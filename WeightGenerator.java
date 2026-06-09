@@ -1,4 +1,3 @@
-package fog_simulation;
 
 import java.util.Random;
 

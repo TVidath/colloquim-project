@@ -1,5 +1,3 @@
-package fog_simulation;
-
 import java.util.Random;
 
 /**
@@ -8,8 +6,8 @@ import java.util.Random;
  * ranks fog node preferences based on least (normDelay + normEnergy), generates urgency weights,
  * calculates urgency values for all tasks, and sorts tasks by preference for each fog node.
  * 
- * Compile : javac fog_simulation/*.java
- * Run     : java fog_simulation.Main
+ * Compile : javac *.java
+ * Run     : java Main
  */
 public class Main {
 

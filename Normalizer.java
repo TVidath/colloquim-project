@@ -1,4 +1,3 @@
-package fog_simulation;
 
 /**
  * Normalizer

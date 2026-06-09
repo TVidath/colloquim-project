@@ -1,4 +1,3 @@
-package fog_simulation;
 
 /**
  * Represents a computational task to be offloaded to a Fog Network.

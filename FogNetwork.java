@@ -1,4 +1,3 @@
-package fog_simulation;
 
 /**
  * Represents a Fog Network node.
