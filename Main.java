@@ -39,16 +39,38 @@ public class Main {
             fogNetworks[i] = new FogNetwork(i + 1, "FogNode_" + (i + 1), cpuGHz, vrus);
         }
 
-        // --- Generate Urgency Weights (Normalized, w1 + w2 + w3 + w4 = 1.0) ---
+        // --- Generate Urgency Weights via AHP (Normalized, w1 + w2 + w3 + w4 = 1.0) ---
         double[] weights = WeightGenerator.generateWeights(rand);
         double w1 = weights[0], w2 = weights[1], w3 = weights[2], w4 = weights[3];
 
-        // --- Header ---
+        // --- Header & AHP Diagnostics ---
         System.out.println("==========================================================================================================");
         System.out.println("  FOG SIMULATION — Phase 1 (Urgency & Sort)  |  Tasks: " + NUM_TASKS + "  |  Fog Nodes: " + fogNetworks.length);
         System.out.printf ("  Urgency Weights: w1(DelayDiff)=%.4f | w2(PrefCount)=%.4f | w3(Energy)=%.4f | w4(Severity)=%.4f%n",
             w1, w2, w3, w4);
         System.out.println("  Uplink/Downlink Bandwidth: 20 MHz (2500 KB/s) for all Nodes");
+        System.out.println("==========================================================================================================\n");
+
+        System.out.println("==========================================================================================================");
+        System.out.println("  AHP WEIGHT GENERATION DIAGNOSTICS (Algorithms 3-6 Consistency Check)");
+        System.out.println("==========================================================================================================");
+        System.out.printf ("  AHP Iterations to Converge : %d%n", WeightGenerator.iterations);
+        System.out.printf ("  Lambda Max                 : %.4f%n", WeightGenerator.lambdaMax);
+        System.out.printf ("  Consistency Index (CI)     : %.4f%n", WeightGenerator.consistencyIndex);
+        System.out.printf ("  Consistency Ratio (CR)     : %.4f (Passed: CR <= 0.1)%n", WeightGenerator.consistencyRatio);
+        System.out.println("  Pairwise Comparison Matrix P:");
+        double[][] pm = WeightGenerator.pairwiseMatrix;
+        String[] labels = {"c1(DelayDiff)", "c2(PrefCount)", "c3(Energy)", "c4(Severity)"};
+        System.out.print("                 ");
+        for (String lbl : labels) System.out.printf("%-15s", lbl);
+        System.out.println();
+        for (int x = 0; x < 4; x++) {
+            System.out.printf("  %-15s", labels[x]);
+            for (int y = 0; y < 4; y++) {
+                System.out.printf("%-15.4f", pm[x][y]);
+            }
+            System.out.println();
+        }
         System.out.println("==========================================================================================================\n");
 
         System.out.println("--- Generated Fog Nodes ---");
