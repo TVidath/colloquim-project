@@ -26,11 +26,14 @@ public class SimulationData {
     private int[][]      preferredFogIndices;
     private int[][]      preferredTasksPerFog;
     private double[]     weights;
+    private Task[]       precedenceListMajor;
+    private Task[]       precedenceListMinor;
 
     public SimulationData(Task[] tasks, FogNetwork[] fogNetworks,
                           double[][] normDelayArray, double[][] normEnergyArray,
                           double[][] normSumArray, int[][] preferredFogIndices,
-                          int[][] preferredTasksPerFog, double[] weights) {
+                          int[][] preferredTasksPerFog, double[] weights,
+                          Task[] precedenceListMajor, Task[] precedenceListMinor) {
         this.tasks                = tasks;
         this.fogNetworks          = fogNetworks;
         this.normDelayArray       = normDelayArray;
@@ -39,6 +42,8 @@ public class SimulationData {
         this.preferredFogIndices  = preferredFogIndices;
         this.preferredTasksPerFog = preferredTasksPerFog;
         this.weights              = weights;
+        this.precedenceListMajor  = precedenceListMajor;
+        this.precedenceListMinor  = precedenceListMinor;
     }
 
     // ------------------- Getters -------------------
@@ -51,6 +56,8 @@ public class SimulationData {
     public int[][]      getPreferredFogIndices()  { return preferredFogIndices; }
     public int[][]      getPreferredTasksPerFog() { return preferredTasksPerFog; }
     public double[]     getWeights()              { return weights; }
+    public Task[]       getPrecedenceListMajor()  { return precedenceListMajor; }
+    public Task[]       getPrecedenceListMinor()  { return precedenceListMinor; }
 
     /**
      * Convenience: get normalized delay for a specific task and fog node

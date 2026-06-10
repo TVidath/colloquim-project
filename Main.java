@@ -132,6 +132,44 @@ public class Main {
             }
         }
 
+        // --- Create Precedence Lists: Major and Minor cases separately, sorted by ascending order of deadline ---
+        int majorCount = 0;
+        int minorCount = 0;
+        for (Task t : tasks) {
+            if (t.getSeverity() != null && t.getSeverity().equalsIgnoreCase("Major")) {
+                majorCount++;
+            } else {
+                minorCount++;
+            }
+        }
+
+        Task[] precedenceListMajor = new Task[majorCount];
+        Task[] precedenceListMinor = new Task[minorCount];
+        int majorIdx = 0;
+        int minorIdx = 0;
+        for (Task t : tasks) {
+            if (t.getSeverity() != null && t.getSeverity().equalsIgnoreCase("Major")) {
+                precedenceListMajor[majorIdx++] = t;
+            } else {
+                precedenceListMinor[minorIdx++] = t;
+            }
+        }
+
+        // Sort both arrays in ascending order of deadline
+        java.util.Arrays.sort(precedenceListMajor, new java.util.Comparator<Task>() {
+            @Override
+            public int compare(Task a, Task b) {
+                return Double.compare(a.getDeadline(), b.getDeadline());
+            }
+        });
+
+        java.util.Arrays.sort(precedenceListMinor, new java.util.Comparator<Task>() {
+            @Override
+            public int compare(Task a, Task b) {
+                return Double.compare(a.getDeadline(), b.getDeadline());
+            }
+        });
+
         // --- Extract normalized and ranked arrays for SimulationData container ---
         double[][] normDelayArray = new double[NUM_TASKS][fogNetworks.length];
         double[][] normEnergyArray = new double[NUM_TASKS][fogNetworks.length];
@@ -147,7 +185,7 @@ public class Main {
 
         SimulationData simData = new SimulationData(
             tasks, fogNetworks, normDelayArray, normEnergyArray, normSumArray, preferredFogIndices,
-            preferredTasksPerFog, weights);
+            preferredTasksPerFog, weights, precedenceListMajor, precedenceListMinor);
 
         // --- Sample task detailed view (first 3 tasks) ---
         System.out.println("==========================================================================================");
@@ -197,6 +235,30 @@ public class Main {
             System.out.println("\n");
         }
 
+        // --- Print Precedence Lists Diagnostics ---
+        System.out.println("==========================================================================================");
+        System.out.println("  PRECEDENCE LISTS (Major and Minor Tasks sorted by Ascending Deadline)");
+        System.out.println("==========================================================================================");
+        System.out.printf("  Precedence List Major (Total: %d tasks):%n  ", precedenceListMajor.length);
+        for (int r = 0; r < Math.min(15, precedenceListMajor.length); r++) {
+            Task t = precedenceListMajor[r];
+            System.out.printf("[Rank %2d: T%d (DL: %5.2fs)]", r + 1, t.getTaskId(), t.getDeadline());
+            if (r < Math.min(15, precedenceListMajor.length) - 1) {
+                System.out.print(" -> ");
+            }
+        }
+        System.out.println("\n");
+        
+        System.out.printf("  Precedence List Minor (Total: %d tasks):%n  ", precedenceListMinor.length);
+        for (int r = 0; r < Math.min(15, precedenceListMinor.length); r++) {
+            Task t = precedenceListMinor[r];
+            System.out.printf("[Rank %2d: T%d (DL: %5.2fs)]", r + 1, t.getTaskId(), t.getDeadline());
+            if (r < Math.min(15, precedenceListMinor.length) - 1) {
+                System.out.print(" -> ");
+            }
+        }
+        System.out.println("\n");
+
         System.out.println("==========================================================================================");
         System.out.println("  [Phase 1 Complete] SimulationData ready for M-MOORA");
         System.out.println("  Tasks count             → " + simData.getTasks().length);
@@ -205,6 +267,8 @@ public class Main {
         System.out.println("  normSumArray shape      → " + simData.getNormSumArray().length + " x " + simData.getNormSumArray()[0].length);
         System.out.println("  preferredFogIndices     → " + simData.getPreferredFogIndices().length + " x " + simData.getPreferredFogIndices()[0].length);
         System.out.println("  preferredTasksPerFog    → " + simData.getPreferredTasksPerFog().length + " x " + simData.getPreferredTasksPerFog()[0].length);
+        System.out.println("  precedenceListMajor     → " + simData.getPrecedenceListMajor().length + " tasks");
+        System.out.println("  precedenceListMinor     → " + simData.getPrecedenceListMinor().length + " tasks");
         System.out.println("==========================================================================================");
     }
 
