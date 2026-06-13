@@ -25,6 +25,8 @@ public class SimulationData {
     private double[][]   normSumArray;
     private int[][]      preferredFogIndices;
     private int[][]      preferredTasksPerFog;
+    private int[][]      preferredMajorTasksPerFog;
+    private int[][]      preferredMinorTasksPerFog;
     private double[]     weights;
     private Task[]       precedenceListMajor;
     private Task[]       precedenceListMinor;
@@ -32,32 +34,37 @@ public class SimulationData {
     public SimulationData(Task[] tasks, FogNetwork[] fogNetworks,
                           double[][] normDelayArray, double[][] normEnergyArray,
                           double[][] normSumArray, int[][] preferredFogIndices,
-                          int[][] preferredTasksPerFog, double[] weights,
+                          int[][] preferredTasksPerFog, int[][] preferredMajorTasksPerFog,
+                          int[][] preferredMinorTasksPerFog, double[] weights,
                           Task[] precedenceListMajor, Task[] precedenceListMinor) {
-        this.tasks                = tasks;
-        this.fogNetworks          = fogNetworks;
-        this.normDelayArray       = normDelayArray;
-        this.normEnergyArray      = normEnergyArray;
-        this.normSumArray         = normSumArray;
-        this.preferredFogIndices  = preferredFogIndices;
-        this.preferredTasksPerFog = preferredTasksPerFog;
-        this.weights              = weights;
-        this.precedenceListMajor  = precedenceListMajor;
-        this.precedenceListMinor  = precedenceListMinor;
+        this.tasks                     = tasks;
+        this.fogNetworks               = fogNetworks;
+        this.normDelayArray            = normDelayArray;
+        this.normEnergyArray           = normEnergyArray;
+        this.normSumArray              = normSumArray;
+        this.preferredFogIndices       = preferredFogIndices;
+        this.preferredTasksPerFog      = preferredTasksPerFog;
+        this.preferredMajorTasksPerFog = preferredMajorTasksPerFog;
+        this.preferredMinorTasksPerFog = preferredMinorTasksPerFog;
+        this.weights                   = weights;
+        this.precedenceListMajor       = precedenceListMajor;
+        this.precedenceListMinor       = precedenceListMinor;
     }
 
     // ------------------- Getters -------------------
 
-    public Task[]       getTasks()                { return tasks; }
-    public FogNetwork[] getFogNetworks()          { return fogNetworks; }
-    public double[][]   getNormDelayArray()       { return normDelayArray; }
-    public double[][]   getNormEnergyArray()      { return normEnergyArray; }
-    public double[][]   getNormSumArray()         { return normSumArray; }
-    public int[][]      getPreferredFogIndices()  { return preferredFogIndices; }
-    public int[][]      getPreferredTasksPerFog() { return preferredTasksPerFog; }
-    public double[]     getWeights()              { return weights; }
-    public Task[]       getPrecedenceListMajor()  { return precedenceListMajor; }
-    public Task[]       getPrecedenceListMinor()  { return precedenceListMinor; }
+    public Task[]       getTasks()                     { return tasks; }
+    public FogNetwork[] getFogNetworks()               { return fogNetworks; }
+    public double[][]   getNormDelayArray()            { return normDelayArray; }
+    public double[][]   getNormEnergyArray()           { return normEnergyArray; }
+    public double[][]   getNormSumArray()              { return normSumArray; }
+    public int[][]      getPreferredFogIndices()       { return preferredFogIndices; }
+    public int[][]      getPreferredTasksPerFog()      { return preferredTasksPerFog; }
+    public int[][]      getPreferredMajorTasksPerFog() { return preferredMajorTasksPerFog; }
+    public int[][]      getPreferredMinorTasksPerFog() { return preferredMinorTasksPerFog; }
+    public double[]     getWeights()                   { return weights; }
+    public Task[]       getPrecedenceListMajor()       { return precedenceListMajor; }
+    public Task[]       getPrecedenceListMinor()       { return precedenceListMinor; }
 
     /**
      * Convenience: get normalized delay for a specific task and fog node
@@ -92,5 +99,35 @@ public class SimulationData {
      */
     public int[] getPreferredTasks(int fogIndex) {
         return preferredTasksPerFog[fogIndex];
+    }
+
+    /**
+     * Convenience: get preferred Major task order indices for a specific fog node
+     */
+    public int[] getPreferredMajorTasks(int fogIndex) {
+        return preferredMajorTasksPerFog[fogIndex];
+    }
+
+    /**
+     * Convenience: get preferred Minor task order indices for a specific fog node
+     */
+    public int[] getPreferredMinorTasks(int fogIndex) {
+        return preferredMinorTasksPerFog[fogIndex];
+    }
+
+    public int getMinQuotaAllTasks(int fogIndex) {
+        return fogNetworks[fogIndex].getMinQuotaAllTasks();
+    }
+
+    public int getMaxQuotaAllTasks(int fogIndex) {
+        return fogNetworks[fogIndex].getMaxQuotaAllTasks();
+    }
+
+    public int getMinQuotaMajorTasks(int fogIndex) {
+        return fogNetworks[fogIndex].getMinQuotaMajorTasks();
+    }
+
+    public Integer getMaxQuotaMajorTasks(int fogIndex) {
+        return fogNetworks[fogIndex].getMaxQuotaMajorTasks();
     }
 }

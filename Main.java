@@ -170,6 +170,73 @@ public class Main {
             }
         });
 
+        // --- Compute Quotas for All Tasks and Major Tasks sets ---
+        QuotaDeterminator.computeMinimumQuotas(fogNetworks, NUM_TASKS, true);
+        QuotaDeterminator.computeMinimumQuotas(fogNetworks, majorCount, false);
+
+        // --- Print Quota Information ---
+        System.out.println("==========================================================================================");
+        System.out.println("  FOG NODE QUOTAS (Computed via M-DAFTO Algorithm 1)");
+        System.out.println("==========================================================================================");
+        System.out.printf("  %-15s | %-12s | %-12s | %-12s | %-12s%n",
+            "Fog Node", "Min (All)", "Max (All)", "Min (Major)", "Max (Major)");
+        System.out.println("  ----------------------------------------------------------------------------------------");
+        for (FogNetwork fn : fogNetworks) {
+            String maxMajorStr = (fn.getMaxQuotaMajorTasks() == null) ? "empty" : String.valueOf(fn.getMaxQuotaMajorTasks());
+            System.out.printf("  %-15s | %-12d | %-12d | %-12d | %-12s%n",
+                fn.getName(), fn.getMinQuotaAllTasks(), fn.getMaxQuotaAllTasks(),
+                fn.getMinQuotaMajorTasks(), maxMajorStr);
+        }
+        System.out.println("==========================================================================================\n");
+
+        // --- Compute preferred task ranking list for each fog node restricted to Major tasks ---
+        int[][] preferredMajorTasksPerFog = new int[fogNetworks.length][majorCount];
+        for (int f = 0; f < fogNetworks.length; f++) {
+            final int fogIndex = f;
+            Integer[] indices = new Integer[majorCount];
+            int idx = 0;
+            for (int i = 0; i < NUM_TASKS; i++) {
+                if (tasks[i].getSeverity() != null && tasks[i].getSeverity().equalsIgnoreCase("Major")) {
+                    indices[idx++] = i;
+                }
+            }
+            
+            java.util.Arrays.sort(indices, new java.util.Comparator<Integer>() {
+                @Override
+                public int compare(Integer a, Integer b) {
+                    return Double.compare(tasks[b].getUrgency(fogIndex), tasks[a].getUrgency(fogIndex));
+                }
+            });
+            
+            for (int i = 0; i < majorCount; i++) {
+                preferredMajorTasksPerFog[f][i] = indices[i];
+            }
+        }
+
+        // --- Compute preferred task ranking list for each fog node restricted to Minor tasks ---
+        int[][] preferredMinorTasksPerFog = new int[fogNetworks.length][minorCount];
+        for (int f = 0; f < fogNetworks.length; f++) {
+            final int fogIndex = f;
+            Integer[] indices = new Integer[minorCount];
+            int idx = 0;
+            for (int i = 0; i < NUM_TASKS; i++) {
+                if (tasks[i].getSeverity() == null || !tasks[i].getSeverity().equalsIgnoreCase("Major")) {
+                    indices[idx++] = i;
+                }
+            }
+            
+            java.util.Arrays.sort(indices, new java.util.Comparator<Integer>() {
+                @Override
+                public int compare(Integer a, Integer b) {
+                    return Double.compare(tasks[b].getUrgency(fogIndex), tasks[a].getUrgency(fogIndex));
+                }
+            });
+            
+            for (int i = 0; i < minorCount; i++) {
+                preferredMinorTasksPerFog[f][i] = indices[i];
+            }
+        }
+
         // --- Extract normalized and ranked arrays for SimulationData container ---
         double[][] normDelayArray = new double[NUM_TASKS][fogNetworks.length];
         double[][] normEnergyArray = new double[NUM_TASKS][fogNetworks.length];
@@ -185,7 +252,8 @@ public class Main {
 
         SimulationData simData = new SimulationData(
             tasks, fogNetworks, normDelayArray, normEnergyArray, normSumArray, preferredFogIndices,
-            preferredTasksPerFog, weights, precedenceListMajor, precedenceListMinor);
+            preferredTasksPerFog, preferredMajorTasksPerFog, preferredMinorTasksPerFog, weights,
+            precedenceListMajor, precedenceListMinor);
 
         // --- Sample task detailed view (first 3 tasks) ---
         System.out.println("==========================================================================================");
@@ -267,6 +335,8 @@ public class Main {
         System.out.println("  normSumArray shape      → " + simData.getNormSumArray().length + " x " + simData.getNormSumArray()[0].length);
         System.out.println("  preferredFogIndices     → " + simData.getPreferredFogIndices().length + " x " + simData.getPreferredFogIndices()[0].length);
         System.out.println("  preferredTasksPerFog    → " + simData.getPreferredTasksPerFog().length + " x " + simData.getPreferredTasksPerFog()[0].length);
+        System.out.println("  preferredMajorTasksPerFog → " + simData.getPreferredMajorTasksPerFog().length + " x " + simData.getPreferredMajorTasksPerFog()[0].length);
+        System.out.println("  preferredMinorTasksPerFog → " + simData.getPreferredMinorTasksPerFog().length + " x " + simData.getPreferredMinorTasksPerFog()[0].length);
         System.out.println("  precedenceListMajor     → " + simData.getPrecedenceListMajor().length + " tasks");
         System.out.println("  precedenceListMinor     → " + simData.getPrecedenceListMinor().length + " tasks");
         System.out.println("==========================================================================================");

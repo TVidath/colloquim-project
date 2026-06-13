@@ -19,12 +19,18 @@ public class FogNetwork {
     private int numberOfVRUs;           // Number of Virtual Resource Units
     private double vruCapacity;         // million cycles/sec per VRU = (GHz * 1000) / VRUs
 
+    // Computed quotas for matching (All Tasks & Major Tasks sets)
+    private int minQuotaAllTasks;
+    private int maxQuotaAllTasks;
+    private int minQuotaMajorTasks;
+    private Integer maxQuotaMajorTasks; // Kept empty as per user request
+
     /**
      * Constructor for FogNetwork
      *
      * @param fogId             Unique fog node identifier
      * @param name              Descriptive name (e.g., "FogNode_A")
-     * @param totalCpuCapacity  Total CPU in MIPS (constant, specified)
+     * @param totalCpuCapacityGHz Total CPU in GHz
      * @param numberOfVRUs      Number of VRUs on this fog node
      */
     public FogNetwork(int fogId, String name, double totalCpuCapacityGHz, int numberOfVRUs) {
@@ -35,13 +41,25 @@ public class FogNetwork {
         this.vruCapacity = (totalCpuCapacityGHz * 1000.0) / numberOfVRUs;   // Derived in million cycles/sec per VRU
     }
 
-    // ------------------- Getters -------------------
+    // ------------------- Getters & Setters -------------------
 
     public int getFogId()               { return fogId; }
     public String getName()             { return name; }
     public double getTotalCpuCapacity() { return totalCpuGHz; }
     public int getNumberOfVRUs()        { return numberOfVRUs; }
     public double getVruCapacity()      { return vruCapacity; }
+
+    public int getMinQuotaAllTasks()                { return minQuotaAllTasks; }
+    public void setMinQuotaAllTasks(int val)        { this.minQuotaAllTasks = val; }
+
+    public int getMaxQuotaAllTasks()                { return maxQuotaAllTasks; }
+    public void setMaxQuotaAllTasks(int val)        { this.maxQuotaAllTasks = val; }
+
+    public int getMinQuotaMajorTasks()              { return minQuotaMajorTasks; }
+    public void setMinQuotaMajorTasks(int val)      { this.minQuotaMajorTasks = val; }
+
+    public Integer getMaxQuotaMajorTasks()          { return maxQuotaMajorTasks; }
+    public void setMaxQuotaMajorTasks(Integer val)  { this.maxQuotaMajorTasks = val; }
 
     // ------------------- Display -------------------
 
