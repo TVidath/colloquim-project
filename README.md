@@ -1,6 +1,6 @@
 # M-DAFTO: Multi-Stage Deferred Acceptance Based Fair Task Offloading in IoT-Fog Systems
 
-This repository contains the simulation codebase for **M-DAFTO** (Multi-Stage Deferred Acceptance Based Fair Task Offloading) in IoT-Fog Systems. This is Phase 1 of the implementation, focusing on urgency calculation and preference ranking for fair task offloading.
+This repository contains the simulation codebase for **M-DAFTO** (Multi-Stage Deferred Acceptance Based Fair Task Offloading) in IoT-Fog Systems, focusing on weight generation, urgency calculation, and preference ranking for fair task offloading.
 
 ---
 
@@ -13,23 +13,57 @@ This simulation:
 2. **Computes offloading metrics**: Calculates the transmission delay, execution delay, return delay, and total energy consumed per task across all Fog nodes.
 3. **Normalizes metrics globally**: Applies Min-Max normalization to delay and energy parameters.
 4. **Calculates urgency values**: Employs multi-objective weight parameters to compute the urgency of each task relative to each Fog node, prioritizing critical/major tasks.
-5. **Generates preference rankings**: Ranks tasks based on urgency for each Fog node, preparing the structural inputs needed for the M-MOORA allocation algorithm.
+5. **Generates preference rankings**: Ranks tasks based on urgency for each Fog node.
 
 ---
 
 ## 📁 Codebase Structure
 
-All codebase files are located in the repository root directory:
+All source files are organized by responsibility into clear layers:
 
-| File Name | Description |
+### Orchestrator
+
+| File | Description |
 | :--- | :--- |
-| **[Main.java](file:///c:/Users/tvida/Downloads/files/Main.java)** | Main orchestrator/driver that initializes nodes, tasks, generates weights, runs the pipeline, and prints sample metrics. |
-| **[Task.java](file:///c:/Users/tvida/Downloads/files/Task.java)** | Represents an offloading task. Holds metadata, computed delay/energy metrics per node, and urgency calculations. |
-| **[FogNetwork.java](file:///c:/Users/tvida/Downloads/files/FogNetwork.java)** | Represents a Fog node with total CPU capacity, number of Virtual Resource Units (VRUs), and derived capacity. |
-| **[OffloadingCalculator.java](file:///c:/Users/tvida/Downloads/files/OffloadingCalculator.java)** | Utility class containing math formulations for network transmission delays and energy usage. |
-| **[Normalizer.java](file:///c:/Users/tvida/Downloads/files/Normalizer.java)** | Standardizes values using global Min-Max normalization, adjusting based on task severity (Major vs. Minor). |
-| **[WeightGenerator.java](file:///c:/Users/tvida/Downloads/files/WeightGenerator.java)** | Generates normalized random weights ($w_1, w_2, w_3, w_4$) summing to $1.0$ for the urgency calculations. |
-| **[SimulationData.java](file:///c:/Users/tvida/Downloads/files/SimulationData.java)** | A data transfer object (DTO) that groups and houses all arrays to feed directly into the future M-MOORA phase. |
+| **[Main.java](file:///c:/Users/tvida/Downloads/files/Main.java)** | Entry point — orchestrates the full simulation pipeline by calling each component in order (12 steps). |
+
+### Configuration
+
+| File | Description |
+| :--- | :--- |
+| **[SimulationConfig.java](file:///c:/Users/tvida/Downloads/files/SimulationConfig.java)** | Central configuration — holds ALL simulation constants and parameter ranges (task counts, CPU/size/deadline ranges, fog node specs). |
+
+### Model Layer (Data Objects)
+
+| File | Description |
+| :--- | :--- |
+| **[Task.java](file:///c:/Users/tvida/Downloads/files/Task.java)** | Pure data model for a computational task — fields, getters, setters for identity, parameters, classification, and per-fog-node metrics. |
+| **[FogNetwork.java](file:///c:/Users/tvida/Downloads/files/FogNetwork.java)** | Data model for a Fog node — identity, hardware specs (CPU, VRUs, VRU capacity), and quota fields. |
+| **[SimulationData.java](file:///c:/Users/tvida/Downloads/files/SimulationData.java)** | Data Transfer Object (DTO) — groups all computed arrays (normalized metrics, preference rankings, precedence lists). |
+
+### Generator Layer
+
+| File | Description |
+| :--- | :--- |
+| **[TaskGenerator.java](file:///c:/Users/tvida/Downloads/files/TaskGenerator.java)** | Generates Task objects with random parameters (CPU demand, input/output size, deadline, phase, severity) within configured ranges. |
+| **[FogNetworkGenerator.java](file:///c:/Users/tvida/Downloads/files/FogNetworkGenerator.java)** | Generates FogNetwork objects with random hardware specs (CPU capacity, VRU count) within configured ranges. |
+
+### Computation Layer
+
+| File | Description |
+| :--- | :--- |
+| **[OffloadingCalculator.java](file:///c:/Users/tvida/Downloads/files/OffloadingCalculator.java)** | Computes transmission time, execution time, receiving time, offloading delay, and energy for each task × fog node pair. |
+| **[Normalizer.java](file:///c:/Users/tvida/Downloads/files/Normalizer.java)** | Global Min-Max normalization of delay and energy values across all tasks and fog nodes. Applies severity-based weight reduction for Minor tasks. |
+| **[WeightGenerator.java](file:///c:/Users/tvida/Downloads/files/WeightGenerator.java)** | AHP-based weight generation (Algorithms 3-6) — produces consistent urgency weights w1, w2, w3, w4. Returns a WeightResult with diagnostics. |
+| **[QuotaDeterminator.java](file:///c:/Users/tvida/Downloads/files/QuotaDeterminator.java)** | Algorithm 1 (MQD) — computes minimum and maximum quotas for each Fog node proportionately based on VRU capacity. |
+| **[UrgencyCalculator.java](file:///c:/Users/tvida/Downloads/files/UrgencyCalculator.java)** | Computes urgency values for each task × fog node using the multi-criteria formula (delay diff, pref count, energy, severity). |
+| **[PreferenceRanker.java](file:///c:/Users/tvida/Downloads/files/PreferenceRanker.java)** | All ranking operations — fog preferences per task, task rankings per fog (all/major/minor), and precedence list construction. |
+
+### Output Layer
+
+| File | Description |
+| :--- | :--- |
+| **[SimulationPrinter.java](file:///c:/Users/tvida/Downloads/files/SimulationPrinter.java)** | All console output — 8 print methods for header, AHP diagnostics, fog nodes, quotas, sample tasks, prioritization, precedence lists, and summary. |
 
 ---
 
@@ -84,6 +118,8 @@ java Main
 ## 📊 Sample Output Description
 When run, the simulation displays:
 * General configurations and generated Fog node metadata.
+* AHP weight generation diagnostics with consistency check.
 * Detailed analysis of the first three tasks w.r.t all Fog nodes.
 * Preferred task prioritization lists (Top 15 ranked tasks by urgency) for each Fog node.
-* Summary confirming successful completion and readying of `SimulationData` for the next M-MOORA execution.
+* Major and Minor precedence lists sorted by ascending deadline.
+* Summary confirming successful completion and compilation of `SimulationData`.

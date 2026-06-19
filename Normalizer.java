@@ -1,39 +1,47 @@
-
 /**
- * Normalizer
+ * ============================================================================
+ *  Normalizer
+ * ============================================================================
  *
- * Performs global Min-Max normalization of delay and energy values
- * across all tasks and all fog nodes, mapping each value to the range [0, 1].
+ *  Performs global Min-Max normalization of delay and energy values
+ *  across ALL tasks and ALL fog nodes, mapping each value to [0, 1].
  *
- * Formula:
- *   normalizedValue = (value - min) / (max - min)
+ *  Formula:
+ *    normalizedValue = (value - globalMin) / (globalMax - globalMin)
  *
- * If all values are identical (max == min), normalized value = 0.
+ *  Special handling:
+ *    - If all values are identical (max == min), range defaults to 1
+ *      to avoid division by zero.
+ *    - Minor-severity tasks get a 0.5 weight reduction on their
+ *      normalized values.
  *
- * Also computes the sum of normalized delay and normalized energy per task/fog node,
- * and triggers preference sorting for each task.
+ *  After normalization, this class also:
+ *    - Computes the sum of normalized delay + energy per task/fog node
+ *    - Triggers preference ordering for each task via PreferenceRanker
+ * ============================================================================
  */
 public class Normalizer {
 
     /**
      * Normalizes delay and energy values globally across all tasks and fog nodes.
-     * Stores normalized values and sums back into each Task object.
+     * Stores normalized values, sums, and fog preference order back into each Task.
      *
-     * @param tasks        Array of tasks with computed delay and energy w.r.t fog nodes
-     * @param numFogNodes  The number of available fog nodes
+     * @param tasks        Array of tasks with computed delay and energy
+     * @param numFogNodes  Number of fog nodes in the simulation
      */
     public static void normalize(Task[] tasks, int numFogNodes) {
 
-        // ---- Find global min and max for Delay & Energy across all tasks and fog nodes ----
-        double minDelay = Double.MAX_VALUE, maxDelay = -Double.MAX_VALUE;
+        // ── Step 1: Find global min/max for delay and energy ──
+        double minDelay  = Double.MAX_VALUE, maxDelay  = -Double.MAX_VALUE;
         double minEnergy = Double.MAX_VALUE, maxEnergy = -Double.MAX_VALUE;
 
         for (Task t : tasks) {
             for (int f = 0; f < numFogNodes; f++) {
-                double delay = t.getOffloadingDelay(f);
+                double delay  = t.getOffloadingDelay(f);
                 double energy = t.getEnergy(f);
-                if (delay < minDelay)  minDelay  = delay;
-                if (delay > maxDelay)  maxDelay  = delay;
+
+                if (delay  < minDelay)  minDelay  = delay;
+                if (delay  > maxDelay)  maxDelay  = delay;
                 if (energy < minEnergy) minEnergy = energy;
                 if (energy > maxEnergy) maxEnergy = energy;
             }
@@ -42,8 +50,9 @@ public class Normalizer {
         double delayRange  = (maxDelay  - minDelay)  == 0 ? 1 : (maxDelay  - minDelay);
         double energyRange = (maxEnergy - minEnergy) == 0 ? 1 : (maxEnergy - minEnergy);
 
-        // ---- Normalize and store (apply severity weight: Minor=0.5, Major=1.0) ----
+        // ── Step 2: Normalize each value and compute sums ──
         for (Task t : tasks) {
+            // Severity weight: Minor tasks get 0.5 reduction, Major tasks get 1.0
             String severity = t.getSeverity();
             double weight = 1.0;
             if (severity != null && severity.equalsIgnoreCase("Minor")) {
@@ -54,19 +63,19 @@ public class Normalizer {
                 double nd = (t.getOffloadingDelay(f) - minDelay)  / delayRange;
                 double ne = (t.getEnergy(f)          - minEnergy) / energyRange;
 
+                // Apply severity weight
                 nd = nd * weight;
                 ne = ne * weight;
 
                 t.setNormalizedDelay(f, nd);
                 t.setNormalizedEnergy(f, ne);
 
-                // Sum of normalized delay and normalized energy
-                double sum = nd + ne;
-                t.setNormSum(f, sum);
+                // Sum of normalized delay + normalized energy
+                t.setNormSum(f, nd + ne);
             }
 
-            // Sort the preferred order of fog nodes for this task (least sum first)
-            t.computePreferredFogOrder(numFogNodes);
+            // ── Step 3: Compute preferred fog order for this task ──
+            PreferenceRanker.computePreferredFogOrder(t, numFogNodes);
         }
     }
 }
