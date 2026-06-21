@@ -80,9 +80,10 @@ public class UrgencyCalculator {
         double   deadline = task.getDeadline();
 
         for (int f = 0; f < delays.length; f++) {
-            // Safe division: clamp to 0.001 if deadline ≤ delay
+            // Safe division: clamp to 0.5 to prevent the term from dominating urgency
+            // (0.001 caused 1/0.001=1000, drowning out all other terms)
             double delayDiff    = deadline - delays[f];
-            double invDelayDiff = 1.0 / Math.max(delayDiff, 0.001);
+            double invDelayDiff = 1.0 / Math.max(delayDiff, 0.5);
 
             // Safe division: clamp to 0.001 if energy ≤ 0
             double invEnergy = 1.0 / Math.max(energies[f], 0.001);

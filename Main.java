@@ -97,10 +97,21 @@ public class Main {
             weights, precedenceListMajor, precedenceListMinor
         );
 
-        // ── Step 12: Print Results ──
+        // ── Step 12: Print Input Configurations & Lists ──
         SimulationPrinter.printSampleTasks(tasks, fogNetworks, SimulationConfig.SAMPLE_TASK_COUNT);
         SimulationPrinter.printPreferredTaskPrioritization(simData, tasks, fogNetworks);
         SimulationPrinter.printPrecedenceLists(precedenceListMajor, precedenceListMinor);
+
+        // ── Step 13: Run matching algorithm ──
+        MSDAlgorithm.MatchingResult result = MSDAlgorithm.match(simData);
+
+        // ── Step 14: Print matching results ──
+        SimulationPrinter.printMatchingResults(simData, result);
+
+        // ── Step 15: Print detailed paper-style analysis ──
+        SimulationPrinter.printDetailedAnalysis(simData, result);
+
+        // ── Step 16: Print final summary ──
         SimulationPrinter.printSummary(simData);
     }
 }

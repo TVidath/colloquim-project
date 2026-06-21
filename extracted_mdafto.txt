@@ -1,0 +1,1307 @@
+﻿Pages: 14
+--- PAGE 1 ---
+3928 IEEE TRANSACTIONS ON SERVICES COMPUTING, VOL. 17, NO. 6, NOVEMBER/DECEMBER 2024
+M-DAFTO: Multi-Stage Deferred Acceptance Based
+Fair Task Of∩¼éoading in IoT-Fog Systems
+Chittaranjan Swain , Graduate Student Member , IEEE, Manmath Narayan Sahoo , Member , IEEE,
+Anurag Satpathy , Graduate Student Member , IEEE, Sambit Bakshi , Senior Member , IEEE,
+and Soumya K. Ghosh , Senior Member , IEEE
+AbstractΓÇöResource-constrained Internet of Things (IoT) de-
+vices depend on remote Cloud/Fog Nodes (FNs) to execute deadline-
+sensitive services. Of∩¼éoading computations of real-time services
+to a remote cloud server results in intolerable latency due to
+intermittent channels, higher transmission delays, and scarce spec-
+trum resources. Therefore, of∩¼éoading to nearby FNs is preferable;
+however, it introduces several signi∩¼ücant issues: ( i) allocation of
+limited FN resources, ( ii) deadline constraint of heterogeneous
+services, and (iii) requirement of computationally inexpensive and
+scalable strategies. This article proposes a M-DAFTO model to
+tackle the abovementioned issues and generate a fair of∩¼éoading
+plan in polynomial time. The of∩¼éoading problem is modeled as a
+many-to-one matching game with maximum and minimum quotas
+at each FN. Because the deferred acceptance (DA) algorithm fails
+to operate with minimum quotas, we adopt a variant of the DA
+algorithm, a multistage deferred acceptance (MSDA) algorithm, to
+solve the of∩¼éoading problem. The overall goal of M-DAFTO is to
+reduce the aggregate of∩¼éoading delay with increased assignment of
+tasks to FNs. Extensive simulation and analysis con∩¼ürm a 30.26%
+and a 93.53% reduction in of∩¼éoading delay and outages (unassigned
+tasks) compared to the baselines.
+Index Terms ΓÇöTask of∩¼éoading, IoT, fog systems, matching
+theory, deferred acceptance algorithm, analytic hierarchy process,
+technique for order performance by similarity to ideal solution.
+I. I NTRODUCTION
+T
+HE rapid growth of the Internet of Things (IoT) has facil-
+itated the emergence of real-time services such as online
+gaming, video streaming, facial recognition, health care, virtual
+reality (VR), augmented reality (AR), and automated driving[1],
+[2], [3]. The recent statistics published by the International Data
+Corporation (IDC) state that 55.7billion devices will execute
+such real-time services by 2025, 75% of which will be IoT.
+These IoT devices are expected to generate73.1ZB of data [4].
+Received 22 February 2023; revised 6 June 2024; accepted 26 July 2024.
+Date of publication 2 August 2024; date of current version 30 December 2024.
+(Corresponding author: Manmath Narayan Sahoo.)
+Chittaranjan Swain, Manmath Narayan Sahoo, and Sambit Bakshi are with
+the Department of Computer Science and Engineering, National Institute of
+Technology, Rourkela, Odisha 769008, India (e-mail: chittaranjanswain518@
+gmail.com; sahoom@nitrkl.ac.in; bakshisambit@ieee.org).
+Anurag Satpathy is with the Department of Computer Science, Missouri
+University of Science and Technology, Rolla, MO 65409 USA (e-mail:
+anurag.satpathy@mst.edu).
+Soumya K. Ghosh is with the Department of Computer Science and Engi-
+neering, Indian Institute of Technology, Kharagpur, West Bengal 721302, India
+(e-mail: skg@iitkgp.ac.in).
+This article has supplementary downloadable material available at
+https://doi.org/10.1109/TSC.2024.3436648, provided by the authors.
+Digital Object Identi∩¼üer 10.1109/TSC.2024.3436648
+Real-time services often require adequate computing resources
+for processing such sizeable data. However, IoT devices are often
+resource-constrained and incapable of performing large-scale
+computations, relying on remote devices for processing [5].
+Remote processing, often referred to as of∩¼éoading, is per-
+formed in two modes depending on where the services are
+executed. The ∩¼ürst execution mode directly of∩¼éoads the ser-
+vices to a remote cloud server [6]. This mode of execution is
+infeasible for real-time services as higher latency is experienced
+due to physical distance , intermittent WAN latency , network
+congestion, and scarce spectrum resources [5]. To overcome
+the pitfalls, an alternate execution mode involves of∩¼éoading
+computations to nearby fog nodes (FNs) instead of the remote
+cloud server [1]. Additionally, of∩¼éoading to FNs provides real-
+time mobility support, location awareness, and geo-distributed
+services [7]. Although of∩¼éoading services to FNs is a sensible
+option, generating an of∩¼éoading plan for a densely connected
+IoT-Fog network with heterogeneous resources is non-trivial
+and introduces multiple research challenges. First, the delay
+guarantee of real-time services is dif∩¼ücult to achieve, especially
+with the stochastic computational demands of IoTs and FNs.
+Second, the contention of limited FN resources in a massive IoT
+network often complicates the of∩¼éoading decisions. Finally, the
+requirement of scalable, computationally-inexpensive, and non-
+clustered assignment assists in effectively utilizing the limited
+FN resources and avoiding congestion.
+The existing works on of∩¼éoading focused on reducing the
+of∩¼éoading delay or outages, i.e., services overshooting the pre-
+scribed deadlines. In this regard, works in [4], [8], [9] adopted
+meta-heuristic strategies to generate an of∩¼éoading schedule.
+Though these approaches are acceptable, they are compute-
+intensive, not scalable , and non-polynomial. Moreover, the
+above-discussed approaches ignore the deadlines associated
+with real-time services, thereby leading to quality-of-service
+(QoS) violations [1]. The strategies discussed in [3], [10], [11],
+[12] aimed to optimize the of∩¼éoading delay adhering to the QoS
+requirements in terms of the deadline. However, they may suffer
+from clustered assignments, resulting in ineffective utilization
+and congestion at the FNs. Therefore, this work proposes a
+framework M-DAFTO to simultaneously reduce of∩¼éoading de-
+lays and outages. Adopting a multistage deferred acceptance
+(MSDA) algorithm with maximum and minimum quotas at
+the FNs assists in generating a polynomial time non-clustered
+assignment.
+1939-1374 ┬⌐ 2024 IEEE. Personal use is permitted, but republication/redistribution requires IEEE permission.
+See https://www.ieee.org/publications/rights/index.html for more information.
+Authorized licensed use limited to: INDIAN INST OF INFO TECH AND MANAGEMENT. Downloaded on June 08,2026 at 06:21:05 UTC from IEEE Xplore.  Restrictions apply. 
+--- PAGE 2 ---
+SW AIN et al.: M-DAFTO: MULTI-STAGE DEFERRED ACCEPTANCE BASED FAIR TASK OFFLOADING IN IOT-FOG SYSTEMS 3929
+A. Contributions
+r We propose a novel frameworkM-DAFTO that generates a
+fair of∩¼éoading schedule focused on reducing the of∩¼éoading
+delay without compromising the QoS of services expressed
+as their deadlines.
+r The of∩¼éoading between IoTs and FNs is designed as a
+many-to-one matching game considering maximum and
+minimum quotas at each FN. The adoption of such a solu-
+tion approach introduces two challenges. First, setting the
+minimum quota is arduous due to resource heterogeneity
+at FNs. Second, generating the preferences of the FNs
+is complex, especially considering multiple criteria such
+as of∩¼éoading delay, QoS, and feasible execution options.
+We devise a novel strategy in Section V- Ato assign the
+minimum quotas at FNs, which addresses the ∩¼ürst concern.
+We also introduce a term called urgency in Section V- B
+that captures the preferences of services obtained using
+a combination of analytic hierarchy process (AHP) and
+technique for order performance by similarity to the ideal
+solution (TOPSIS).
+r To obtain a fair of∩¼éoading schedule, we adopt a variant of
+the deferred acceptance algorithm called MSDA that takes
+as input the processing order of the services in the form of
+a precedence list (PL). The PL construction, as presented
+in Section V- C, considers the demands, QoS, and feasible
+execution options of different services.
+r The performance of M-DAFTO is compared against three
+different baselines: a matching theory framework for tasks
+of∩¼éoading in fog computing for IoT systems (MBTO)[13],
+heuristic-based task of∩¼éoading strategy [12], greedy place-
+ment method (GPM)[14], and ef∩¼ücient load-balanced strat-
+egy for task of∩¼éoading in IoT-Fog systems (LETO) [15].
+Through exhaustive simulation and analysis, we infer that
+M-DAFTOachieves a 30.26% reduction in of∩¼éoading delay
+and 93.53% reduction in the number of outages compared
+to the baselines.
+To the best of our knowledge, this is the ∩¼ürst work that aims
+to reduce the of∩¼éoading delay and outages using a maximum-
+minimum quota-based matching game. A preliminary version of
+this work is published in a conference[15],w h e r ew ed i s c u s s e da
+basic framework for modeling the of∩¼éoading as a many-to-one
+matching game with a maximum-minimum quota at the FNs.
+The presented work in this article is a signi∩¼ücant extension that
+overcomes the drawbacks and provides a comprehensive view
+of the solution strategy with extensive simulation and analysis.
+The rest of the paper is organized as follows. Section II dis-
+cusses the literature we reviewed. SectionIII presents the system
+model in detail. The overall problem is formulated in SectionIV.
+Sections IV -Cand V discuss the of∩¼éoading game and the solution
+approach. Performance analysis of M-DAFTO is presented in
+Section VI, and conclusions are drawn in Section VII.
+II. R ELA TEDWORKS
+This section discusses the relevant literature on of∩¼éoading
+from two aspects. First, we discuss strategies that solely focus
+on addressing the reduction in the of∩¼éoading delays. Reducing
+the of∩¼éoading delay without any impetus on the maximum
+tolerable latency of individual services may not be suitable for
+real-world services such as AR and VR, with stringent QoS
+expressed in terms of their deadlines[16]. For such applications,
+QoS violations can result in user dissatisfaction and loss of
+revenue for the service providers (SPs) in the long run, [15].
+Therefore, the second part of the survey discusses strategies that
+consider both the of∩¼éoading delay and outages while generating
+an of∩¼éoading plan.
+The works in [4], [8], [9] developed meta-heuristic-based
+solutions to reduce theof∩¼éoading delayin complex fog networks.
+In this regard, Kishor et al. [4] discussed an ef∩¼ücient of∩¼éoad-
+ing policy based on a smart ant colony optimization (SACO).
+Alternatively, a genetic algorithm (GA)ΓÇôbased swift of∩¼éoading
+policy for sensors in an intelligent city network is discussed
+in [8]. On the other hand, Wang and Chen [9] considered a setup
+that considered both local and FN resources in making joint
+of∩¼éoading decisions. A GA and simulated annealing (SA)ΓÇôbased
+hybrid strategy is adopted to generate the of∩¼éoading schedule.
+Some other works discussed in [17], [18], [22], and [23] have
+also modeled of∩¼éoading as an optimization. Although the above-
+discussed approaches generate acceptable solutions, they are
+inef∩¼ücient, time-consuming, and not scalable [1]. To overcome
+the lacunas of optimization solvers, authors in [13], [19], [20],
+[21] proposed game-theoretic solutions. In this regard, Nowak
+et al. [21] modeled the association between the access point and
+cloudlets as a non-cooperative game. On the other hand, Chitti
+et al. [13],a n dA l ie ta l . [20] formulated the of∩¼éoading as a
+one-to-many matching game and solved it using a variation of the
+DA algorithm. Alternatively, authors in[19] imposed maximum
+and minimum quotas at the FNs to achieve a non-clustered as-
+signment. They solved the matching problem using a multi-stage
+deferred acceptance (MSDA) algorithm. Additionally, works
+in [24], [25] focused on reducing theof∩¼éoading delayin different
+environments.
+As discussed earlier, a more realistic setup involves running
+services within their speci∩¼üed deadlines. In this context, Za-
+kariya et al. [10] discussed a GA-based solution that aims to
+minimize the outages without compromising much with the of-
+∩¼éoading latency. Deng et al. [11] proposed a novel hybrid meta-
+heuristic scheme to execute maximum of∩¼éoaded tasks within
+their respective deadlines to obtain the best of both worlds. The
+authors hybridized GA and Particle swarm optimization (PSO)
+to obtain a sub-optimal solution. Deviating from meta-heuristic-
+based solutions, Adhikari et al. [3] proposed a delay-dependent
+priority-aware heuristic of∩¼éoading strategy called DPTO. The
+authors assign task priorities based on their deadlines and use
+a multilevel feedback queue to schedule of∩¼éoaded tasks. Al-
+ternatively, in [15], the authors formulated the of∩¼éoading as
+a one-to-many matching-based with maximum and minimum
+quotas at the FNs to achieve a non-clustered assignment. The
+MSDA algorithm was adopted to solve the matching game,
+which yielded a PL fair of∩¼éoading schedule. Some other works
+on vehicular networks focused on of∩¼éoading latency reduction
+with deadline speci∩¼ücations are discussed in [26], [27], [28].
+It may be noted from the above discussion that of∩¼éoading
+has been studied and investigated in the existing literature.
+Authorized licensed use limited to: INDIAN INST OF INFO TECH AND MANAGEMENT. Downloaded on June 08,2026 at 06:21:05 UTC from IEEE Xplore.  Restrictions apply. 
+--- PAGE 3 ---
+3930 IEEE TRANSACTIONS ON SERVICES COMPUTING, VOL. 17, NO. 6, NOVEMBER/DECEMBER 2024
+TABLE I
+COMPARISON OF OFFLOADING SCHEMES
+Fig. 1. An IoT-Fog network comprising multiple IoT devices and FNs com-
+municating over a wireless channel.
+Most of the literature focuses on reducing the of∩¼éoading delay
+without the impetus to meet the deadlines. Moreover, the limited
+literature considers both optimization and meta-heuristics-based
+solutions. The former is time-consuming and suffers from inef-
+∩¼üciency, whereas the latter is computationally expensive and is
+not scalable . Therefore, this paper proposes a matching-based
+solution approach called M-DAFTO. It simultaneously aims to
+minimize the of∩¼éoading delay and outages in a polynomial
+time, ensuring a non-clustered assignment at the FNs. This
+can be achieved by introducing a minimum quota at each FN.
+Further, Section-V- Adiscusses a minimum quota determination
+algorithm. Table I provides a comparative analysis of literature
+based on solution approaches and parameters used.
+III. S YSTEM MODEL
+Fig. 1 represents the overall architecture of an IoT-Fog net-
+work comprising m IoTs and n FNs. Each IoT di generates
+an indivisible task ti and T = {t1,t2,t3,...,t m} captures
+all such tasks. The device di, i.e., i Γêê[1,m], is assumed to
+be resource-constrained and incapable of local execution [1].
+Hence, for execution, the devices are computationally dependent
+on nearby FNs captured by F = {f1,f2,f3,...,f n}. More-
+over, an of∩¼éoading request of ti is represented as a quadruple
+<s in
+i ,╬╖i,╬öi,s out
+i >. Here,sin
+i andsout
+i denote input and output
+size (in bits) whereas╬╖i and╬öi represent the computational de-
+mand (in cycles) and deadline (ins). The computational resource
+of a FN Cj (cycles/sec) is logically partitioned into ΓÇÿxΓÇÖ isolated
+executable entities termed virtual resource units (VRUs) [1],
+such thatx ΓêêZ+.L e t╬╗j (cycles/sec) be the compute capability
+of a VRU at fj , derived by dividing FNΓÇÖs computational ca-
+pability by the number of VRUs. We assume computationally
+identical VRUs within a FN [1], [5]. For instance, if fj has a
+computational capability of 4 GHz, andx =4 , then each VRUΓÇÖs
+assigned computational capacity would be 1GHz. Heterogeneity
+is imparted by ensuring ╬╗j ╠╕= ╬╗jΓÇ▓ , j ╠╕= jΓÇ▓. Opting for homo-
+geneous VRUs at a FN simpli∩¼ües the modeling and problem
+formulation [5]. Regardless of the differences in computational
+capability among VRUs within and across FNs, M-DAFTO
+effortlessly generates the of∩¼éoading plan. The number of VRUs
+at fj is denoted as its maximum quota h(fj), representing
+the number of of∩¼éoaded tasks simultaneously executed at fj .
+We also impose a minimum quota l(fj) at fj to guarantee a
+non-clustered assignment (refer to Section I).
+Relationship Between FN Parameters: Considering the com-
+pute capacity of a VRU╬╗j and that of FNfj , ╬╗j ΓëñCj holds such
+that Cj = xΓêù╬╗j,x ΓêêZ+. Furthermore, if fj has ΓÇÿxΓÇÖ VRUs, its
+maximum quota can be set as h(fj)= x. Note that our model
+does not focus on determining ΓÇÿxΓÇÖ; we assume it to be an integral
+value.
+Delays in Of∩¼éoading: The latency incurred in the of∩¼éoading
+procedure is the aggregation of the following delays ( i) com-
+munication delay and (ii) execution delay. The former involves
+transmitting the of∩¼éoaded task to the designated FN and re-
+ceiving the processed output. The latter captures the delay in
+executing the of∩¼éoaded task at the FN.
+A. Communication Delay
+The aggregate delay in the communication phase encom-
+passes (i) transmission delay and (ii) receiving delay.
+Transmission Delay:It captures the time needed to send a task
+ti from a device di to FN fj for its computation. Following [1],
+we assume the presence of an active uplink and downlink chan-
+nel for each IoT device captured as Bu
+i,j and Bd
+j,i, respectively.
+Let ptp
+i represent the transmission power of IoT device di, and
+hi,j indicates the channel gain from di to fj with noise power
+n0. Therefore, the effective uplink data rate Ri,j is derived as
+per (1).
+Ri,j = Bu
+i,j Γêùlog2
+(
+1+ ptp
+i Γêùhi,j
+n0
+)
+(1)
+Taking sin
+i and Ri,j , the transmission delay (Dtd
+i,j) from IoT
+devicedi to FN fj can be calculated as per (2).
+Dtd
+i,j = sin
+i
+Ri,j
+(2)
+Authorized licensed use limited to: INDIAN INST OF INFO TECH AND MANAGEMENT. Downloaded on June 08,2026 at 06:21:05 UTC from IEEE Xplore.  Restrictions apply. 
+--- PAGE 4 ---
+SW AIN et al.: M-DAFTO: MULTI-STAGE DEFERRED ACCEPTANCE BASED FAIR TASK OFFLOADING IN IOT-FOG SYSTEMS 3931
+Receiving Delay: It indicates the time to receive the processed
+output fromfj .L e tptp
+j denote the transmission power offj , and
+hj,i be the channel gain between fj and di. The downlink rate
+Rj,i is determined as per (3).
+Rj,i = Bd
+j,i Γêùlog2
+(
+1+
+ptp
+j Γêùhj,i
+n0
+)
+(3)
+Consideringsout
+i andRj,i, the receiving delay (Drd
+j,i) is derived
+as (4).
+Drd
+j,i = sout
+i
+Rj,i
+(4)
+B. Computation of Execution Delay
+The execution delay (Ded
+i,j )o ft a s kti at FN fj depends on (i)
+computational requirement of ti, i.e., ╬╖i and (ii) computational
+capability of a VRU atfj , i.e., ╬╗j . Considering these parameters,
+it can be derived as per (5).
+Ded
+i,j = ╬╖i
+╬╗j
+(5)
+C. Of∩¼éoading Delay
+The of∩¼éoading delay (Dof f
+i,j )o f ti is the sum of all delays in-
+curred while of∩¼éoading (transmission, execution, and receiving)
+and can be derived as per (6).
+Dof f
+i,j = Dtd
+i,j +Ded
+i,j +Drd
+j,i (6)
+IV . PROBLEM FORMULA TION
+In this work, we formulate the overall problem as a mini-
+mization function to reduce the aggregate of∩¼éoading delay.W e
+also ensure a non-clustered assignment of tasks to FNs without
+compromising the objective mentioned above.
+A. Constraints on Of∩¼éoading
+Before de∩¼üning the constraints imposed, we introduce a bi-
+nary indicator variable ╧çi,j expressed as per (7).
+╧çi,j =
+{
+1 If task ti is assigned to the FN fj
+0 otherwise (7)
+1) Delay Constraint: This constraint guarantees that the of-
+∩¼éoaded tasks meet their deadline requirements, which is crucial
+for time-sensitive tasks. Equation (8) captures this constraint.
+Dof f
+i,j Γëñ╬öi (8)
+2) Assignment Constraint: It ensures that a task can be of-
+∩¼éoaded at most one FNfj ΓêêF. Further, this constraint captures
+a full of∩¼éoading scenario considered in M-DAFTO and is ex-
+pressed as (9).
+nΓêæ
+j=1
+╧çi,j Γëñ1; ΓêÇi Γêê[1,m] (9)
+3) Capacity Constraint: A maximum of h(fj) of∩¼éoaded
+tasks can be executed parallelly at a FNfj ΓêêF. This is captured
+in (10).
+mΓêæ
+i=1
+╧çi,j Γëñh(fj); h(fj) > 0; ΓêÇj Γêê[1,n] (10)
+4) Minimum Quota Constraint: Minimum quota l(fj) of a
+FN fj ΓêêF is upper-bounded by its maximum quota h(fj),a s
+captured in (11).
+l(fj) Γëñh(fj); l(fj) ΓëÑ0; ΓêÇj Γêê[1,n] (11)
+5) Max-Min Constraint: The max-min constraint ensures
+that the of∩¼éoaded tasks, i.e., |T | should be within the range
+of the cumulative minimum quotas and the sum of maximum
+quotas, considering all fj ΓêêF. This requirement is expressed
+as (12).
+nΓêæ
+j=1
+l(fj) Γëñ| T|Γëñ
+nΓêæ
+j=1
+h(fj) (12)
+B. Objective of M-DAFTO
+M-DAFTO aims to reduce the total of∩¼éoading delay in the
+IoT-Fog network.
+1) Minimization of Total Of∩¼éoading Delay: The total of-
+∩¼éoading delay (Aof f) incurred in successfully of∩¼éoading the
+tasks to FNs in the IoT-Fog network and can be derived as per
+(13).
+Aof f =
+ΓÄ¢
+ΓÄ¥
+mΓêæ
+i=1
+nΓêæ
+j=1
+╧çi,j ΓêùDof f
+i,j
+ΓÄ₧
+ΓÄá (13)
+2) Objective F ormulation and Constraints for M-DAFTO:
+M-DAFTOΓÇÖs objective is expressed as per (14a). Conditions
+(14b), (14c), (14d), (14e), and (14f) respectively capture the
+delay, assignment, capacity, minimum quota, and max-min con-
+straints. The values of variables are captured as Constraint(14g).
+minimize : Aof f (14a)
+s.t. Dof f
+i,j Γëñ╬öi (14b)
+nΓêæ
+j=1
+╧çi,j Γëñ1 (14c)
+mΓêæ
+i=1
+╧çi,j Γëñh(fj); h(fj) > 0 (14d)
+l(fj) Γëñh(fj); l(fj) ΓëÑ0, (14e)
+nΓêæ
+j=1
+l(fj) Γëñ| T|Γëñ
+nΓêæ
+j=1
+h(fj) (14f)
+ΓêÇi Γêê[1,m], ΓêÇj Γêê[1,n] (14g)
+The problem captured as (14a) is NP -Hard enforcing an
+ardent challenge is obtaining a polynomial time solution [1].
+In this regard, M-DAFTO models the of∩¼éoading as a matching
+game focused on achieving afair assignment in polynomial time.
+Authorized licensed use limited to: INDIAN INST OF INFO TECH AND MANAGEMENT. Downloaded on June 08,2026 at 06:21:05 UTC from IEEE Xplore.  Restrictions apply. 
+--- PAGE 5 ---
+3932 IEEE TRANSACTIONS ON SERVICES COMPUTING, VOL. 17, NO. 6, NOVEMBER/DECEMBER 2024
+Fig. 2. Components of M-DAFTO and their interactions.
+The working of M-DAFTO is shown in Fig. 2, and the problem
+is subsequently formulated.
+C. Task Of∩¼éoading as a Matching Game
+The objective of M-DAFTO is to minimize total of∩¼éoading
+delay. M-DAFTO achieves this objective through a matching
+game between tasks and FNs, considering the preferences of
+both agents.
+Relationship of Task-FN Matching With M-DAFTOΓÇÖs Objec-
+tive: M-DAFTO considers a many-to-one matching between
+tasks (T ) and FNs (F), referred to as agents. Before assignment
+(Algorithm 9), an agent ranks some/all agents in the opposite
+set (Algorithm 2). For instance, tasks rank the FNs in increasing
+order of of∩¼éoading delays. FNs order tasks in decreasing urgen-
+cies (17), which considers the deadline, of∩¼éoading delay, and the
+number of feasible execution execution options. The proposal
+order is derived as a PL by considering the CPU demand, the
+deadline, and the number of feasible execution options for each
+task (Algorithm 8). These data structures serve as inputs to
+the mapping and facilitate achieving the objective outlined in
+(14a). The of∩¼éoading delay and outages signi∩¼ücantly impact
+the mapping game by directly in∩¼éuencing the preferences of
+tasks and FNs. For instance, a task would ideally prefer to be
+of∩¼éoaded to an FN with a lower of∩¼éoading delay, making it
+logical to rank FNs in increasing order of of∩¼éoading delays.
+Conversely, FNs prefer tasks with higher urgency to meet their
+delay requirements.
+De∩¼ünition 1. (Preference Relation): A matching over set T
+andF has the same number of preference relations, i.e.,Γë╗ti and
+Γë╗fj . The former enables an agent ti ΓêêT to rank the agents in
+F, whereas the latter allows conversely.
+A preference relation ti Γë╗fj tiΓÇ▓ indicates that fj assigns a
+higher rank to ti overtiΓÇ▓ .I n M-DAFTO, an agents preference is
+strict, transitive, and incomplete relation. Collectively, the pref-
+erence relations of an agent a ΓêêTΓê¬F is called its preference
+pro∩¼üle and is captured as pref(a).
+De∩¼ünition 2. (Of∩¼éoading Game): The matching game be-
+tween T and F is a many-to-one mapping ╬Ñ: TΓê¬ FΓåÆ 2T Γê¬
+2F , satisfying the conditions below:
+Condition 2.1: Each ti ΓêêT , |╬Ñ(ti)| Γë» 1 and╬Ñ(ti) ΓèåF
+Condition 2.2: Each fj ΓêêF, ╬Ñ(fj) ΓèåT , and |╬Ñ(fj)|Γëñ
+h(fj)
+Condition 2.3: Forti andfj , ti Γêê╬Ñ(fj) ΓçÉΓçÆfj Γêê╬Ñ(ti)
+Condition (2.1) speci∩¼ües that each task ti can be assigned to
+only one FN, signifying a full of∩¼éoading scenario. Considering
+the capacity of FNs to handle multiple tasks, Condition ( 2.2)
+ensures that FN fj is constrained to hosting a maximum of
+h(fj) of∩¼éoaded tasks. Finally, Condition ( 2.3) emphasizes the
+symmetry in the task-to-FN mapping, af∩¼ürming that ti is paired
+with fj if and only if fj is paired with ti in ╬Ñ.
+De∩¼ünition 3. (Individual Rationality): The assignment ╬Ñ is
+individually rational iff it satis∩¼ües the following:
+Condition 3.1: ti Γêê╬Ñ(fj) andfj /Γêêpref(ti).
+Condition 3.2: fj Γêê╬Ñ(ti) andti /Γêêpref(fj).
+Individually rational outcomes, as delineated in Conditions
+(3.1) and (3.2) of De∩¼ünition 3, pertain to assignments or
+allocations that take into account acceptable participants or
+agents [29]. This concept centers on meeting the criteria for
+individual satisfaction by accommodating the decision-making
+preferences of each participant. Additionally, in the context of
+matching-based assignments, it is imperative to uphold each
+agentΓÇÖs rationality, ensuring both rational and ef∩¼ücient assign-
+ments.
+De∩¼ünition 4. (Blocking Pair): A pair (ti,f j) blocks the
+matching╬Ñsubject to the adherence of the following conditions:
+Condition 4.1: ti /Γêê╬Ñ(fj) andfj /Γêê╬Ñ(ti)
+Condition 4.2: fj Γë╗ti fjΓÇ▓ , fjΓÇ▓ Γêê╬Ñ(ti) and|╬Ñ(fj)| =0
+Condition 4.3: ti Γë╗fj tiΓÇ▓ , where tiΓÇ▓ Γêê╬Ñ(fj)
+Condition ( 4.1) states that ti and fj are not matched in ╬Ñ.
+Condition (4.2) re∩¼éects thatti blocks the matching╬Ñiff it prefers
+fj over its current match fjΓÇ▓ . According to Condition ( 4.3), fj
+blocks the matching ╬Ñ, if there exists a tiΓÇ▓ Γêê╬Ñ(fj) such that it
+prefersti overtiΓÇ▓ .
+De∩¼ünition 5. (Fairness): A fair matching ╬Ñhas no blocking
+pairs.
+The absence of blocking pairs is the crucial criterion to achieve
+fairness. However, obtaining a fair match meeting the minimum
+quota constraint expressed in (11) is not always possible. This
+can be illustrated using an example scenario in Appendix A.3,
+available online. Therefore, a relaxed de∩¼ünition of fairness
+called PL-fairness is proposed that disallows the presence of
+PL-blocked pairs [30].
+De∩¼ünition 6. (PL-Blocked Pair): A matching ╬Ñ is said to
+be PL-blocked by a pair of agents (ti,f j) iff it satis∩¼ües the
+conditions of De∩¼ünition 4 and the following condition
+ti Γë╗PL tiΓÇ▓,i ╠╕= iΓÇ▓ (15)
+Equation (15) states that ti appears before tiΓÇ▓ in the PL.
+Moreover, the PL enforces a strict processing order for the tasks
+to ensure a PL-fair matching.
+De∩¼ünition 7. (PL-Fairness): If a matching╬Ñcontains no PL-
+Blocked Pair, it is considered a PL-fair matching.
+A PL holds signi∩¼ücance in establishing the priority or pref-
+erences of agents during each stage of the matching process.
+Its crucial role lies in shaping the outcomes of the matching
+algorithm by providing a prede∩¼üned order in which agents are
+considered for potential matches. This mechanism promotes
+Authorized licensed use limited to: INDIAN INST OF INFO TECH AND MANAGEMENT. Downloaded on June 08,2026 at 06:21:05 UTC from IEEE Xplore.  Restrictions apply. 
+--- PAGE 6 ---
+SW AIN et al.: M-DAFTO: MULTI-STAGE DEFERRED ACCEPTANCE BASED FAIR TASK OFFLOADING IN IOT-FOG SYSTEMS 3933
+fairness and contributes to the stability and consistency of match-
+ing process outputs.
+De∩¼ünition 8. (Wastefulness): A wasteful matching╬Ñsatis∩¼ües
+the following conditions:
+Condition 8.1: Γêâfj such that |╬Ñ(fj)| <l (fj)
+or
+Condition 8.2: Γêâfj such that:
+a) Γêâ(ti,f jΓÇ▓) | ti Γêê╬Ñ(fjΓÇ▓) andfjΓÇ▓ Γêê╬Ñ(ti)
+b) fj Γë╗ti fjΓÇ▓ and|╬Ñ(fj)| <h (fj)
+c) There exists another matching ╬ÑΓÇ▓ such that ╬ÑΓÇ▓ =( ╬ÑΓê¬
+{(ti,f j)})\{(ti,f jΓÇ▓)} and|╬Ñ(fjΓÇ▓)|ΓëÑ l(fjΓÇ▓)
+Condition ( 8.1) implies that there exists FN fj ΓêêF,t h e
+minimum quota of which is not satis∩¼üed. Condition ( 8.2)(a)
+ensures that ti and fj are matched in ╬Ñ. Condition ( 8.2)(b)
+af∩¼ürms that a taskti can claim an empty VRU at fj if the taskti
+prefersfj over its current matchfjΓÇ▓ andfj can accommodate it.
+Condition (8.2)(c) implies that there exists another matching ╬ÑΓÇ▓
+where(ti,fj) can be paired without violation of minimum quota
+constraint at fjΓÇ▓ in ╬Ñ. The concept of the ΓÇ£wasteful propertyΓÇ¥
+elucidates a scenario where speci∩¼üc agents are allocated less
+preferred assignments in later stages, even though they had the
+chance to secure more preferred options earlier. This is deemed
+as inef∩¼üciency or ΓÇ£wasteΓÇ¥ within the allocation process.
+De∩¼ünition 9. (Strong Stability): A strongly stablematching╬Ñ
+satis∩¼ües properties of individual rationality, fairness, and non-
+wastefulness.
+With maximum and minimum quotas at each FN, thestrongly
+stable matching is not always possible [30]. The details can be
+found in Appendices A.1, A.2, and A.3, available online.
+De∩¼ünition 10. (Partial Stability): A partially stable matching
+╬Ñ satis∩¼ües the properties of individual rationality and PL-
+fairness.
+V. S OLUTION APPROACH
+Traditionally, the deferred acceptance (DA) algorithm has
+been successfully used to obtain a stable assignment in dif-
+ferent scenarios [1], [20], [31]. However, the DA algorithm
+fails to generate a matching that meets the minimum quota
+of agents [30]. This is highlighted using an example presented
+in Appendix B, available online. Therefore, in M-DAFTO,w e
+utilize an improved version of the DA algorithm called the
+MSDA algorithm that achieves a partially stable assignment.
+Although the adoption of the MSDA algorithm meets the design
+objective of M-DAFTO, it introduces the following additional
+research challenges. First,i n M-DAFTO context, setting the
+minimum quota is non-trivial owing to the heterogeneous nature
+of FNs. Second, designing an agentΓÇÖs preferences is particularly
+challenging as M-DAFTO caters to multiple parameters. Third,
+determining the order of the tasks for processing is crucial
+and more challenging because of their heterogeneous of∩¼éoading
+requests. Subsequently, we discuss sophisticated procedures to
+address each research challenge.
+A. Determination of Minimum Quota of FNs
+In [15], [19], the authors have considered a random assign-
+ment policy for setting the minimum quota of FNs in the range
+Algorithm 1: Minimum Quota Determination (MQD):
+[0,Γîè|T |
+|F| Γîï]. Here, |T |and|F| represent the total number of tasks
+to be of∩¼éoaded and the number of FNs in the network. Similar
+assignment policies have also been followed in [30], [32].H o w -
+ever, such assignment policies are irrational and cannot directly
+be incorporated in M-DAFTO for the following reasons. For a
+p a i ro fF N s ,(fj,f jΓÇ▓) ΓêêF with ╬╗j > ╬╗jΓÇ▓ , a random allocation
+can lead to an assignment such that l(fjΓÇ▓) >l (fj), which is in-
+consistent.T h i sinconsistency compromises the of∩¼éoading delay
+by assigning a higher minimum quota to a less computationally
+ef∩¼ücient FN. This results in undesirable allocations and impacts
+M-DAFTO design objective. Therefore, a sophisticated mini-
+mum quota determination (MQD) procedure is proposed, which
+takes the computational capability ╬╗j , ΓêÇfj ΓêêF and ensures
+consistent assignments.
+1) Minimum Quota Determination: The overall working of
+MQD follows Algorithm1.( i) two sets of agents -T ,F,( ii) max-
+imum quota h(fj),ΓêÇfj ΓêêF, and ( iii) computational capability
+╬╗j, ΓêÇfj ΓêêF are taken as input. The algorithm outputs the mini-
+mum quotal(fj),ΓêÇfj ΓêêF. MQD executes as follows. All FNsΓÇÖ
+minimum quotas are initialized to 0, i.e., l(fj)=0 ,ΓêÇfj ΓêêF.
+Letfj be the most computationally ef∩¼ücient FN, and its compu-
+tational capability is ╬╗max. The minimum quota offj is then set
+tomin((h(fj),Γîè|T |
+|F| Γîï). Allocating minimum quota to the FNs in
+the range [0,Γîè|T |
+|F| Γîï] ensures the feasibility of allocation (refer
+to (14f)). we adopt a proportionate assignment of minimum
+quotas for remaining FN ( fjΓÇ▓ ΓêêF\{ fj}) in decreasing order
+of their computational capabilities. This ensures for a pair of
+FNs(fj,f jΓÇ▓) ΓêêF if ╬╗j > ╬╗jΓÇ▓ thenl(fj) >l (fjΓÇ▓), improving the
+objective of M-DAFTO.
+B. Preference Pro∩¼üles of Agents
+The preference of an agenta ΓêêTΓê¬F is captured aspref(a).
+ItΓÇÖs important to note that an agentΓÇÖs preference re∩¼éects its level
+of ∩¼éexibility, representing the number of potential partners an
+agent can choose. In the context of M-DAFTO, the degree of
+freedom for a taskti and FNfj is precisely de∩¼üned by|pref(ti)|
+and|pref(fj)|, respectively.
+1) Preference of Tasks: Each task ti ΓêêT ranks the FNs in
+non-decreasing order of the of∩¼éoading delay where ΓêÇfj ΓêêF
+and ╬öi ΓëÑDof f
+i,j , thereby boosting the objective of M-DAFTO.
+For instance, a task ti prefers a FN fj overfjΓÇ▓ iff the of∩¼éoading
+Authorized licensed use limited to: INDIAN INST OF INFO TECH AND MANAGEMENT. Downloaded on June 08,2026 at 06:21:05 UTC from IEEE Xplore.  Restrictions apply. 
+--- PAGE 7 ---
+3934 IEEE TRANSACTIONS ON SERVICES COMPUTING, VOL. 17, NO. 6, NOVEMBER/DECEMBER 2024
+Algorithm 2: Preference Generation of FN (PGF).
+delay at fj is less than fjΓÇ▓ . Therefore,
+fj Γë╗ti fjΓÇ▓ ΓçÉΓçÆ Dof f
+i,j <D of f
+i,jΓÇ▓ ; j ╠╕= jΓÇ▓ (16)
+2) Task Urgency Computation: FNs focus on executing tasks
+within their prescribed deadlines to meet M-DAFTOΓÇÖs agenda.
+However, due to incomplete preferences, preferential of∩¼éoading
+based on the nearest deadline may not guarantee allocations.
+Therefore, a metric called urgency associated with each task
+ti ΓêêT is coined. It captures the priority of a task ti at FN
+fj considering ( i.) buffer time: ╬öi ΓêÆDof f
+i,j and ( ii.) number
+of feasible executing options: |pref(ti)|. The former assists in
+prioritizing tasks with of∩¼éoading delay closer to the deadline,
+whereas the latter helps reduce unassigned tasks. Therefore,
+a merged valuation helps achieve M-DAFTOΓÇÖs objective. The
+urgency ofti atfj (uj
+ti ) is derived as per (17). The weights (w1,
+w2) and task urgencies are determined via Algorithms 3 and 7,
+respectively.
+uj
+ti = w1 Γêù 1
+(╬öi ΓêÆDof f
+i,j )
++w2 Γêù 1
+|pref(ti)| (17)
+3) Preference of FNs: A pair of tasksti andtiΓÇ▓ to be executed
+at fj are ranked in non-increasing order of their urgencies.
+Therefore,
+ti Γë╗fj tiΓÇ▓ ΓçÉΓçÆ uj
+ti >u j
+tiΓÇ▓ ; i ╠╕= iΓÇ▓
+The preferences of the FNs are computed as per the Preference
+Generation of FN procedure (PGF), i.e., Algorithm 2).
+The PGF takes as input a set of criteria C,as e to ft a s k sti Γêê
+T , and the set of FNs fj ΓêêF. It outputs the preference list of
+each FN fj , i.e., pref(fj)ΓêÇfj ΓêêF. PGF executes as follows.
+Initially, the preference list of each FN fj is set to ╬ª. The FN fj
+that has|T ΓÇ▓| > 1 invokes two algorithms: (i) AHP-based Criteria
+Weight (ACW) (Algorithm 3) and ( ii) the TOPSIS-based Rank
+Determination (TRD) (Algorithm 7). The former obtains criteria
+Algorithm 3: AHP-Based Criteria Weight (ACW).
+weights, whereas the latter takes criteria weights as input to rank
+all the tasks in T ΓÇ▓.
+4) AHP-Based Criteria Weight Determination: Algorithm 3
+takes the criteria set C as input and outputs the weight wx
+corresponding to each criterion cx, retained in a row vector W.
+Algorithm 3 commences by initializing flag to false. It then
+initiates the Pairwise Comparison Matrix Computation (PMC)
+procedure as per Algorithm 4. It assigns the relative weights of
+criteria taken as user inputs (Steps 2-10 of Algorithm 4). Note
+that the relative weights are assigned following the linear judg-
+ment scale [33]. Finally, PMC outputs a pairwise comparison
+matrix P . After generating the pairwise comparison matrix, the
+Criteria Weight Determination (CWD) procedure (Algorithm
+5) is invoked. Algorithm 5 ∩¼ürst performs the column-wise nor-
+malization of P (Steps 2-4 of Algorithm 5). The normalized
+matrix P is subsequently averaged row-wise to obtain a column
+vectorW containing the criteria weights (Steps 5-7 of Algorithm
+5). Once Algorithm 5 terminates, the Consistency Check (CC)
+procedure via Algorithm 6 is performed. The weights obtained
+via Algorithm 3 are auto consistent iff|C| =2 , and consistency
+checking is not called for[33]. A consistency check is mandatory
+for all other cases and proceeds as follows. It encompasses
+the veri∩¼ücation of the obtained weights within the allowable
+deviation range measured via consistency ratio CR. Note that
+the random index with RI is set following the ∩¼ündings of[33].I f
+the consistency check passes, theflag is set to true, and weights
+are retained in W (Steps 7-8 of Algorithm 3). Alternatively,
+inconsistent weight iteratively triggers Algorithms 4, 5, and 6
+till a weight vector passes the consistency check (Steps 9-14 of
+Algorithm 3).
+5) TOPSIS-Based Task Ranking: After obtaining the criteria
+weights, TRD, as depicted in Algorithm 7, is invoked. It takes
+as input ( i) decision matrix D,( ii) weight vector W (obtained
+via AHP), ( iii) set of criteria C and ( iv) set of alternatives
+Authorized licensed use limited to: INDIAN INST OF INFO TECH AND MANAGEMENT. Downloaded on June 08,2026 at 06:21:05 UTC from IEEE Xplore.  Restrictions apply. 
+--- PAGE 8 ---
+SW AIN et al.: M-DAFTO: MULTI-STAGE DEFERRED ACCEPTANCE BASED FAIR TASK OFFLOADING IN IOT-FOG SYSTEMS 3935
+Algorithm 4: Pairwise-Comparison Matrix Computation
+(PMC).
+Algorithm 5: Criteria Weight Determination (CWD).
+Algorithm 6: Consistency Check (CC).
+A such that AΓèåT . Algorithm 7 outputs a ranking for the
+alternatives and proceeds as follows. The decision matrix D
+is ∩¼ürst column-wise normalized (Steps 2-5). Next, normalized
+matrix D is then transformed into a weighted normalization
+matrix DΓÇ▓ (Steps 6-8). The ideal best (V+
+cy orVΓêÆ
+cy ) and worst (VΓêÆ
+cy
+Algorithm 7: TOPSIS-Based Rank Determination (TRD).
+orV+
+cy ) values speci∩¼üc to each criterionc ΓêêC are computed next
+(Steps 9-15). Note that the criterion for which a higher value is
+acceptable is bene∩¼ücial. Then, the euclidean distance from the
+ideal best and worst denoted by
+ΓêÜ
+u+
+ti and
+ΓêÜ
+uΓêÆ
+ti respectively is
+determined for each alternative ti ΓêêA. Finally, the utility score
+uti of an alternativeti ΓêêA is calculated and added into a global
+utility score vector U (Steps 16-20). The alternatives are then
+sequenced in non-increasing order of their utilities.
+C. Computation of Precedence List
+The precedence list (PL) contains all the tasks of T in non-
+increasing order of their utility scores. To generate the utility
+score of a task, we consider its ( i) Computational demand, i.e.,
+╬╖i,( ii) deadline, i.e.,╬öi, and (iii) feasible execution options, i.e.,
+|pref(ti)|. The consideration of computational demand allows
+the assignment of larger tasks onto computationally ef∩¼ücient
+FNs, assisting in reducing of∩¼éoading delay. The deadline and
+feasible options boost the possibility of assignments, reduc-
+ing the unassigned tasks. Therefore, considering the above-
+discussed parameters helps M-DAFTO achieve its design goals.
+Considering multiple attributes drives us to adopt a hybrid
+AHP-TOPSIS-based strategy that outputs a ranking of tasks. In
+Authorized licensed use limited to: INDIAN INST OF INFO TECH AND MANAGEMENT. Downloaded on June 08,2026 at 06:21:05 UTC from IEEE Xplore.  Restrictions apply. 
+--- PAGE 9 ---
+3936 IEEE TRANSACTIONS ON SERVICES COMPUTING, VOL. 17, NO. 6, NOVEMBER/DECEMBER 2024
+Algorithm 8: Precedence List Construction (PLC).
+Algorithm 9: Multistage Deferred Acceptance (MSDA).
+fact the ranking of tasks ti and tiΓÇ▓ follows (18).
+ti Γë╗PL tiΓÇ▓ ΓçÉΓçÆ uti >u tiΓÇ▓ ; i ╠╕= iΓÇ▓ (18)
+The detailed working procedure of precedence list computation
+is explained in Algorithm 8.
+D. Partially Stable Matching via MSDA Algorithm
+The overall working of the MSDA algorithm is shown in
+Algorithm 9. The inputs to the algorithm are: (i)s e t sT andF,( ii)
+a precedence list, PL, (iii) maximum and minimum quota,h(fj)
+andl(fj),ΓêÇfj ΓêêF, and (iv) preferences of agents inTΓê¬ F.T h e
+algorithm outputs a partially stable matching M that comprises
+matched pairs ( ti, fj). The algorithm starts by initializing the
+matching of agents in TΓê¬ F to ╬ª. As the matching procedure
+iterates over multiple stages, we de∩¼üne an iterator k that tracks
+the executing stage of the MSDA algorithm. Prior to stage 1,
+R0 is initialized to T and hk(fj) and lk(fj) are respectively
+initialized to maximum quota h(fj) and minimum quota l(fj)
+of fj . Each task ti is set to be free, indicating its availability
+in the matching procedure (Steps 2-3 of Algorithm 9). MSDA
+procedure then extracts the least preferred rk tasks in PL and
+retains them in Rk(Steps 5-6 of Algorithm 9). Depending on
+RkΓêÆ1 \ Rk, MSDA procedure triggers Algorithm10 (DA) either
+with maximum or minimum quota. The existence of at least one
+task in (RkΓêÆ1 \ Rk) indicates the availability of additional tasks
+(RkΓêÆ1 \ Rk) after reservation. Hence, DA is triggered for these
+additional tasks with maximum quotas of FNs (Steps 7-10 of
+Algorithm 9). On the other hand, if RkΓêÆ1 \ Rk equals ╬ª,D A
+is invoked for Rk tasks with minimum quotas of FNs (Steps
+11-16 of Algorithm 9). After executing DA, the maximum and
+minimum quota of FNs are updated, and upon exhaustion of
+PL, the ∩¼ünal matching M is returned. Algorithm 10 enters the
+proposal phase, wherein an unassigned task ti proposes to its
+most preferred FN fjΓÇ▓ . Depending on the updated quota sk(fjΓÇ▓)
+of fjΓÇ▓ either of the following cases may be encountered: ( i)i t
+has suf∩¼ücient resources ( ii) it does not have enough resources.
+In the former, ti and fjΓÇ▓ are matched (Steps 6-10 of Algorithm
+10). The latter is subdivided into two cases depending on the
+preference of ti at fjΓÇ▓ .I f tiΓÇ▓ Γë╗fjΓÇ▓ ti , where tiΓÇ▓ is the worst
+assigned task, ti is rejected. Alternatively,ti Γë╗fjΓÇ▓ tiΓÇ▓ ,t i replaces
+tiΓÇ▓ and in the present iteration, the addition of the task tiΓÇ▓ to the
+set T provides an opportunity for assignment (Steps 12-23 of
+Algorithm 10). Note that a true value for the status variable DA
+allows for replacement; otherwise, it does not. The motivation
+for disallowing replacements is to abide by the minimum quota
+constraints imposed [30]. During the last iteration, M-DAFTO
+focuses on ful∩¼ülling the minimum quotas at FNs by allocating
+all tasks designated for the minimum quota stage from the PL.
+Nevertheless, this compulsory allocation could result in an unfair
+distribution, potentially introducing blocking pairs, as de∩¼üned in
+De∩¼ünition 4. Such situations may prompt individuals to deviate
+from their existing agent allocation. To mitigate this concern and
+promote fairness in the distribution of tasks and FNs according
+to the PL, the concept of PL-fairness is introduced. It aims to
+eliminate incentives for participants to alter their allocations.
+1) A Toy Example: To illustrate the working of M-DAFTO,
+we consider an example with ∩¼üve tasks {t1,t2,t3,t4,t5},
+and three FNs {f1,f2,f3}. The preference pro∩¼üles of tasks,
+pref(ti), ΓêÇi Γêê[1,5] and that of FNs, pref(fj), ΓêÇj Γêê[1,3]
+are shown in Tables II and III respectively. Table III also
+captures the maximum and minimum quotas of each fj ,
+denoted by h(fj) and l(fj), respectively. Additionally, we
+Authorized licensed use limited to: INDIAN INST OF INFO TECH AND MANAGEMENT. Downloaded on June 08,2026 at 06:21:05 UTC from IEEE Xplore.  Restrictions apply. 
+--- PAGE 10 ---
+SW AIN et al.: M-DAFTO: MULTI-STAGE DEFERRED ACCEPTANCE BASED FAIR TASK OFFLOADING IN IOT-FOG SYSTEMS 3937
+Algorithm 10: Deferred Acceptance (DA).
+TABLE II
+PREFERENCES OF TASKS
+consider a PL that follows the ordering {t1,t2,t3,t4,t5}.I n i -
+tially, R0 = {t1,t2,t3,t4,t5}. Algorithm 9 executes in multiple
+stages tracked by the variable k. At stage k of MSDA, Algo-
+rithm 10 is invoked with either maximum or minimum quota
+of the FNs depending upon the number of unprocessed tasks
+captured by |RkΓêÆ1 \ Rk|. If there are no unprocessed tasks,
+i.e., |RkΓêÆ1 \ Rk| = 0, DA is invoked with minimum quotas,
+otherwise with maximum quotas. In the ∩¼ürst stage ( k = 1), r1
+= 3, hence r1 least preferred tasks, i.e., {t3,t4,t5} are reserved
+from PL and retained in R1 for processing at a later stage. As
+R0 \ R1 is not empty, Algorithm 10 is invoked for tasks{t1,t2}
+with maximum quotas of FNs. Following Algorithm 10, tasks
+TABLE III
+PREFERENCES OF FNS
+t1 and t2 send proposals to their most preferred FN f2.T h e
+proposals are accommodated at f2, and available resources at
+f2 denoted by s1(f2) are updated to 1. Note that the processed
+tasks are removed from PL. Hence, the updated PL at the end
+stage 1 contains{t3,t4,t5}. Additionally, Stage 1 terminates by
+updating the current maximum quota h2(f2) to 1 and minimum
+quota l2(f2) to 0. MSDA then enters the second stage ( k =
+2), where r2 = 2 and R2 = {t4,t5}.A s R1 \ R2 ╠╕=╬ª,D Ai s
+invoked for task t3 with maximum quotas at FNs. t3 proposes
+to its most preferred FN f1 and is matched. Hence, the available
+resources at f1 denoted by s2(f1) is updated to 1. Then MSDA
+updates PL, maximum quotah3(f1), and minimum quotal3(f1)
+to{t4,t5}, 1, and 0 respectively. MSDA executes its third stage
+(k = 3), where r3 = 1 and R3 = {t5}. DA is triggered for the
+only taskt4 which is subsequently matched tof2 ands3(f2) and
+PL are updated to 0 and{t5}, respectively. Here, both maximum
+quotah3(f3) and minimum quotal3(f3) are updated to 0. In the
+fourth stage, r4 = 1, R4 = {t5}, R4 \ R3 =╬ª, hence DA is
+invoked for t5 with minimum quotas. f1, f2 reject t5 owing to
+exhaustion of minimum quotas. Therefore,t5 is ∩¼ünally matched
+to f3, which terminates the MSDA. The ∩¼ünal matching M =
+{(t1,f2), (t2, f2), (t3, f1), (t4, f2), (t5, f3)}.
+Theorem 1. (PL-Fairness): MSDA produces a PL-fair match-
+ing between the set of tasks T and FNs F.
+Proof: The proof can be found in Appendix D.1, available
+online. Γûí
+Theorem 2. (Individual Rationality): MSDA produces a indi-
+vidual rationality matching between the set T andF.
+Proof: The proof is detailed in Appendix D.2, available
+online. Γûí
+Theorem 3. Partially Stable): MSDA produces a partially
+stable matching between the set of tasks T and FNs F.
+Proof: Since MSDA satis∩¼ües the properties of PL-fairness
+and individual rationality uniquely, the matching generated by
+it is partially stable. Γûí
+Theorem 4. (Time Complexity): M-DAFTO converges with
+the time complexity of O(mΓêùn), where m and n are the total
+numbers of tasks and FNs, respectively.
+Proof: The proof can be found in Appendix D.3, available
+online. Γûí
+Theorem 5. ( NP -Hardness): The of∩¼éoading problem in M-
+DAFTO is NP -Hard.
+Proof: Appendix D.4, available online, contains the proof for
+NP -Hardness. Γûí
+Authorized licensed use limited to: INDIAN INST OF INFO TECH AND MANAGEMENT. Downloaded on June 08,2026 at 06:21:05 UTC from IEEE Xplore.  Restrictions apply. 
+--- PAGE 11 ---
+3938 IEEE TRANSACTIONS ON SERVICES COMPUTING, VOL. 17, NO. 6, NOVEMBER/DECEMBER 2024
+VI. P ERFORMANCE EVA L U AT I O N
+For simulation, the iFogSim simulator has been used [34].
+In this section, we have discussed the environmental setup and
+elaborately analyzed the simulation results.
+A. Environmental Setup
+The IoT devices and FNs are deployed statically, and the
+distance between an IoT and a FN is uniformly distributed
+U[50,500] meters. The uplink and downlink bandwidth is 20
+MHz [15]. For experimentation, we consider 4 test scenarios,
+S-1, S-2, S-3, and S-4 for 250, 500, 750, and 1000 tasks and 5
+FNs. Further, we perform 10 test runs for each scenario, and we
+examine the comparative behavior of protocols. The input size,
+computational requirement, deadline, and output size are gener-
+ated uniformly in the range U[300,600] Kb,U[210,480] million
+cycles, and U [15,22] s, and U [10,20] Kb, respectively [1].
+Moreover, the transmission power of di and noise power are
+set to 0.5 W and 10ΓêÆ10 W respectively [15]. FN parameters,
+such as computational resources and number of VRUs, are
+uniformly set in U [6,10] GHz and U[200,500], respectively,
+with each FN having a transmission power of 1 W. The free
+space path loss between an IoT and a FN fj in PCS-1900 GSM
+band is determined as pldi ,fj =3 8.02+20 log10(dist(di,f j))
+dB, where dist(di,f j) represents the distance between an IoT
+and a FN. Considering pldi ,fj , the channel gain hi,j is derived
+as hi,j =1 0ΓêÆ(pldi ,fj )/10.
+B. The Baseline Algorithms
+We have considered the following baselines to compare the
+performance of M-DAFTO.
+r A matching theory framework for tasks of∩¼éoading in fog
+computing for IoT systems (MBTO) [13]: It aims to min-
+imize the total of∩¼éoading delay by reducing the worst
+completion times of tasks. Of∩¼éoading is modeled as a
+matching between IoTs and FNs, with a maximum quota at
+the FNs. To obtain a stable assignment, the authors adopt
+a DA algorithm variant.
+r LETO [15]: This work reduces the total of∩¼éoading delay
+and number of outages in an IoT-Fog setup. The of∩¼éoading
+is formulated as a matching game with maximum and min-
+imum quotas at the FNs. A multistage deferred acceptance
+(MSDA) algorithm generates a stable of∩¼éoading schedule.
+r Heuristic-based task of∩¼éoading (HTO) [12]: It randomly
+of∩¼éoads tasks in a non-increasing order of their input size
+to FNs.
+r GPM [14]: It greedily assigns the tasks to the FNs having
+the maximum number of VRUs.
+C. Simulation Results
+M-DAFTOΓÇÖs performance is validated considering three met-
+rics, i.e., (i.) Performance-based; (ii.) Matching-based; and (iii.)
+Utilization-based. Subsequently, we provide a detailed insight
+into each category.
+Fig. 3. Total of∩¼éoading delay ( s) versus scenarios.
+1) Performance-Based Metrics: The primary evaluation
+metrics, such as total of∩¼éoading delay and outages, are studied
+in this category.
+Total Of∩¼éoading Delay:Fig. 3 captures the aggregate of∩¼éoad-
+ing delay in executing of∩¼éoaded tasks at the FNs across different
+scenarios. The of∩¼éoading delay escalates with increasing tasks,
+which is anticipated. However,M-DAFTO outperforms the base-
+lines across scenarios by achieving minimum of∩¼éoading delay.
+This is attributed to the following reasons.First, the residual time
+of larger tasks1 is often smaller owing to its higher computational
+demand, resulting in limited of∩¼éoading options, hence higher
+urgency (17). Second, the PL dictates the processing order of
+the tasks and favors the of∩¼éoading of larger tasks having a
+smaller deadline (18). Although LETO is similar to M-DAFTO,
+the former differs in PL-ordering and FN preferences based on
+the taskΓÇÖs deadline. This results in the preferable assignment
+of tasks with a smaller deadline to computationally ef∩¼ücient
+FNs.2 Moreover, a smaller deadline does not necessarily imply
+a smaller task. Hence, processing based on deadlines can push
+larger tasks onto computationally inferior FNs, elevating the
+of∩¼éoading delay. MBTO, HTO, and GPM exhibit inferior per-
+formance compared to M-DAFTO and LETO, as the IoTs do not
+consider the FNsΓÇÖ computational capabilities while generating
+the of∩¼éoading schedule. Considering the comparative behavior
+of MBTO and HTO, the former outperforms the latter. However,
+we observe a ∩¼éipped behavior for scenario S-3 due to the random
+processing order of the FNs. Conversely, GPM has the worst
+of∩¼éoading delay due to greedy task of∩¼éoading to FNs with the
+highest VRUs.
+Outages: It is the difference between tasks (T ) in the system
+and successfully of∩¼éoaded ones, which can be calculated per
+(19).
+O = {T}\{Γê¬ n
+j=1╬Ñ(fj)} (19)
+Fig. 4 illustrates the number of outages experienced by different
+strategies across test scenarios. It can be inferred from Fig. 4
+that the number of outages increases with increasing tasks.
+M-DAFTO outperforms the baselines owing to the following
+reasons. First, tasks rank the FNs in non-decreasing order of the
+1Larger task imply a higher CPU demand
+2Computationally ef∩¼ücient FNs have higher compute capabilities for the
+VRUs.
+Authorized licensed use limited to: INDIAN INST OF INFO TECH AND MANAGEMENT. Downloaded on June 08,2026 at 06:21:05 UTC from IEEE Xplore.  Restrictions apply. 
+--- PAGE 12 ---
+SW AIN et al.: M-DAFTO: MULTI-STAGE DEFERRED ACCEPTANCE BASED FAIR TASK OFFLOADING IN IOT-FOG SYSTEMS 3939
+Fig. 4. Outages versus scenarios.
+Fig. 5. Average task satisfaction (%) versus scenarios.
+of∩¼éoading delays. Second, the tasks are processed at the FNs
+based on their urgencies (refer to (17)). Third, the processing
+order of the tasks enforced by the PL assists in pushing the
+larger tasks onto computationally ef∩¼ücient FNs. The combined
+impact of the policies as mentioned above assists M-DAFTO in
+achieving minimal outages. LETO exhibits inferior performance
+compared to M-DAFTO as tasks having limited FN options for
+successful execution are not prioritized during the assignment.
+Large tasks may not have a smaller deadline; hence, their
+processing is deferred in LETO. This results in their assign-
+ments to inferior FNs due to limited capacities at faster FNs.
+MBTO, HTO, and GPM are inconsiderate towards the FNsΓÇÖ
+computational capabilities while generating IoT preferences and
+deadlines for the tasks while generating the FN preferences.
+2) Matching-Based Metrics: A primary metric to evaluate
+the performance of matching-based techniques is thesatisfaction
+factor of individual agents. It re∩¼éects an agentΓÇÖs happiness with
+its match, considering its preference list. Ideally, agents matched
+to their more preferred choices have higher satisfaction.
+Task Satisfaction Factor:Fig. 5 indicates the average satisfac-
+tion factor of tasks for different matching-based strategies used
+for comparison. Given thatti is matched to fj in╬Ñ, satisfaction
+factorSi,j(%) ofti can be computed as per(20). Here,rank(fj)
+captures the position offj inpref(ti). The detailed computation
+of the satisfaction of tasks for an example scenario is provided
+in Appendix C.1, available online.
+Si,j(%) =|pref(ti)|ΓêÆrank(fj)
+|pref(ti)| Γêù100 (20)
+It can be observed from Fig. 5 that M-DAFTO achieves the
+highest task satisfaction compared to MBTO and LETO. This is
+attributed to the fact that M-DAFTO executes the majority of the
+Fig. 6. Average FN satisfaction (%) versus scenarios.
+of∩¼éoaded tasks within their prescribed deadlines (refer to Fig.4),
+thereby achieving minimal outages. A task experiencing an out-
+age has zero satisfaction; hence, excessive outages deleteriously
+impact the average task satisfaction. As it can be inferred from
+Fig. 4, LETO suffers more outages than M-DAFTO, resulting in
+lower task satisfaction. On the other hand, MBTO achieves the
+lowest satisfaction due to the maximum outages suffered during
+of∩¼éoading. However, task satisfaction in MBTO is relatively
+consistent across scenarios. This is because MBTO of∩¼éoads the
+tasks to the FNs in close proximity, and a uniformly distributed
+setup assists the protocol in achieving a relatively distributed
+assignment.
+FN Satisfaction Factor: Fig. 6 illustrates the average satisfac-
+tion factor of FNs for different matching-based strategies. Given
+a matching ╬Ñ,l e t╬Ñ(fj) be the set of tasks matched to fj .T h e
+satisfaction factor Sj,i(%) captures the satisfaction obtained by
+fj in executing the of∩¼éoaded taskti and is computed as per (21)
+and (22). Here, count tracks the number of currently matched
+agents per pref(fj). A detailed insight into the computation of
+FN satisfaction is provided in Appendix C.2, available online.
+Sj,i(%) =|pref(fj)|ΓêÆrank(ti)
+|pref(fj)|ΓêÆcount Γêù100; ΓêÇti Γêê╬Ñ(fj) (21)
+Sj(%) =
+Γêæ
+ΓêÇiΓêê[1,m]& tiΓêê╬Ñ(fj) Sj,i
+min(h(fj),|pref(fj)|) ; ΓêÇj Γêê[1,n] (22)
+It can be observed from Fig. 6 that the satisfaction of FNs
+escalates with increasing tasks as the |pref(fj)| increases, con-
+sequently boosting the satisfaction factor of similar options. It
+can be inferred from Fig. 6 that M-DAFTO achieves the highest
+satisfaction as it experiences minimal outages. Moreover, the
+number of outages dictates the satisfaction of FNs for different
+protocols, i.e., the higher the number of outages, the lower its
+satisfaction.
+3) Utilization-Based Metric: We also provide an insight into
+the load distribution (used VRUs) of different schemes and study
+their comparative behavior.
+Resource Utilization: Fig. 7(a)ΓÇô(d) highlight the utilization
+of FNs for different schemes across test cases. The utilization
+of FNs increases for increasing tasks, which is anticipated. The
+FNs are utilized in non-increasing order of their computational
+capabilities of VRUs (refer to Fig. 1 of Appendix E, available
+online) owing to the setting of the preferences for IoTs based
+on their of∩¼éoading delays (refer to (16)). However, due to the
+Authorized licensed use limited to: INDIAN INST OF INFO TECH AND MANAGEMENT. Downloaded on June 08,2026 at 06:21:05 UTC from IEEE Xplore.  Restrictions apply. 
+--- PAGE 13 ---
+3940 IEEE TRANSACTIONS ON SERVICES COMPUTING, VOL. 17, NO. 6, NOVEMBER/DECEMBER 2024
+Fig. 7. FN resources utilization across scenarios.
+Fig. 8. Gini index versus scenarios.
+imposition of minimum quota in M-DAFTO and LETO, all
+the FNs are assigned some tasks. MBTO obtains a relatively
+distributed assignment compared to the baselines as the tasks
+are preferably of∩¼éoaded to the FNs in its proximity in a uni-
+formly distributed IoT-Fog network. In HTO, tasks are assigned
+FNs in a prede∩¼üned random sequence, enforcing a clustered
+assignment of FNs appearing at the beginning of the random
+sequence. Alternatively, GPM greedily of∩¼éoads tasks to the FNs
+in non-increasing order of their VRUs, resulting in a clustered
+assignment at larger FNs.
+Gini Index: It indicates the statistical dispersion or inequal-
+ity measure of load across FNs [35]. The Gini index can be
+computed as per (23), where ┬»x = Γêæn
+j=1 |╬Ñ(fj)|/n. It lies in the
+0ΓêÆ1; a 0 value represents perfect equality, whereas 1 indicates
+perfect inequality.
+Gini(n)= 1
+2n2┬»x
+nΓêæ
+j=1
+nΓêæ
+k=1
+||╬Ñ(fj)|ΓêÆ|╬Ñ(fk)|| (23)
+Fig. 8 illustrates the Gini index across strategies for different test
+scenarios. MBTO is the best protocol as it achieves a relatively
+dispersed allocation owing to the nature of of∩¼éoading in MBTO
+and the uniformly distributed deployment of IoT devices. More-
+over, M-DAFTO and LETO achieve the same load dispersion
+due to similar allocation policies. The Gini index of M-DAFTO
+and LETO is better than HTO and GPM. This is because of
+the imposition of a minimum quota at FN in M-DAFTO and
+LETO, which achieves non-clustered allocations. Moreover, the
+Gini index of HTO is better than GPM as it performs greedy
+assignments by selecting random FNs, resulting in clustered
+allocation. On the other hand, GPMΓÇÖs Gini index is the worst
+as it performs greedy task assignments to FNs in decreasing
+order of their VRUs (maximum quota), resulting in clustered
+allocation.
+Appendix E, available online, includes some additional simu-
+lation results regarding the Jain fairness index, worst of∩¼éoading
+delay, and worst number of outages.
+VII. C ONCLUSIONS &F UTURE DIRECTIONS
+This paper proposed a framework M-DAFTO that generates
+an ef∩¼ücient of∩¼éoading policy for the IoT-Fog interconnection
+network. The of∩¼éoading is modeled as a matching game with
+maximum and minimum quotas at the FNs. To overcome the
+shortcomings of the DA and operate with minimum quotas,
+we adopted the MSDA to solve the problem mentioned above.
+Further, the MSDA generates a partial stable assignment be-
+tween IoTs and FNs in a polynomial time. Simulation results
+con∩¼ürm that the proposed scheme achieves 30.26 % and 93.53
+% reduction of total of∩¼éoading delay and outages, respectively,
+compared to the baselines. Though M-DAFTO achieves en-
+hanced performance, the agentsΓÇÖ preferences are immutable.
+The work can be extended to consider dynamic preferences,
+including additional parameters such as of∩¼éoading energy and
+channel interference. Moreover, the of∩¼éoading setup can also
+be supplemented by including cloud resources in the IoT-Fog
+interconnection network.
+REFERENCES
+[1] C. Swain et al., ΓÇ£METO: Matching-theory-based ef∩¼ücient task of∩¼éoading
+in IoT-Fog interconnection networks,ΓÇ¥ IEEE Internet Things J. ,v o l .8 ,
+no. 16, pp. 12 705ΓÇô12 715, Aug. 2021.
+[2] I. Sarkar, M. Adhikari, N. Kumar, and S. Kumar, ΓÇ£A collaborative com-
+putational of∩¼éoading strategy for latency-sensitive applications in fog net-
+works,ΓÇ¥ IEEE Internet Things J., vol. 9, no. 6, pp. 4565ΓÇô4572, Mar. 2022.
+[3] M. Adhikari, M. Mukherjee, and S. N. Srirama, ΓÇ£DPTO: A deadline and
+priority-aware task of∩¼éoading in fog computing framework leveraging
+multilevel feedback queueing,ΓÇ¥ IEEE Internet Things J. , vol. 7, no. 7,
+pp. 5773ΓÇô5782, Jul. 2020.
+[4] A. Kishor and C. Chakarbarty, ΓÇ£Task of∩¼éoading in fog computing for
+using smart ant colony optimization,ΓÇ¥ Wireless Pers. Commun., vol. 127,
+pp. 1683ΓÇô1704, 2022.
+[5] C. Swain, M. N. Sahoo, A. Satpathy, K. Muhammad, S. Bakshi, and J.
+J. P . C. Rodrigues, ΓÇ£A-DAFTO: Arti∩¼ücial cap deferred acceptance based
+fair task of∩¼éoading in complex IoT-fog networks,ΓÇ¥ IEEE Trans. Consum.
+Electron., vol. 69, no. 4, pp. 914ΓÇô926, Nov. 2023.
+[6] L. Jiao, R. Friedman, X. Fu, S. Secci, Z. Smoreda, and H. Tschofenig,
+ΓÇ£Cloud-based computation of∩¼éoading for mobile devices: State of the art,
+challenges and opportunities,ΓÇ¥ inProc. Future Netw. Mobile Summit, 2013,
+pp. 1ΓÇô11.
+[7] C. Swain, M. N. Sahoo, and A. Satpathy, ΓÇ£SPA TO: A student project
+allocation based task of∩¼éoading in IoT-fog systems,ΓÇ¥ in Proc. IEEE Int.
+Conf. Commun., 2021, pp. 1ΓÇô6.
+Authorized licensed use limited to: INDIAN INST OF INFO TECH AND MANAGEMENT. Downloaded on June 08,2026 at 06:21:05 UTC from IEEE Xplore.  Restrictions apply. 
+--- PAGE 14 ---
+SW AIN et al.: M-DAFTO: MULTI-STAGE DEFERRED ACCEPTANCE BASED FAIR TASK OFFLOADING IN IOT-FOG SYSTEMS 3941
+[8] C. Canali and R. Lancellotti, ΓÇ£GASP: Genetic algorithms for service
+placement in fog computing systems,ΓÇ¥ Algorithms, vol. 12, no. 10, 2019,
+Art. no. 201.
+[9] Q. Wang and S. Chen, ΓÇ£Latency-minimum of∩¼éoading decision and re-
+source allocation for fog-enabled Internet of Things networks,ΓÇ¥ Trans.
+Emerg. Telecommun. Technol., vol. 31, no. 12, 2020, Art. no. e3880.
+[10] S. A. Zakaryia, S. A. Ahmed, and M. K. Hussein, ΓÇ£Evolutionary of∩¼éoading
+in an edge environment,ΓÇ¥ Egyptian Inform. J., vol. 22, no. 3, pp. 257ΓÇô267,
+2021.
+[11] Y . Deng, P . Wang, and L. Li, ΓÇ£Task of∩¼éoading for mixed cloud/fog com-
+puting in vehicular network using genetic particle swarm optimization,ΓÇ¥
+in Proc. 4th Int. Conf. Inf. Commun. Signal Process. , 2021, pp. 489ΓÇô494.
+[12] H. Bao and Y . Liu, ΓÇ£A two-sided matching approach for distributed edge
+computation of∩¼éoading,ΓÇ¥ in Proc. IEEE/CIC Int. Conf. Commun. China ,
+2019, pp. 535ΓÇô540.
+[13] F. Chiti, R. Fantacci, and B. Picano, ΓÇ£A matching theory framework for
+tasks of∩¼éoading in fog computing for IoT systems,ΓÇ¥ IEEE Internet Things
+J., vol. 5, no. 6, pp. 5089ΓÇô5096, Dec. 2018.
+[14] F. Chiti, R. Fantacci, F. Paganelli, and B. Picano, ΓÇ£Virtual functions
+placement with time constraints in fog computing: A matching theory per-
+spective,ΓÇ¥ IEEE Trans. Netw. Service Manag., vol. 16, no. 3, pp. 980ΓÇô989,
+Sep. 2019.
+[15] C. Swain, M. N. Sahoo, and A. Satpathy, ΓÇ£LETO: An ef∩¼ücient load
+balanced strategy for task of∩¼éoading in IoT-fog systems,ΓÇ¥ in Proc. IEEE
+Int. Conf. Web Serv., 2021, pp. 459ΓÇô464.
+[16] M. Mukherjee, S. Kumar, M. Shojafar, Q. Zhang, and C. X. Mavromous-
+takis, ΓÇ£Joint task of∩¼éoading and resource allocation for delay-sensitive fog
+networks,ΓÇ¥ in Proc. IEEE Int. Conf. Commun. , 2019, pp. 1ΓÇô7.
+[17] J. He, ΓÇ£Optimization of edge delay sensitive task scheduling based on ge-
+netic algorithm,ΓÇ¥ in Proc. Int. Conf. Algorithms Data Mining Inf. Technol.,
+2022, pp. 155ΓÇô159.
+[18] Z. Li and Q. Zhu, ΓÇ£Genetic algorithm-based optimization of of∩¼éoading
+and resource allocation in mobile-edge computing,ΓÇ¥ Information, vol. 11,
+no. 2, 2020, Art. no. 83.
+[19] A. Abouaomar, A. Kobbane, and S. Cherkaoui, ΓÇ£Matching-game for user-
+fog assignment,ΓÇ¥ in Proc. IEEE Glob. Commun. Conf. , 2018, pp. 1ΓÇô6.
+[20] M. Ali, N. Riaz, M. I. Ashraf, S. Qaisar, and M. Naeem, ΓÇ£Joint cloudlet
+selection and latency minimization in fog networks,ΓÇ¥ IEEE Trans. Ind.
+Informat., vol. 14, no. 9, pp. 4055ΓÇô4063, Sep. 2018.
+[21] D. Nowak, T. Mahn, H. Al-Shatri, A. Schwartz, and A. Klein, ΓÇ£A gener-
+alized nash game for mobile edge computation of∩¼éoading,ΓÇ¥ in Proc. 6th
+IEEE Int. Conf. Mobile Cloud Comput. Serv. Eng. , 2018, pp. 95ΓÇô102.
+[22] P . Kaur and S. Mehta, Improvement of Task Of∩¼éoading for Latency Sensi-
+tive Tasks in F og Environment. Singapore: Springer, 2022, pp. 49ΓÇô63.
+[23] Q. Luo, C. Li, T. H. Luan, and W. Shi, ΓÇ£Minimizing the delay and cost
+of computation of∩¼éoading for vehicular edge computing,ΓÇ¥ IEEE Trans.
+Services Comput., vol. 15, no. 5, pp. 2897ΓÇô2909, Sep./Oct. 2022.
+[24] Y . Pan, H. Jiang, H. Zhu, and J. Wang, ΓÇ£Latency minimization for task
+of∩¼éoading in hierarchical fog-computing C-RAN networks,ΓÇ¥ inProc. IEEE
+Int. Conf. Commun., 2020, pp. 1ΓÇô6.
+[25] M. Mukherjee, V . Kumar, S. Kumar, J. Lloret, Q. Zhang, and M. Guo,
+ΓÇ£Recon∩¼ügurable intelligent surface-assisted edge computing to minimize
+delay in task of∩¼éoading,ΓÇ¥ in Proc. IEEE Glob. Commun. Conf. , 2021,
+pp. 01ΓÇô06.
+[26] P . Liu, J. Li, and Z. Sun, ΓÇ£Matching-based task of∩¼éoading for vehicular
+edge computing,ΓÇ¥ IEEE Access, vol. 7, pp. 27 628ΓÇô27 640, 2019.
+[27] B. Y ang, M. Sun, X. Hong, and X. Guo, ΓÇ£A deadline-aware of∩¼éoading
+scheme for vehicular fog computing at signalized intersection,ΓÇ¥ in Proc.
+IEEE Int. Conf. Pervasive Comput. Commun. Workshops , 2020, pp. 1ΓÇô6.
+[28] Y . Sun, J. Song, S. Zhou, X. Guo, and Z. Niu, ΓÇ£Task replication for vehicular
+edge computing: A combinatorial multi-armed bandit based approach,ΓÇ¥ in
+Proc. IEEE Glob. Commun. Conf. , 2018, pp. 1ΓÇô7.
+[29] D. Gale and L. S. Shapley, ΓÇ£College admissions and the stability of
+marriage,ΓÇ¥ Amer . Math. Monthly, vol. 69, no. 1, pp. 9ΓÇô15, 1962.
+[30] D. Fragiadakis, A. Iwasaki, P . Troyan, S. Ueda, and M. Y okoo, ΓÇ£Strate-
+gyproof matching with minimum quotas,ΓÇ¥ ACM Trans. Econ. Computa-
+tion, vol. 4, no. 1, pp. 1ΓÇô40, 2016.
+[31] A. Satpathy, M. N. Sahoo, L. Behera, and C. Swain, ΓÇ£ReMatch: An ef∩¼ücient
+virtual data center re-matching strategy based on matching theory,ΓÇ¥ IEEE
+Trans. Services Comput., vol. 16, no. 2, pp. 1373ΓÇô1386, Mar./Apr. 2023.
+[32] O. Semiari, W. Saad, and M. Bennis, ΓÇ£Downlink cell association and load
+balancing for joint millimeter wave-microwave cellular networks,ΓÇ¥ inProc.
+IEEE Glob. Commun. Conf., 2016, pp. 1ΓÇô6.
+[33] A. Satpathy, M. N. Sahoo, A. K. Sangaiah, C. Swain, and S. Bakshi,
+ΓÇ£CoMap: An ef∩¼ücient virtual network re-mapping strategy based on coali-
+tional matching theory,ΓÇ¥ Comput. Netw., vol. 216, 2022, Art. no. 109248.
+[34] H. Gupta, A. V . Dastjerdi, S. K. Ghosh, and R. Buyya, ΓÇ£iFogSim: A toolkit
+for modeling and simulation of resource management techniques in the
+Internet of Things, edge and fog computing environments,ΓÇ¥ Softw. Pract.
+Experience, vol. 47, no. 9, pp. 1275ΓÇô1296, 2017.
+[35] Z. Ning, L. Guo, Y . Peng, and X. Wang, ΓÇ£Joint scheduling and routing
+algorithm with load balancing in wireless mesh network,ΓÇ¥ Comput. Elect.
+Eng., vol. 38, no. 3, pp. 533ΓÇô550, 2012.
+Chittaranjan Swain (Graduate Student Member,
+IEEE) received the MTech degree in computer sci-
+ence engineering from VIT University, V ellore, India.
+He is a computer science and engineering research
+scholar with NIT Rourkela, India. His research in-
+terests include cloud computing, fog computing, and
+Internet of Things.
+Manmath Narayan Sahoo (Member, IEEE) re-
+ceived the PhD degree in computer science from NIT
+Rourkela, India, in 2014. He is an assistant professor
+with CSE, NIT Rourkela, India. He has been a re-
+viewer, guest editor, track chair, and program chair in
+many journals and conferences. His research interests
+include mobile Ad-hoc networks, sensor networks,
+and cloud computing.
+Anurag Satpathy(Graduate Student Member, IEEE)
+received the PhD degree in computer science and
+engineering from the National Institute of Technol-
+ogy, Rourkela, India. He is a post-doctoral fellow
+with the Department of Computer Science, Missouri
+University of Science and Technology, Rolla, MO,
+USA. His research interests include cloud computing,
+the Internet of Things, and distributed systems.
+Sambit Bakshi (Senior Member, IEEE) is currently
+with the Department of Computer Science and Engi-
+neering, National Institute of Technology Rourkela,
+India. His area of interests include surveillance, bio-
+metric security, and digital forensics. He presently
+serves as associate editor of theIEEE Transactions on
+Computational Social Systems, IEEE Transactions on
+Technology and Society, IEEE Transactions on Edu-
+cation, IEEE Systems Journal, Innovations in Systems
+and Software Engineering Springer: A NASA Journal,
+Expert Systems with Applications , Engineering Ap-
+plications of Arti∩¼ücial Intelligence , Image and Vision Computing , Multimedia
+Systems, Multimedia Tools and Applications ,a n d Neural Processing Letters .
+He previously served as associate editor of the IEEE IT Professional Magazine,
+IEEE Access, PLoS One,a n d Expert Systems in the past. He is founding chair
+of IEEE Rourkela Subsection and IEEE Kolkata Section Biometrics Council
+Chapter. He serves as a distinguished lecturer of IEEE Systems Council for
+2023-2025. He has published widely in more than 100 journals and conferences.
+Soumya K. Ghosh (Senior Member, IEEE) received
+the PhD degree in computer science and engineering
+from the IIT, Kharagpur. Currently, he is a professor
+with the Department of Computer Science and Engi-
+neering, IIT Kharagpur. Prior to joining IIT Kharag-
+pur, he was with the ISRO, working in the area of
+satellite remote sensing and GIS. His research inter-
+ests include cloud computing, spatial data science,
+and IoT.
+Authorized licensed use limited to: INDIAN INST OF INFO TECH AND MANAGEMENT. Downloaded on June 08,2026 at 06:21:05 UTC from IEEE Xplore.  Restrictions apply. 

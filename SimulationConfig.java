@@ -39,7 +39,7 @@ public class SimulationConfig {
 
     /** Task deadline range in seconds */
     static final double DEADLINE_MIN = 15.0;
-    static final double DEADLINE_MAX = 25.0;
+    static final double DEADLINE_MAX = 22.0;
 
     // ================================================================
     //  2. FOG NETWORK PARAMETERS

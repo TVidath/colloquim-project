@@ -1,0 +1,1006 @@
+﻿Pages: 22
+--- PAGE 1 ---
+Arti∩¼ücial Intelligence 316 (2023) 103855
+Contents lists available at ScienceDirect
+Arti∩¼ücial Intelligence
+journal homepage: www.elsevier.com/locate/artint
+Strategyproof Mechanism for Two-Sided Matching with 
+Resource Allocation Γ£⌐
+Kwei-guu Liu, Kentaro YahiroΓêù, Makoto Yokoo
+Kyushu University, Fukuoka, Japan
+a r t i c l e i n f o a b s t r a c t
+Article history:
+Received 9 February 2022
+Received in revised form 30 December 2022
+Accepted 1 January 2023
+Available online 5 January 2023
+Keywords:
+Matching
+Resource allocation
+Strategyproofness
+In this work, we consider a student-project-resource matching-allocation problem, where 
+students have preferences over projects and the projects have preferences over students. 
+In this problem, students and indivisible resources are many-to-one matched to projects 
+whose capacities are endogenously determined by the resources allocated to them. 
+Traditionally, this problem is decomposed into two separate problems: (1) resources 
+are allocated to projects based on expectations (a resource allocation problem), and (2) 
+students are matched to projects based on the capacities determined in the previous 
+problem (a matching problem). Although both problems are well-understood, if the 
+expectations used in the ∩¼ürst are incorrect, we obtain a sub-optimal outcome. Thus, this 
+problem should be solved as a whole without dividing it into two parts. We show that 
+no strategyproof mechanism satis∩¼ües fairness and weak e∩¼âciency requirements. Given this 
+impossibility result, we develop a new class of strategyproof mechanisms called Sample 
+and Deferred Acceptance (SDA), which satis∩¼ües several properties on fairness and e∩¼âciency. 
+We experimentally compare several SDA instances as well as existing mechanisms, and 
+show that an SDA instance strikes a good balance of fairness and e∩¼âciency when students 
+are divided into different types according to their preferences.
+┬⌐ 2023 The Author(s). Published by Elsevier B.V. This is an open access article under the 
+CC BY license (http://creativecommons.org/licenses/by/4.0/).
+1. Introduction
+We introduce a simple, but fundamental problem called Student-Project-Resource matching-allocation problem (SPR).1
+On one hand, SPR can be considered as a two-sided, many-to-one matching problem [3]s i n c e students are matched to 
+projects based on their preferences. On the other hand, it is also a discrete resource allocation problem [4]s i n c e resources 
+are allocated to each project. However, unlike the standard setting of two-sided many-to-one matching, where the capacity 
+of each project is exogenously determined, we assume the capacities are endogenously determined by resource allocation.
+Γ£⌐ This paper is based on our conference paper [1], which introduces just one mechanism called Sample and Vote Deferred Acceptance (SVDA). In this 
+paper, we present a new class of mechanisms which we call Sample and Deferred Acceptance (SDA), and show axiomatic properties for this general class 
+(SVDA corresponds to SDA-V in this paper). Furthermore, we develop other SDA instances (SDA-VΓêù and SDA-S), and conduct an extended evaluation of SDA 
+instances, including a case when students are divided into several types (Section 5).
+* Corresponding author.
+E-mail addresses:liu@agent.inf.kyushu-u.ac.jp (K.-g. Liu), yahiro@agent.inf.kyushu-u.ac.jp (K. Yahiro), yokoo@inf.kyushu-u.ac.jp (M. Yokoo).
+1 An SPR is a strict generalization of the student-project-room allocation problem [2], in which a single resource (i.e., a room) is allocated to each project 
+while multiple resources can be allocated to each project in our model.
+https://doi.org/10.1016/j.artint.2023.103855
+0004-3702/┬⌐ 2023 The Author(s). Published by Elsevier B.V. This is an open access article under the CC BY license 
+(http://creativecommons.org/licenses/by/4.0/).
+--- PAGE 2 ---
+K . - g .L i u ,K .Y a h i r oa n dM .Y o k o o Arti∩¼ücial Intelligence 316 (2023) 103855
+If the mechanism designer knows the preferences of the students, she can allocate resources to projects using combi-
+natorial optimization techniques. If each projectΓÇÖs capacity is determined, even if the mechanism designer does not know 
+the studentsΓÇÖ preferences beforehand, she can ∩¼ünd a matching that satis∩¼ües desirable properties (e.g., stability) with a 
+strategyproof mechanism, e.g., Deferred Acceptance mechanism (DA) [5], such that students voluntarily disclose their true 
+preferences. However, the mechanism designer usually does not know their preferences. Thus, a common practice for solving 
+this problem is to determine its resource allocation part based on the expectations or the past data and set the capacities 
+of the projects. Then the actual matching of students to projects is determined by a matching mechanism. In this approach, 
+if the expectations used in the ∩¼ürst problem are incorrect, the outcome can be sub-optimal; excess demand and supply for 
+seats can coexist, which can be avoided by a better resource allocation.
+One real-life instance where this practice is applied is the nursery-school waiting list problem [6]. As of October 2018, 
+over 47,000 children were on waiting lists for nursery schools in Japan. This serious social problem shackles womenΓÇÖs 
+empowerment. The Japanese government is trying to increase the number of nursery schools to encourage women to enter 
+the workforce. The following is the procedure for matching children and teachers to publicly certi∩¼üed nursery schools 
+in Japanese municipalities. First, the matching authority announces the quotas for each age group. This situation can be 
+formalized as an SPR by assuming a child is a student, each age group in a school is a project, and a teacher is a resource.2
+Allocation of the resources/teachers within a school to each age group is based on estimates. Next, based on the quotas for 
+each age group, the actual assignment is determined by a matching mechanism. The primary shortcoming of this procedure 
+is that in the obtained matching, excess supply and demand may coexist in one school because the local authorities must 
+determine the quotas for each age group of all the schools before they know the actual demand. To avoid such ine∩¼âciency, 
+this problem should be solved as a whole without dividing it into two parts.
+Another example is a school choice program for assigning students to public schools. In a standard setting, each school 
+has a maximum quota that is determined in advance. Assume a local government (e.g., a city/prefecture/state) has spare re-
+sources, e.g., su∩¼âcient budget to hire temporary teachers, which can be allocated based on the demand. Then the maximum 
+quota of each school is no longer ∩¼üxed in advance, but it can be ∩¼éexibly modi∩¼üed based on the actual demand utilizing 
+extra budget/resources.
+This paper follows previous works that address constrained matching problems. Two-sided matching has attracted con-
+siderable attention from AI and theoretical computer science researchers [7ΓÇô13]. A standard market deals with maximum 
+quotas, i.e., capacity limits that cannot be exceeded. However, many real-world matching markets are subject to a variety 
+of distributional constraints [14,15], including regional maximum quotas, which restrict the total number of students as-
+signed to a set of schools [16], minimum quotas, which guarantee that a certain number of students are assigned to each 
+school [17ΓÇô21], and diversity constraints [22ΓÇô26]. Other works examine the computational complexity of ∩¼ünding a match-
+ing with desirable properties under distributional constraints [27ΓÇô29]. One desirable property a matching should satisfy is 
+stability [30ΓÇô32], which can be divided into fairness and nonwastefulness, where nonwastefulness is related to studentsΓÇÖ 
+welfare. When some distributional constraints are imposed, a stable matching may not exist. Given this fact, one stream of 
+works considers weaker stability requirements [33ΓÇô35,16,36], while another stream assumes fairness as hard constraints and 
+tries to maximize studentsΓÇÖ welfare, e.g., by utilizing mixed integer linear programming (MILP) [37,34]. Although a model 
+that resembles ours is examined [38], it utilizes a compact representation scheme to handle exponentially many students, 
+assuming they can be divided into a small number of types.
+Several works have addressed three-sided matching problems [39ΓÇô41] where three types of players/agents are matched, 
+e.g., males, females, and pets. Three-dimensional (or multi-dimensional) roommate problems deal with forming triplets (or 
+d-tuples where d ΓëÑ 3) of agents with a single type [42,43]. Although these models super∩¼ücially resemble ours, they are 
+fundamentally different. In our model, a resource is not an agent/player; it has no preference over projects/students. A 
+project/student has no preference over resources; a project just needs to receive su∩¼âcient resources to accommodate the 
+students who have applied to it. In the student-project allocation problem [44], students are matched to projects, each of 
+which is offered by a lecturer. A student has a preference over projects, and a lecturer has a preference over students. Each 
+lecturer has a capacity limit. This problem can be considered as a standard two-sided matching problem with distributional 
+constraints [14]. Aziz et al. [34] consider a problem called summer internship problem, where students are allocated to 
+projects. The capacity of a project is endogenously determined by the amount of the budget that a supervisor provides. 
+Although this problem resembles an SPR, one important difference is that we assume a resource is indivisible, while they 
+assume the budget is in∩¼ünitely divisible. Furthermore, they do not consider strategyproof mechanisms.
+In our problem, the indivisibility of resources among projects leads to the computational di∩¼âculty when ∩¼ünding a feasible 
+matching. Such hardness is also studied in the problem matching with sizes and its closely related problem parallel machine 
+scheduling [45,46]. One typical problem of matching with sizes is known as matching with couples, where entities on one 
+side have sizes of one or two people and the other side has resource capacities of two. If couples can be separated, the 
+problem can be solved e∩¼âciently because it becomes the classical college admission problem. Due to the constraint that 
+couples are inseparable in real-world problems like resident doctors matching schemes, the di∩¼âculty has been proved to be 
+NP-complete [45].
+2 This nursery school problem has a distinct structure, i.e., a child/student must be assigned to one age group/project within a nursery school, and a 
+resource/teacher is shared within the projects/age groups that belong to the same nursery school. Our formalization of an SPR is more general and can 
+represent a variety of applications beyond this example.
+2
+--- PAGE 3 ---
+K . - g .L i u ,K .Y a h i r oa n dM .Y o k o o Arti∩¼ücial Intelligence 316 (2023) 103855
+In this work, we present a generalized framework to capture two orthogonal problems that need to be solved simul-
+taneously as a single problem. We show that no strategyproof mechanism satis∩¼ües fairness (i.e., no student has justi∩¼üed 
+envy) and very mild e∩¼âciency requirements on studentsΓÇÖ welfare [1]. We also con∩¼ürm the limitations of the following three 
+existing mechanisms [2]: Serial Dictatorship mechanism (SD), Arti∩¼ücial Caps Deferred Acceptance mechanism (ACDA), and 
+Adaptive Deferred Acceptance mechanism (ADA). Then we introduce a new class of strategyproof mechanisms called Sample 
+and Deferred Acceptance (SDA), which satis∩¼ües several properties on fairness and e∩¼âciency. SDA can be considered as a 
+combination of SD and DA. Although it borrows a common idea from auction mechanisms, i.e., dividing students/partici-
+pants into two groups and utilizing the information obtained by one group to appropriately set parameters to apply the 
+mechanism to another group, its application to two-sided matching is novel. Moreover, we believe that combining SD and 
+DA, such that the entire mechanism satis∩¼ües several desiderata, is unprecedented.
+More speci∩¼ücally, in SDA, students are divided into two groups: sampled students and regular students. Sampled students 
+are assigned using SD. Next, resources are allocated based on the preferences of the sampled students. Then the regular 
+students are assigned using DA based on the resource allocation. We can use several alternative methods for determining 
+the resource allocation based on the sampled studentsΓÇÖ preferences. One simple method is using the vote among sampled 
+students. We call an instance of SDA using a simple Borda count SDA with Voting (SDA-V). However, such a simple voting 
+scheme can be inappropriate when students are divided into several types based on their preferences. To address this issue, 
+we develop another instance of SDA, which uses a more sophisticated voting scheme called SDA-VΓêù. Furthermore, we develop 
+another instance of SDA, which uses a simulation instead of voting called SDA with Simulation (SDA-S). We experimentally 
+show that SDA-S outperforms other SDA variants in terms of e∩¼âciency and fairness when students are divided into several 
+types.
+This paper is organized as follows. Section 2 introduces a model of an SPR. Section 3 shows that no mechanism is fair, 
+weakly nonwasteful, resource e∩¼âcient, and strategyproof. In Section 4, we explain the existing strategyproof mechanisms 
+and their drawbacks, and introduce our new class of mechanisms, SDA. In Section 5, we show that SDA strikes a good 
+balance between fairness and e∩¼âciency when all students belong to a single type. Next, we show that SDA-S outperforms 
+other variants of SDA when students are divided into multiple types. Finally, Section 6 concludes our work.
+2. Model
+We de∩¼üne a Student-Project-Resource matching-allocation problem (SPR) as follows:
+De∩¼ünition 1 (Student-Project-Resource allocation (SPR) instance). An SPR instance is a tuple (S, P, R, Γë╗S, Γë╗P , TR, qR).
+ΓÇó S ={s1, ...,  s|S|} is a set of students.
+ΓÇó P ={ p1, ...,  p|P|} is a set of projects.
+ΓÇó R ={r1, ...,  r|R|} is a set of indivisible resources.
+ΓÇóΓë╗ S= (Γë╗s)sΓêêS are the student strict preferences over set P Γê¬{ Γêà }. Symbol Γêà means that a student is not assigned to any 
+project.
+ΓÇóΓë╗ P = (Γë╗p)pΓêêP are the projectsΓÇÖ strict preferences over set S Γê¬{Γêà}. Symbol Γêàmeans that a project is assigned no student.
+ΓÇó qR = (qr)rΓêêR are the capacities of resources; qr Γêê N>0 for every r ΓêêR.
+ΓÇó TR = (Tr)rΓêêR is a pro∩¼üle of the resource compatibility lists, where each Tr Γèå P is a set of projects to which resource r
+can be allocated. Since resource r is indivisible, it must be allocated to exactly one project in Tr.
+Note that since we assume a resource indivisible, we cannot allocate a resource r with the capacity of two to the projects 
+p1 and p2 with the capacity of one each. We illustrate our setting with the following example.
+Example 1. There are four students, s1, s2, s3, s4, four projects, p1, p2, p3, p4, and two resources, r1, r2, where Tr1 ={ p1, p2}, 
+Tr2 ={ p3, p4}, and qr1 =2, qr2 =1. The following are their preferences:
+s1 : p1 Γë╗ p2 Γë╗ p4 Γë╗ p3 Γë╗Γêà, p1 :s4 Γë╗s3 Γë╗s2 Γë╗s1 Γë╗Γêà,
+s2 : p1 Γë╗ p2 Γë╗ p3 Γë╗ p4 Γë╗Γêà, p2 :s4 Γë╗s3 Γë╗s2 Γë╗s1 Γë╗Γêà,
+s3 : p1 Γë╗ p2 Γë╗ p3 Γë╗ p4 Γë╗Γêà, p3 :s1 Γë╗s2 Γë╗s3 Γë╗s4 Γë╗Γêà,
+s4 : p4 Γë╗ p3 Γë╗ p2 Γë╗ΓêàΓë╗ p1, p4 :s1 Γë╗s2 Γë╗s3 Γë╗s4 Γë╗Γêà.
+Since we assume resources are indivisible, it is impossible to allocate students to three different projects although the 
+total capacity of all the resources equals three. A resource can only be allocated to a compatible project, e.g., r1 can be 
+allocated to either p1 or p2. The following are the possible capacities of the four projects: (2, 0, 1, 0), (2, 0, 0, 1), (0, 2, 1, 0), 
+or (0, 2, 0, 1).
+3
+--- PAGE 4 ---
+K . - g .L i u ,K .Y a h i r oa n dM .Y o k o o Arti∩¼ücial Intelligence 316 (2023) 103855
+Fig. 1. SPR instance: matching ╦åY and allocation ╦å╬╝ in Example1.
+We follow the matching with a contracts model [47]. Contract (s, p) ΓêêS ├ù P means that student s is matched to project 
+p. Contract (s, p) is acceptable to student s (resp. project p) if p Γë╗s Γêà holds (resp. s Γë╗p Γêà). Let X denote the set of all 
+contracts that are acceptable to the projects.3
+A matching is a set of contracts satisfying the following conditions.
+De∩¼ünition 2 (Matching). A matching is a subset Y Γèå X, where for every student s ΓêêS, Ys ={ (s, p) | (s, p) Γêê X}, either |Ys| =0, 
+or Ys ={ (s, p)} and p Γë╗s Γêàhold.
+For matching Y, let Y(s) denote the project to which s is matched (Y(s) =Γêà if s is not matched to any project in Y), 
+and let Y(p) Γèå S denote the set of students assigned to project p (Y(p) =Γêà means no student is allocated to p in Y).
+In an SPR, we also need to describe how resources are allocated to projects. A matchingΓÇÖs feasibility is de∩¼üned based on 
+this description.
+De∩¼ünition 3 (Allocation). An allocation ╬╝ : R ΓåÆ P maps each resource r to a project ╬╝(r) ΓêêTr. Let q╬╝(p) = Γêæ
+rΓêê╬╝ΓêÆ1(p)qr.4
+In words, a projectΓÇÖs maximum quota is de∩¼üned by the sum of all resources that are allocated to it. Note that multiple 
+resources can be allocated to a single project.
+De∩¼ünition 4 (Feasibility). A feasible matching (Y, ╬╝) is a matching-allocation pair where |Y(p)| Γëñ q╬╝(p) holds for every 
+p Γêê P.
+In the setting of Example 1, assume matching ╦åY is {(s1, p1), (s2, p1), (s3, Γêà), (s4, p3)} and allocation ╦å╬╝ distributes r1 to 
+p1, and r2 to p3. Then ( ╦åY, ╦å╬╝) is a feasible matching. See Fig. 1 for an illustration.
+Next, we introduce a concept related to e∩¼âciency called nonwastefulness. First, we de∩¼üne a situation where a student 
+claims that the current matching is ine∩¼âcient since her welfare can be improved without disadvantaging other students.
+De∩¼ünition 5 (Claiming an empty seat with ╬╝). Given feasible matching (Y, ╬╝), student s claims an empty seat in project p
+with ╬╝ if the following conditions hold:
+ΓÇó p Γë╗s Y(s), and
+ΓÇó Y \{ (s, Y(s))} Γê¬{ (s, p)} is feasible with ╬╝.
+In other words, student s claims an empty seat in project p with ╬╝ if it is possible to move her to p from current project 
+Y(s) (which can be Γêà) with current allocation ╬╝.
+De∩¼ünition 6 (Nonwastefulness). Given feasible matching (Y, ╬╝), student s possibly claims an empty seat in project p if Γêâ╬╝ΓÇ▓
+such that s claims an empty seat in p with ╬╝ΓÇ▓. A feasible matching (Y, ╬╝) is nonwasteful if no student possibly claims an 
+empty seat in any project.
+In other words, s possibly claims an empty seat in p if s can be moved to a more preferred project p without changing 
+the assignment of the other students with allocation ╬╝ΓÇ▓. Note that ╬╝ΓÇ▓ can be different from ╬╝. Thus, s can possibly claim 
+an empty seat in p even if it is impossible to move her to p with current allocation ╬╝, as long as it becomes possible with 
+a different/better allocation ╬╝ΓÇ▓. In a traditional setting, since the maximum quota (capacity limit) of each project is ∩¼üxed, it 
+3 In designing a strategyproof mechanism, we assume student preferences are private information, and the other information is public. Thus, we assume 
+X, i.e., the set of all contracts that are acceptable to the projects is public.
+4 For ╬╝ΓêÆ1(p) =Γêà, we assume q╬╝(p) =0.
+4
+--- PAGE 5 ---
+K . - g .L i u ,K .Y a h i r oa n dM .Y o k o o Arti∩¼ücial Intelligence 316 (2023) 103855
+su∩¼âces to check whether a student can be moved to another project under the ∩¼üxed maximum quotas. In contrast, in our 
+setting, maximum quotas are endogenous and ∩¼éexible. Thus, the de∩¼ünition of nonwastefulness is modi∩¼üed to re∩¼éect this 
+∩¼éexibility.
+In the setting of Example 1 in Fig. 1, s4 cannot claim an empty seat in p4 in current allocation ╦å╬╝ because no resource 
+is allocated to p4 and it is impossible to move her from p3 to p4. However, she possibly claims an empty seat in p4
+since by allocating r2 to p4, we can move her to p4 without disadvantaging other students. Thus, ( ╦åY , ╦å╬╝) does not satisfy 
+nonwastefulness.
+Next, we introduce a concept called fairness.
+De∩¼ünition 7 (Fairness). Given feasible matching (Y, ╬╝), student s has justi∩¼üed envy toward student sΓÇ▓ if for project p such 
+that sΓÇ▓ ΓêêY(p), p Γë╗s Y(s) and s Γë╗p sΓÇ▓ hold. A feasible matching (Y, ╬╝) is fair if no student has justi∩¼üed envy.
+In other words, student s has justi∩¼üed envy toward sΓÇ▓ if sΓÇ▓ is assigned to project p although s prefers p over her current 
+project Y(s) and project p also prefers s over sΓÇ▓.
+In the setting of Example 1 in Fig. 1, s3 has justi∩¼üed envy toward s1 (or s2) since she prefers p1 over Γêà, and p1 prefers 
+her over s1 (or s2).
+By combining nonwastefulness and fairness, we obtain stability.
+De∩¼ünition 8 (Stability). A feasible matching (Y, ╬╝) is stable if it is nonwasteful and fair.
+This stability concept is also called strong stability [16,48]. Next, we introduce concepts related to e∩¼âciency and welfare 
+of students.
+De∩¼ünition 9 (Pareto e∩¼âciency). Matching Y is Pareto dominated by YΓÇ▓ if all students weakly prefer YΓÇ▓ over Y (that is, either 
+YΓÇ▓(s) Γë╗s Y(s) or Y(s) = Y(sΓÇ▓) for every s Γêê S) and at least one student strictly prefers YΓÇ▓. Matching Y is strongly Pareto 
+dominated by YΓÇ▓ if all students strictly prefer YΓÇ▓ over Y. A feasible matching is Pareto e∩¼âcient if no feasible matching 
+Pareto dominates it. A feasible matching is weakly Pareto e∩¼âcient if no feasible matching strongly Pareto dominates it.
+If a matching is Pareto e∩¼âcient, we need to sacri∩¼üce the welfare of other students to improve the assignment of one 
+student. If a matching is weakly Pareto e∩¼âcient, it is impossible to strictly improve the assignments of all the students. 
+Pareto e∩¼âciency obviously implies weak Pareto e∩¼âciency but not vice versa. Pareto e∩¼âciency also implies nonwastefulness 
+since if a matching is wasteful, i.e., student s possibly claims an empty seat in project p, then we can move s to p from 
+her current assignment without changing the welfare of other students using appropriate allocation ╬╝ΓÇ▓. The converse is not 
+true. Weak Pareto e∩¼âciency and nonwastefulness are independent properties.
+In the setting of Example 1, matching ╦åY in Fig. 1 is not Pareto e∩¼âcient since s4 possibly claims an empty seat in p4; we 
+can improve the assignment of s4 without disadvantaging other students. On the other hand, it is weakly Pareto e∩¼âcient 
+since s1 and s2 are assigned to their best project and their assignment cannot be improved.
+Next, we formally de∩¼üne a mechanism and introduce the desirable properties a mechanism should satisfy: strategyproof-
+ness and weak group strategyproofness.
+De∩¼ünition 10 (Mechanism). Given any SPR instance, a mechanism outputs a feasible matching (Y, ╬╝). If a mechanism always 
+yields a feasible matching that satis∩¼ües property A (e.g., fairness), we say that this mechanism is A (e.g., fair).
+De∩¼ünition 11 ((Group) strategyproofness). A mechanism is strategyproof if no student has an incentive to misreport her 
+preference. A mechanism is weakly group strategyproof if no group of students can collude to misreport their preferences 
+in a way that makes every member strictly better off.
+3. Impossibility theorems
+In an SPR, resources should be ∩¼éexibly allocated to projects for more e∩¼âcient matching. However, such ∩¼éexibility is hard 
+to combine with fairness. First, we show that fairness and nonwastefulness are incompatible.
+Theorem 1. An SPR instance exists where no feasible matching is fair and nonwasteful.
+Proof. Consider the following SPR instance5: two students, s1, s2, two projects, p1, p2, and a unitary resource compatible 
+with both. The student preferences are p1 Γë╗s1 p2 Γë╗s1 Γêà, and p2 Γë╗s2 p1 Γë╗s2 Γêà. The project preferences are s2 Γë╗p1 s1 Γë╗p1 Γêàand 
+5 This example is identical to the example [16], which shows that a strongly stable matching may not exist with regional quotas.
+5
+--- PAGE 6 ---
+K . - g .L i u ,K .Y a h i r oa n dM .Y o k o o Arti∩¼ücial Intelligence 316 (2023) 103855
+s1 Γë╗p2 s2 Γë╗p2 Γêà. By symmetry, we can assume the resource is allocated to p1 w.l.o.g. For fairness, s2 must be allocated to 
+p1. Then s1 possibly claims an empty seat in p2 since moving her to p2 is possible by allocating the resource to p2. /Box
+Given this impossibility theorem, we introduce weaker conditions on e∩¼âciency.
+De∩¼ünition 12 (Weak nonwastefulness). For feasible matching (Y, ╬╝), student s strongly claims an empty seat if Y(s) =Γêà, and 
+s claims an empty seat in project p with ╬╝. A feasible matching is weakly nonwasteful if no student strongly claims an 
+empty seat.
+In the setting of Example 1, feasible matching ( ╦åY , ╦å╬╝) in Fig. 1 is weakly nonwasteful because s3 cannot strongly claim 
+an empty seat. Although ╦åY (s3) =Γêà, she cannot be assigned to any project with current allocation ╦å╬╝.
+De∩¼ünition 13 (Very weak nonwastefulness). For feasible matching (Y, ╬╝), student sv e r y strongly claims an empty seat if Y(s) =
+Γêà, and ΓêÇ╬╝ΓÇ▓, such that (Y, ╬╝ΓÇ▓) is feasible, Γêâp in which s claims an empty seat with ╬╝ΓÇ▓. A feasible matching is very weakly 
+nonwasteful if no student very strongly claims an empty seat.
+In other words, student s very strongly claims an empty seat if she is currently unassigned, and under any feasible 
+resource allocation ╬╝ΓÇ▓, project p exists such that s claims an empty seat in p with ╬╝ΓÇ▓. Note that p can be different for each 
+╬╝ΓÇ▓.
+Consider matching Y ={ (s1, p1), (s2, p1), (s3, Γêà), (s4, Γêà)} in the setting of Example 1. Then s3 very strongly claims an 
+empty seat. Here Y(s3) =Γêà. For any allocation with which Y is feasible, r1 must be allocated to p1. When r2 is allocated to 
+p3, s3 claims an empty seat in p3. When r2 is allocated to p4, s3 claims an empty seat in p4.
+If student s very strongly claims an empty seat, she is currently unassigned and claims an empty seat in project p with 
+current allocation ╬╝, and thus she also strongly claims an empty seat. If she claims an empty seat in p under the current 
+assignment, she also possibly claims an empty seat in p. Thus, nonwastefulness implies weak nonwastefulness, and weak 
+nonwastefulness implies very weak nonwastefulness.
+To de∩¼üne another concept called resource e∩¼âciency, we ∩¼ürst de∩¼üne unanimous preferences.
+De∩¼ünition 14 (Unanimous preference). Students unanimously prefer p over pΓÇ▓ if for every s ΓêêS, (s, p) Γêê X and p Γë╗s pΓÇ▓ hold.
+This condition means that project p accepts all students and all students prefer p over pΓÇ▓. If students unanimously prefer 
+p over pΓÇ▓, allocating any resource (which is compatible with both p and pΓÇ▓) to pΓÇ▓ is ine∩¼âcientin terms of studentsΓÇÖ welfare. 
+The following formalizes this intuition.
+De∩¼ünition 15 (Resource e∩¼âciency). Resource allocation ╬╝ is resource e∩¼âcient if no resource r, such that p, pΓÇ▓ ΓêêTr and stu-
+dents unanimously prefer p over pΓÇ▓, is allocated to pΓÇ▓. A mechanism is resource e∩¼âcient if it always returns a resource 
+e∩¼âcient allocation.
+Pareto e∩¼âciency implies nonwastefulness. The following theorem shows that Pareto e∩¼âciency also implies resource e∩¼â-
+ciency.
+Theorem 2. If feasible matching (Y, ╬╝) is Pareto e∩¼âcient, then allocation ╬╝ΓÇ▓ exists such that (Y, ╬╝ΓÇ▓) is feasible and ╬╝ΓÇ▓ is resource 
+e∩¼âcient.
+Proof. For the sake of contradiction, assume Y is Pareto e∩¼âcient, and all students unanimously prefer p over pΓÇ▓, but for 
+any ╬╝ such that (Y, ╬╝) is feasible, resource r exists such that p, pΓÇ▓ ΓêêTr is allocated to pΓÇ▓. Consider ╬╝ΓÇ▓ obtained from ╬╝, 
+such that r is re-assigned to p. If (Y, ╬╝ΓÇ▓) is feasible, we repeat the same procedure. (Y, ╬╝ΓÇ▓) eventually becomes infeasible 
+(otherwise, we obtain resource e∩¼âcient ╬╝ΓÇ▓, which contradicts our assumption). Since students unanimously prefer p over 
+pΓÇ▓, any student assigned to pΓÇ▓ is acceptable to p and prefers p over pΓÇ▓. Consider another matching YΓÇ▓, in which some 
+students are moved from pΓÇ▓ to p such that (YΓÇ▓, ╬╝ΓÇ▓) becomes feasible. Then the moved students prefer YΓÇ▓ over Y (and the 
+other students are indifferent). This contradicts our assumption that Y is Pareto e∩¼âcient. /Box
+Now we are ready to introduce another impossibility theorem.
+Theorem 3. No mechanism exists that is fair, very weakly nonwasteful, resource e∩¼âcient, and strategyproof.
+Proof. Consider the following situation: three students, s1, s2, s3, three projects, p1, p2, p3, one resource, r with qr =2, and 
+Tr ={ p1, p2, p3}. The following are their preferences:
+6
+--- PAGE 7 ---
+K . - g .L i u ,K .Y a h i r oa n dM .Y o k o o Arti∩¼ücial Intelligence 316 (2023) 103855
+s1 : p2 Γë╗ p3 Γë╗ p1 Γë╗Γêà, p1 :s1 Γë╗s2 Γë╗s3 Γë╗Γêà,
+s2 : p3 Γë╗ p1 Γë╗ p2 Γë╗Γêà, p2 :s2 Γë╗s3 Γë╗s1 Γë╗Γêà,
+s3 : p1 Γë╗ p2 Γë╗ p3 Γë╗Γêà, p3 :s3 Γë╗s1 Γë╗s2 Γë╗Γêà.
+Recall that since all the resources must be distributed, resource r must be allocated to a project. From very weak nonwaste-
+fulness and fairness, the following are the possible matchings: allocating s1 and s2 to p1, allocating s2 and s3 to p2, or 
+allocating s3 and s1 to p3. From the symmetry, we can assume r is allocated to p1 and s1 and s2 are assigned to p1 w.l.o.g. 
+Next, we examine the case where the preference of s3 is changed to p3 Γë╗ p1 Γë╗ p2 Γë╗Γêà. From resource e∩¼âciency, r cannot 
+be allocated to p1 since all students prefer p3 over p1. If r is allocated to p2 (or p3), then from fairness and very weak 
+nonwastefulness, s3 must be assigned to p2 (or p3). This violates strategyproofness since s3 is not assigned to any project 
+in the original situation. /Box
+4. Strategyproof mechanisms
+4.1. Existing mechanisms
+An SPR belongs to a general class of problems where distributional constraints satisfy a condition called heredity [2]. 
+Heredity means that if matching Y is feasible (to be precise, if allocation ╬╝ exists such that (Y, ╬╝) is feasible), then any of its 
+subsets YΓÇ▓ Γèé Y is also feasible with some allocation ╬╝ΓÇ▓. SPR clearly satis∩¼ües this property: if (Y, ╬╝) is feasible, for any YΓÇ▓ Γèé Y, 
+(Y, ╬╝) is feasible. Three general strategyproof mechanisms exist in this context [2]. Since an SPR satis∩¼ües heredity, the 
+properties of these mechanisms are automatically inherited to our model. Kamada and Kojima [48]a l s o consider heredity 
+constraints. They introduce a weaker stability concept called weak stability and show that a weakly stable matching always 
+exists. Furthermore, Aziz et al. [34]i n t r o d u c e another stability concept called cut-off stability, which is stronger than weak 
+stability, and show a cut-off stable matching always exists. These two stability concepts include fairness. Recently, Cho et 
+al. [49]s h o w that no weakly stable and strategyproof mechanism exists in general.
+Before describing these mechanisms, we introduce a computational problem that needs to be solved within these mech-
+anisms.
+De∩¼ünition 16 (Feasibility). For a given SPR instance and matching Y, does allocation ╬╝ exist such that (Y, ╬╝) is feasible?
+We settle its computational complexity by reduction from a partition problem, which is NP-complete [50].
+De∩¼ünition 17 (3DM). M, W, and D (men, women, and dogs) are disjoint sets of cardinality n. For a given set F Γèå M ├ùW ├ùD, 
+does perfect matching F (i.e., a set F Γèå F of disjoint families of cardinality n) exist?
+Theorem 4. Feasibility is NP-complete. This is true even if the capacity qr is either 1 or 2 for all r ΓêêR.
+Proof. For yes instances, whether (Y, ╬╝) is feasible can be veri∩¼üed in polynomial time when ╬╝ is given as a certi∩¼ücate. 
+Hence, this problem belongs to class NP.
+We show that any instance of 3DM can be reduced to an SPR instance. The projects, resources, and assignment Y are 
+created as follows.
+ΓÇó For each pair of a man and a woman (m, w) ΓêêM ├ùW, we create project pm,w.
+ΓÇó For each man m ΓêêM, we create project pm.
+ΓÇó For each woman w ΓêêW, we create project pw.
+ΓÇó In assignment Y, two students are assigned to each pm,w, and one student is assigned to each pm and each pw.
+ΓÇó For each dog d Γêê D, we create resource rd with qrd =2. Tr ={ pm,w | (m, w, d) Γêê F}, i.e., this resource can be assigned 
+to pm,w when (m, w, d) Γêê F.
+ΓÇó For each pair of a man and a woman (m, w) ΓêêM ├ùW, we create two resources rm,w and rw,m, with qrm,w =qrw,m =1, 
+Trm,w ={ pm,w, pm}, and Trw,m ={ pm,w, pw}.
+Here, the total number of students and the total capacity of all resources are 2n(n +1). Thus, (Y, ╬╝) is feasible only when 
+for each project p, the total capacity of allocated resources is exactly equal to the number of assigned students.
+Assume perfect matching F exists in the original 3DM. We can determine the feasible resource allocation ╬╝ as follows. 
+For each project pm,w, either (i) a unique element (m, w, d) Γêê F exists, or (ii) for all d ΓêêD, (m, w, d) /ΓêêF holds. For case (i), 
+rd is assigned to pm,w. For case (ii), rm,w and rw,m are assigned to pm,w. For each project pm, a unique element (m, w, d) ΓêêF
+exists. rm,w is assigned to pm. For each project pw, a unique element (m, w, d) ΓêêF exists. rw,m is assigned to pw. It is clear 
+that (Y, ╬╝) is feasible.
+Next, assume resource allocation ╬╝ exists such that (Y, ╬╝) is feasible. Each rd must be allocated to pm,w, such that 
+(m, w, d) Γêê F. Let us choose F ={ (m, w, d) |d Γêê D, rd is allocated topm,w}. Clearly, |F| =n holds. We show that F is a 
+perfect matching, i.e., if rd1 is assigned to pm1,w1 and rd2 is assigned to pm2,w2, m1 ╠╕=m2 and w1 ╠╕= w2 hold.
+7
+--- PAGE 8 ---
+K . - g .L i u ,K .Y a h i r oa n dM .Y o k o o Arti∩¼ücial Intelligence 316 (2023) 103855
+By way of contradiction, assume m1 =m2 =m holds. Since rd1 is assigned to pm,w1, rm,w1 must be assigned to pm
+(otherwise, pm,w1 is assigned excessive resources, which means that another resource is not assigned enough resources). 
+Similarly, since rd2 is assigned to pm,w2, rm,w2 must be assigned to pm. However, since the demand of pm is one, it is 
+assigned excessive resources to satisfy its demand. Thus, another project exists that is not assigned enough resources. This 
+contradicts our assumption that ╬╝ is a feasible allocation.
+Similarly, by way of contradiction, assume w1 = w2 = w holds. Since rd1 is assigned to pm1,w, rw,m1 must be assigned 
+to pw. Also, since rd2 is assigned to pm2,w, rw,m2 must be assigned to pw. However, since the demand of pw is one, it is 
+assigned excessive resources to satisfy its demand. Thus, another project exists that is not assigned enough resources. This 
+contradicts our assumption that ╬╝ is a feasible allocation.
+Since 3DM is NP-complete, Feasibility is also NP-complete. /Box
+To verify feasibility, we need to solve a Mixed Integer Programming (MIP) instance. Note that this impossibility crucially 
+depends on the fact that each resource is indivisible. When resources are divisible, i.e., we can assume that qr =1f o r all 
+r, Feasibility is no longer NP-complete; we can solve it using a max-∩¼éow algorithm [51]. Furthermore, if TR has a laminar 
+structure (for any Tr and TrΓÇ▓, one of the following three conditions hold (i) Tr Γèå TrΓÇ▓, (ii) Tr Γèï TrΓÇ▓, or (iii) Tr Γê⌐ TrΓÇ▓ =Γêà), we 
+can translate such distributional constraints into hierarchical regional quotas which form an MΓÖ«-convex set [14]. Then, the 
+generalized DA mechanism [14]i s strategyproof and fair.
+In the following, we describe these mechanisms adopted to an SPR one by one. First, Serial Dictatorship mechanism 
+(SD) uses a serial order among the students. Although the order can be arbitrary, it must be determined independently of 
+student preferences to guarantee strategyproofness. W.l.o.g., we assume this order is s1, s2, ... .
+Conceptually, SD can be described as follows. Let Y denote all the possible matchings, each of which can be feasible 
+with some allocation. The ∩¼ürst student, s1, chooses subset Y1 Γèå Y, such that she equally prefers any matching in Y1 and 
+strictly prefers any matching in Y1 over any matching in Y \ Y1. In other words, she chooses her most preferred matchings 
+in Y. Since she is concerned with the project to which she is assigned and has no interest in the assignments of other 
+students, her most preferred matching is not unique, and her choice is a subset of Y. In the setting of Example 1, s1
+will choose Y1 ={ Y Γêê Y | (s1, p1) ΓêêY}, i.e., all the elements in Y such that s1 is allocated to p1. Then the next student 
+s2 chooses Y2 Γèå Y1 in a similar way; she chooses her most preferred matchings within Y1, and so forth. In the setting of 
+Example 1, s2 will choose Y2 ={Y Γêê Y1 | (s2, p1) ΓêêY}, i.e., all the elements in Y1 such that s2 is allocated to p1. SD is clearly 
+strategyproof since each student can choose her most preferred matchings from the exogenously determined possibilities. 
+SD is also Pareto e∩¼âcient for the following reason. Clearly, we cannot improve the assignment of s1. Nor can we improve 
+s2 without hurting s1, and so forth. Thus, it is impossible to improve the assignment of one student without hurting other 
+students. Since SD is Pareto e∩¼âcient, it is also nonwasteful.
+The following is the formal de∩¼ünition of SD for an SPR:
+Mechanism 4.1 (Serial Dictatorship (SD)).
+Step 1: Y ΓåÉΓêà . k ΓåÉ 1.
+Step 2: If k > |S|, return Y. Otherwise, choose (sk, p) Γêê X, where p is her most preferred, acceptable project such that 
+Y Γê¬{ (sk, p)} is feasible with some allocation ╬╝ΓÇ▓. Y ΓåÉ Y Γê¬{ (sk, p)} (if no such p exists, sk is not assigned to any 
+project).
+Step 3: k ΓåÉ k +1. Go to Step 2.
+Unfortunately, SD is excessively unfair; many students could have justi∩¼üed envy in SD since it completely ignores project 
+preferences.
+The next mechanism is Arti∩¼ücial Caps Deferred Acceptance (ACDA), which is based on the well-known Deferred Ac-
+ceptance (DA) [5]. In DA, each student ∩¼ürst applies to her most preferred project. Then each project provisionally accepts 
+students up to its capacity limit based on its preference and rejects the rest of them. A rejected student applies to her 
+second choice. Each project provisionally accepts students who have applied without distinguishing between newly ap-
+plied and already provisionally accepted students, and so forth. To apply DA, the maximum quota (i.e., capacity limit) of 
+each project must be predetermined. In ACDA, we arti∩¼ücially determine maximum quotas. More speci∩¼ücally, we choose an 
+arbitrary allocation ╬╝ independently of student preferences and decide the maximum quotas based on it.
+The detailed procedure of ACDA for an SPR is given as follows:
+Mechanism 4.2 (Arti∩¼ücial Caps Deferred Acceptance (ACDA)).
+Step 1: Choose ╬╝ independently of Γë╗S.
+Step 2: Run the standard DA, assuming the maximum quota of each project p is Γêæ
+rΓêê╬╝ΓêÆ1(p)qr and obtain matching Y.
+Step 3: Return (Y, ╬╝).
+Although ACDA obtains a fair matching in polynomial-time, it can be very ine∩¼âcient; many students would possibly 
+claim an empty seat since ╬╝ is chosen independently of their preferences.
+8
+--- PAGE 9 ---
+K . - g .L i u ,K .Y a h i r oa n dM .Y o k o o Arti∩¼ücial Intelligence 316 (2023) 103855
+Table 1
+Mechanism Properties.
+SP Fairness PE NW Weak NW RE
+SD [2] yes no yes yes yes yes
+ADA [2] yes no no yes yes yes
+SDA-V yes no no no yes yes
+SDA-V
+Γêù yes no no no yes yes
+SDA-S yes no no no yes yes
+ACDA [2] yes yes no no yes no
+The third mechanism is Adaptive Deferred Acceptance (ADA). Like SD, ADA uses a serial order among students. The order 
+can be arbitrary, but it must be determined independently of student preferences to guarantee strategyproofness. W.l.o.g., 
+we assume this order is s1, s2, ... . As well as ACDA, ADA requires maximum quota qp for each project p. If no maximum 
+quota is given, i.e., if we assume qp =Γê₧ for each p Γêê P, ADA obtains identical matching as SD. To apply ADA to an SPR, 
+we choose qp as Γêæ
+r|TrΓêïp qr, which is the largest capacity when all the compatible resources are allocated to it. During the 
+execution of ADA, we say project p is forbidden under (partial) matching Y if the following conditions hold: (i) Y Γê¬{ (s, p)}
+is infeasible with any allocation, and (ii) |Y(p)| < qp. In other words, project p is forbidden if p cannot accept another 
+student due to resource contention among projects, even though it does not reach its maximum quota. Formally, ADA for 
+an SPR is de∩¼üned as follows:
+Mechanism 4.3 (Adaptive Deferred Acceptance (ADA)). We initially assume that no project is forbidden. Let L ΓåÉ (s1, s2, ...) , 
+q1
+p ΓåÉ qp for each p Γêê P, Y ΓåÉΓêà . Proceed to Stage 1.
+Stage k: Proceed to Round 1.
+Round t: Select t students from the top of L. Let YΓÇ▓ denote the matching obtained by DA for the selected students under 
+(qk
+p)pΓêêP.
+(i) If all students in L are already selected, then output Y Γê¬YΓÇ▓ and terminate the mechanism.
+(ii) If no project pi exists that is forbidden, then proceed to Round t +1.
+(iii) Otherwise, Y ΓåÉ Y Γê¬YΓÇ▓. Remove t students from the top of L. For each project p that is forbidden, set qk+1
+p to 0. 
+For each p ΓêêP, which is not forbidden, set qk+1
+p to qk
+p ΓêÆ| YΓÇ▓(p)|. Proceed to Stage k +1.
+We can assume ADA combines SD and DA, in which student groups are sequentially allocated as SD, but within each 
+group, students compete with each other by DA. We show how ADA works in the setting of Example 1 The maximum quotas 
+of the projects are determined as (2, 2, 1, 1). First, in Round 1 of Stage 1, running DA and s1 is assigned to p1. Then project 
+p2 is forbidden. Although its maximum quota is two and no student is currently assigned to it, we cannot allocate another 
+student to it since r1 is already taken by p1 to accommodate s1. Thus, the assignment (s1, p1) is ∩¼üxed. The maximum quotas 
+are reset to (1, 0, 1, 1). Then in Round 1 of Stage 2, s2 is assigned to p1 by DA. No project is forbidden (note that p1 has 
+already reached its maximum quota and it is not forbidden). In Round 2 of Stage 2, s2 is assigned to p3, and s3 is assigned 
+to p1 using DA. Then project p4 is forbidden. Although its maximum quota is one and no student is currently assigned to 
+it, we cannot allocate another student to it since r2 is taken by p3 to accommodate s2. Thus, the assignments (s2, p3) and 
+(s3, p1) are ∩¼üxed. The new maximum quotas become (0, 0, 0, 0). Thus, no more students can be assigned. ADA terminates 
+and returns {(s1, p1), (s2, p3), (s3, p1), (s4, Γêà)}. ADA is nonwasteful because project p is forbidden only when by allocating 
+another student to p, there is no way to make the current matching feasible. However, it is computationally as expensive 
+as SD since we need to solve Feasibility for checking whether a project is forbidden.
+Using these mechanisms, we can show that resource e∩¼âciency and very weak nonwastefulness are independent prop-
+erties. For example, ACDA satis∩¼ües weak nonwastefulness (thus it also satis∩¼ües very weak nonwastefulness). In ACDA, with 
+resource allocation ╬╝ (which is used for determining maximum quotas), no student claims an empty seat, although it does 
+not satisfy resource e∩¼âciency, i.e., it may allocate a resource to a unanimously less preferred project. Next, assume a mecha-
+nism assigns no student to any project, and no resource is allocated to any project pΓÇ▓ if students unanimously prefer another 
+project p. It is trivially strategyproof and satis∩¼ües resource e∩¼âciency. However, this mechanism does not always satisfy very 
+weak nonwastefulness. Table 1 summarizes the properties of these mechanisms, where SP stands for strategyproofness, PE 
+for Pareto e∩¼âciency, NW for nonwastefulness, and RE for resource e∩¼âciency.
+4.2. New mechanisms
+ACDA is excessively ine∩¼âcient, and SD and ADA are too unfair (many students have justi∩¼üed envy). Moreover, Theorem 3
+shows that fairness cannot be achieved without signi∩¼ücantly sacri∩¼ücing e∩¼âciency. To establish a good balance between 
+fairness and e∩¼âciency in SPR problems, we introduce a new class of mechanisms called Sample and Deferred Acceptance
+(SDA).
+9
+--- PAGE 10 ---
+K . - g .L i u ,K .Y a h i r oa n dM .Y o k o o Arti∩¼ücial Intelligence 316 (2023) 103855
+SDA is outlined as follows.
+Mechanism 4.4 (Sample and Deferred Acceptance (SDA)).
+Step 1: Select SΓÇ▓ Γèå S independently of Γë╗S, which we call sampled students, and SΓÇ▓ ╠╕= Γêà. We call S \ SΓÇ▓ the regular students. 
+Then run SD and ∩¼ünd (partial) matching YSΓÇ▓ for SΓÇ▓.
+Step 2: Allocate RΓÇ▓ Γèå R to projects such that YSΓÇ▓ is feasible and RΓÇ▓ is minimal: no RΓÇ▓ΓÇ▓ Γèè RΓÇ▓ makes YSΓÇ▓ feasible. Then allocate 
+R \ RΓÇ▓ based on the preferences of SΓÇ▓.
+Step 3: Run DA for S \ SΓÇ▓. The capacity of p is q╬╝(p) ΓêÆ| YSΓÇ▓ (p)|, where ╬╝ is the resource allocation determined in Step 2.
+The entire mechanism is carefully designed to guarantee strategyproofness. We adopt a popular technique used in auction 
+domains to ensure strategyproofness, where a mechanism has some parameters and their selection affects participantsΓÇÖ 
+welfare [52,53]. The idea is ∩¼ürst dividing students/participants into two groups, then extracting the information from one 
+group, and lastly setting the parameters of the mechanism applied to the other group based on the obtained information. 
+To the best of our knowledge, applying this idea in two-sided matching to develop a strategyproof mechanism is novel.
+By using different methods to determine resources in Step 2, we can create a variety of sample-based mechanisms that 
+can strike a good balance between fairness and e∩¼âciency by slightly sacri∩¼ücing fairness to improve e∩¼âciency. We introduce 
+a ∩¼ürst strategyproof sample-based mechanism, which we call Sample and Deferred Acceptance with Voting (SDA-V). In 
+Step 2 of Mechanism 4.4, SDA-V determines resource allocation ╬╝ based on the voting among sampled students. More 
+speci∩¼ücally, each sampled student (hypothetically) votes for all projects based on Γë╗s, where each project obtains a Borda 
+score, i.e., the top project obtains |P|, the second project obtains |P| ΓêÆ 1, and so on. Then for each project, the sum of these 
+scores is calculated. Finally, each resource r is allocated to the project that obtains the highest total score within Tr. The 
+details of this voting procedure do not affect SDA-VΓÇÖs theoretical properties, e.g., whether a student can vote for a project to 
+which she is unacceptable, or how ties are broken. Thus, they can be arbitrarily determined.
+We show how SDA-V works with the following example.
+Example 2. There are ∩¼üve students, s1, s2, s3, s4, s5, four projects, p1, p2, p3, p4, and four resources, r1, r2, r3, r4, where Tr1 =
+{p1, p2}, Tr2 ={ p1, p2, p3}, Tr3 ={ p3, p4}, Tr4 ={ p2, p3, p4}, and qr1 =qr3 =qr4 =1, and qr2 =2. The following are their 
+preferences:
+s1 : p1 Γë╗ p2 Γë╗ p3 Γë╗ p4 Γë╗Γêà,
+s2 : p4 Γë╗ p2 Γë╗ p3 Γë╗ p1 Γë╗Γêà,
+s3 : p1 Γë╗ p2 Γë╗ p3 Γë╗ p4 Γë╗Γêà,
+s4 : p4 Γë╗ p2 Γë╗ p3 Γë╗ p1 Γë╗Γêà,
+s5 : p3 Γë╗ p2 Γë╗ p1 Γë╗ p4 Γë╗Γêà,
+p1 :s5 Γë╗s4 Γë╗s1 Γë╗s3 Γë╗s2 Γë╗Γêà,
+p2 :s5 Γë╗s4 Γë╗s3 Γë╗s2 Γë╗s1 Γë╗Γêà,
+p3 :s1 Γë╗s2 Γë╗s3 Γë╗s4 Γë╗s5 Γë╗Γêà,
+p4 :s1 Γë╗s2 Γë╗s3 Γë╗s4 Γë╗s5 Γë╗Γêà.
+In Step 1, assume SΓÇ▓ ={ s1, s2}. In SD, s1, s2 are matched to their ∩¼ürst-choice projects, p1, p4 respectively. In Step 2, 
+the minimal allocation to make {(s1, p1), (s2, p4)} feasible is allocating r1 to p1 and r3 to p4. Thus, RΓÇ▓ ={r1, r3}. Next the 
+allocation of R \ RΓÇ▓ ={ r2, r4} is determined by the preferences of s1 and s2. The Borda scores of the four projects are 
+(5, 6, 4, 5), so r2 and r4 are allocated to p2. In Step 3, since s1 and s2 are ∩¼üxed, the remaining capacities of p1, p2, p3, and 
+p4 are 0, 3, 0, and 0. S \ SΓÇ▓ ={ s3, s4, s5} are matched by DA. Thus, s3, s4, and s5 are matched to p2. The result is weakly 
+nonwasteful, but it is not fair since s3 has justi∩¼üed envy toward s1. Nonwastefulness is not satis∩¼üed either since s3 possibly 
+claims an empty seat in p1.
+SDA-V uses a simple voting scheme for deciding resource allocation. However, if students are divided into several groups 
+in terms of their preferences, we might obtain a sub-optimal result, as illustrated by the following example.
+Example 3. We use the same instance as Example 2 except that the students are divided into two types, i.e., types 1 and 2; 
+there are three type 1 students and two type 2 students. The preference of each type 1 student is p1 Γë╗s p2 Γë╗s p3 Γë╗s p4 Γë╗s Γêà, 
+and the preference of each type 2 student is p4 Γë╗s p2 Γë╗s p3 Γë╗s p1 Γë╗s Γêà. Assume that one type 1 student and one type 2 
+students are sampled. Since the Borda scores of the four projects are (5, 6, 4, 5), SDA-V allocates r2 and r4 to p2. However, if 
+we allocate r2 to p1 and r4 to p4 instead, all the students in these two groups can be assigned to their ∩¼ürst-choice projects.
+As illustrated by Example 3, the Borda count is somewhat too coarse-grained to determine an appropriate resource 
+allocation. More speci∩¼ücally, for each resource r, we choose a single winner among projects Tr in SDA-V. By using the Borda 
+count, we can choose a broadly acceptable project among candidates Tr. Example 3 shows that when multiple resources 
+are available and students are divided into several groups, choosing a single winner can be sub-optimal; resources should 
+be divided proportionally to multiple winners.6
+6 Actually, SDA-VΓÇÖs performance in terms of studentsΓÇÖ welfare can be as bad as ACDA when students are divided into different types in Section 5.
+10
+--- PAGE 11 ---
+K . - g .L i u ,K .Y a h i r oa n dM .Y o k o o Arti∩¼ücial Intelligence 316 (2023) 103855
+By using a different voting scheme, which selects multiple winners and allocates resources proportionally to them, we 
+can allocate resources such that all groups are satis∩¼üed to a certain extent. To be more precise, we can use the following 
+voting scheme:
+ΓÇó For each resource r, sampled students vote for Tr. Each sampled student casts a single vote for her favorite project 
+within Tr.
+ΓÇó Let w(p) denote the number of votes obtained by each project p Γêê Tr. Each project is allocated to r with probability 
+w(p)/ Γêæ
+pΓÇ▓ΓêêTr w(pΓÇ▓).
+We call SDA with this modi∩¼üed voting scheme SDA-VΓêù. As shown in Section 5, SDA-VΓêù outperforms SDA-V when students 
+are divided into several groups.
+We develop yet another way for deciding resource allocation, which does not rely on any voting scheme. Instead of 
+aggregating the preference by voting, we create copies of sampled students and run a simulation for them to decide the 
+resource allocation. More speci∩¼ücally, we (imaginarily) perform SD mechanism for these copied students and obtain a re-
+source allocation. We call this mechanism Sample and Deferred Acceptance with Simulation (SDA-S). Compared to SDA-V 
+or SDA-VΓêù, SDA-S fully utilizes the preference of each sampled student, i.e., not only her ∩¼ürst-choice project, but also her 
+second-choice, third-choice, and so on.
+In SDA-S, the detailed procedure of Step 2 in Mechanism 4.4 is given as follows:
+1. Make n ΓêÆ| SΓÇ▓| copies of sampled students (i.e., for each sampled student, we create either ΓîènΓêÆ|SΓÇ▓|
+|SΓÇ▓| Γîï or ΓîênΓêÆ|SΓÇ▓|
+|SΓÇ▓| Γîë copies).
+2. Run SD for these copies to determine the resource allocation. First, we create copied students and the serial order of 
+them is determined as follows. Assume sampled students are s1, s2, ...,  s|SΓÇ▓|. Let di
+j denote the j-th copy of student 
+si. Then the serial order is d1
+1, d2
+1
+, ...,  d|SΓÇ▓|
+1 , d1
+2, d2
+2
+, ...,  d|SΓÇ▓|
+2 , d1
+3
+, ... , i.e., using a round-robin order among the sampled 
+students to determine the serial order of the copied students. Second, we run SD for these copied students to ∩¼ünd a 
+(imaginary) matching that is feasible with the remaining resources. The resources allocated by the imaginary matching 
+is used for DA in Step 3 of Mechanism 4.4.
+We illustrate how SDA-S works. Assume the setting in Example 2. In Step 1, assume SΓÇ▓ ={s1, s2}. In SD, s1, s2 are matched 
+to their ∩¼ürst-choice projects, p1, p4 respectively. In Step 2, the minimal allocation to make {(s1, p1), (s2, p4)} feasible is 
+allocating r1 to p1 and r3 to p4. Thus, RΓÇ▓ ={r1, r3}. Next the allocation of R \ RΓÇ▓ ={r2, r4} is determined by running SD 
+for copies. We create two copies of s1 (i.e., d1
+1, d1
+2) and one copy of s2 (i.e., d2
+1). In SD, d1
+1
+, d1
+2 are assigned to p1, and d2
+1 is 
+assigned to p4. Then r2 is allocated to p1, and r4 is allocated to p4 to make the imaginary matching feasible. In Step 3, 
+since s1 and s2 are ∩¼üxed, the remaining capacities of p1, p2, p3, and p4 are 2, 0, 0, and 1. S \ SΓÇ▓ ={s3, s4, s5} are matched 
+by DA. Thus, s3, s5 are matched to p1, and s4 is matched to p4.
+4.3. Characteristics of new mechanisms
+We describe that the family of SDA mechanisms satisfy several fundamental desiderata.
+Theorem 5. Any SDA instance is strategyproof, weakly nonwasteful, fair among students in S \SΓÇ▓, and no sampled student has justi∩¼üed 
+envy toward another regular student.
+Proof. First, the sampled students SΓÇ▓ are chosen independently of studentsΓÇÖ preferences (e.g., by random sampling). Thus, 
+students cannot affect who will be selected in SΓÇ▓. Then, for each student in SΓÇ▓, she has no incentive to misreport since her 
+assignment is determined by SD, and the resource allocation for students S \SΓÇ▓ (which is determined using her preference) is 
+irrelevant to her. Next, for each student in S \SΓÇ▓, the capacity of each project is determined independently of her preference. 
+Also, since DA is strategyproof [54,55], she has no incentive to misreport her preference.
+Assume student s is matched to p (which can be Γêà). She applied to project pΓÇ▓, which outranks p, and was rejected. If 
+s Γêê SΓÇ▓, then no feasible allocation ╬╝ΓÇ▓ exists such that s can be assigned to pΓÇ▓. If s Γêê S \ SΓÇ▓, s cannot be assigned to pΓÇ▓ with 
+current allocation ╬╝. Hence, any SDA instance is weakly nonwasteful.
+Regarding fairness, since DA is fair [5], no regular student has justi∩¼üed envy toward another regular student. If sampled 
+student s Γêê SΓÇ▓ is rejected by p, then no more students can be assigned to p. Thus, s never has justi∩¼üed envy toward a 
+regular student who is assigned after s. /Box
+Theorem 6. Any SDA instance is weakly Pareto e∩¼âcient.
+Proof. Assume s is the ∩¼ürst sampled student. In other words, s is ordered ∩¼ürst in SD. She is eventually assigned to her 
+most preferable project p among all projects such that at least one resource r can be allocated with respect to Tr. If 
+another project pΓÇ▓ exists such that pΓÇ▓ Γë╗s p holds, pΓÇ▓ has no compatible resource. Thus, it is impossible to assign s to pΓÇ▓, and 
+11
+--- PAGE 12 ---
+K . - g .L i u ,K .Y a h i r oa n dM .Y o k o o Arti∩¼ücial Intelligence 316 (2023) 103855
+we cannot strictly improve sΓÇÖs allocation. Hence, no feasible matching exists that strongly Pareto dominates the matching 
+obtained by SDA. /Box
+Theorem 7. Any SDA instance is weakly group strategyproof.
+Proof. Since SD is group strategyproof [56,57], a sampled student cannot bene∩¼üt by joining a coalition of sampled students. 
+Furthermore, regular students never affect the assignment of sampled students. Thus, a sampled student cannot bene∩¼üt by 
+joining a coalition of sampled and regular students.
+Since DA is weakly group strategyproof [58] and project quotas are exogenously given by the preferences of the sampled 
+students, no coalition of regular students can collude to misreport their preferences. Hence, no group of students has an 
+incentive to collude and weak group strategyproofness holds for sample-based mechanisms. /Box
+Note that a stronger requirement exists against a deviation of a group called strong group strategyproofness. A mecha-
+nism is strongly group strategyproof if no group of students can collude to misreport their preferences in a way that makes 
+at least one member strictly better off and all members weakly better off. In contrast to weak group strategyproofness, a col-
+luding group can include a member whose assignment does not change. P├ípai [57]s h o w s a characterization of strong group 
+strategyproofness: a mechanism is strongly group strategyproof if and only if it is strategyproof and non-bossy. A mechanism 
+is non-bossy if a student cannot change the assignment of another student without changing her own assignment.
+SDA is clearly bossy; a sampled student can change the assignment of a regular student without changing her assign-
+ment. As a result, SDA is not strongly group strategyproof. More speci∩¼ücally, a coalition can be formed such that a subset of 
+students bene∩¼üts while the assignments of other students do not change, e.g., a sampled student can manipulate her vote to 
+favor some regular students even though she does not bene∩¼üt from this action. Since weak group strategyproofness requires 
+that all members must bene∩¼üt, the existence of such a coalition does not contradict the fact that any SDA instance is weakly 
+group strategyproof. Note that DA itself is bossy (thus it is not strongly group strategyproof). Assume three students, s1, s2, 
+s3, and three projects, p1, p2, p3, such that each capacity is one. Student s1 applies to project p1, which makes s2 to be 
+rejected by p1. Student s2 then applies to p2, which makes s3 to be rejected by p2. Next, s3 applies to p1, which makes s1
+to be rejected by p1. Finally, s1 applies to p3 and all students are accepted. If s1 ∩¼ürst applies to p3, her assignment will not 
+change although s2 will be accepted to p1 and s3 will be accepted to p2. Thus, s1 can change the assignment of another 
+student without changing her assignment in DA. These students are also able to collude and misreport their preferences 
+such that s2 and s3 are strictly better off making s1ΓÇÖs assignment unchanged.
+Whether an SDA instance satis∩¼ües resource e∩¼âciency depends on how the resources are allocated based on the pref-
+erences of the sampled students. We show that the procedures for allocating resources in SDA-V, SDA-VΓêù, and SDA-S are 
+carefully designed such that they satisfy resource e∩¼âciency.
+Theorem 8. SDA-V, SDA-VΓêù, and SDA-S are resource e∩¼âcient.
+Proof. Assume students unanimously prefer p over pΓÇ▓. When assigning sampled students SΓÇ▓, students apply to p before 
+applying to pΓÇ▓. Thus, we do not require that any resource r is allocated to pΓÇ▓ such that p, pΓÇ▓ ΓêêTr holds. This property holds 
+when assigning copied students by SD in SDA-S. Furthermore, rΓÇ▓ never wins in the voting procedure in SDA-V and SDA-VΓêù. 
+Thus, these mechanisms satisfy resource e∩¼âciency. /Box
+Next, we show that SDA mechanisms satisfy additional properties (i.e., Pareto e∩¼âciency and fairness) in special cases 
+where project or student preferences are identical.
+Theorem 9. Any instance of SDA mechanisms is fair if all the projects have an identical preference and the sampled students are selected 
+based on it.
+Proof. From Theorem 5, if s has justi∩¼üed envy toward sΓÇ▓, then there are two cases: (i) s is a regular student and sΓÇ▓ is a 
+sampled student, or (ii) both s and sΓÇ▓ are sampled students. Assume student s, who is assigned to project p, has justi∩¼üed 
+envy toward another student sΓÇ▓, who is assigned to pΓÇ▓ (i.e., s Γë╗pΓÇ▓ sΓÇ▓ and pΓÇ▓ Γë╗s p hold).
+For case (i), sΓÇ▓ Γë╗pΓÇ▓ s must hold from the assumption that every project unanimously prefers a sampled student over a 
+regular student, which contradicts our assumption that s Γë╗pΓÇ▓ sΓÇ▓ holds. For case (ii), sΓÇ▓ must be assigned before s, which 
+means every project unanimously prefers sΓÇ▓ over s. This contradicts our assumption that s Γë╗pΓÇ▓ sΓÇ▓ holds. /Box
+Theorem 10. SDA-V, SDA-VΓêù, and SDA-S are Pareto e∩¼âcient if all student preferences are identical and each project assumes that all 
+students are acceptable.
+Proof. W.l.o.g., assume the preference of each student is p1 Γë╗s p2 Γë╗s ... . Since SD is Pareto e∩¼âcient, it is impossible to 
+assign sampled student s to a better project without disadvantaging another sampled student sΓÇ▓ who was assigned before s.
+12
+--- PAGE 13 ---
+K . - g .L i u ,K .Y a h i r oa n dM .Y o k o o Arti∩¼ücial Intelligence 316 (2023) 103855
+For SDA-V and SDA-VΓêù, resource allocation ╬╝ is determined by the votes of the sampled students, so any resource r
+in ╬╝ is allocated to pi such that it has the smallest identi∩¼üer in all the projects within Tr. Since all student preferences 
+are identical and each project assumes that all students are acceptable, no better allocation exists that can improve the 
+assignment of the regular students.
+For SDA-S, resource allocation ╬╝ is determined by running SD on the copied students. We cannot further improve 
+this imaginary matching without making a copied student worse off. Furthermore, all student preferences are identical, and 
+each project assumes that all students are acceptable. Thus, allocation ╬╝ cannot be improved without sacri∩¼ücing one regular 
+studentΓÇÖs welfare.
+In DA, all regular students S \ SΓÇ▓ ∩¼ürst apply to p1. Assume a set of regular students S1 is accepted to p1 and the 
+remaining students are rejected. By repeating a similar procedure, students in Sk are accepted to pk. It is impossible to 
+assign a student in Sk to a better project without affecting the students in SΓÇ▓ or SkΓÇ▓ (where kΓÇ▓ <k). Thus, no matching 
+Pareto dominates the matching obtained by any of these mechanisms. /Box
+Any SDA instance needs to verify feasibility O(|SΓÇ▓ ├ù P|) times in Step 1. However, when |SΓÇ▓| is small, such a feasibility 
+problem is trivially yes in most cases, assuming projects are equipped with a reasonable amount of resources (the amount 
+of resources might not be able to satisfy the demand of all students, but it should be su∩¼âcient for a small set of them). In 
+addition to the sampled students, SDA-S also needs to solve O((n ΓêÆ| SΓÇ▓|) ├ù|P|) times for the copied students. In total, SDA-S 
+requires solving Feasibility O(|n ├ù P|) times. Thus, in terms of computational cost, SDA-S and SD are equivalent while they 
+are more expensive than SDA-V and SDA-VΓêù. Although SDA-S and SD are computationally expensive, state-of-the-art MIP 
+solvers, e.g., the Gurobi optimizer [59], can handle fairly large-scale feasibility problems.
+5. Experiment
+5.1. Setup
+We consider two markets, I and II, which have different sizes. Market I has 200 students, 10 projects, and 20 resources, 
+and Market II has 400 students, 20 projects, and 40 resources.7 For each resource r, we randomly generate Tr such that 
+each project p is included in Tr with probability ╬│ =0.2, 0.5, and 0.8. Student preferences are generated with the Mallows 
+model [60ΓÇô63]. In this model, student preference Γë╗s is drawn with probability Pr(Γë╗s):
+Pr(Γë╗s) = exp(ΓêÆ╧å┬╖d(Γë╗s,Γë╗╦ås))Γêæ
+Γë╗ΓÇ▓
+s
+exp(ΓêÆ╧å┬╖d(Γë╗ΓÇ▓
+s,Γë╗╦ås)).
+Here ╧å Γêê R denotes a spread parameter, Γë╗╦ås is a central preference, and d(Γë╗s, Γë╗╦ås) represents the Kendall tau distance, 
+which is the number of pairwise inversions between Γë╗s and Γë╗╦ås. In short, student preferences are distributed around a 
+central preference with spread parameter ╧å. When ╧å =0, the Mallows model becomes identical to the uniform distribution 
+(which is equivalent to the impartial culture [64,65]i n our setting), and as ╧å increases, it quickly converges to the constant 
+distribution that returns Γë╗╦ås.
+Based on the Mallows model, we generated studentsΓÇÖ preferences for the following three cases in two markets:
+1-type case: For Market I, we ∩¼üx the central preference: Γë╗╦ås1 = p1 Γë╗ p2 Γë╗ ... Γë╗ p9 Γë╗ p10, and the preference of each student 
+is distributed around Γë╗╦ås1. For Market II, we also ∩¼üx the central preference: Γë╗╦åsΓÇ▓
+1
+= p1 Γë╗ p2 Γë╗ ... Γë╗ p19 Γë╗ p20.
+2-type case:
+Crafted: For Market I, we ∩¼ürst divide the projects into three groups: group A ={ p1, p2, p3}, group B ={ p4, p5, p6, p7}, 
+and group C ={ p8, p9, p10}. Then Γë╗╦ås1 can be represented as ABC , in which group A is ∩¼ürst, group B is second, 
+and group C is third (for two projects pi and pj in the same group, the order is pi Γë╗s pj assuming i < j holds). 
+Next, we create another central preference represented as CBA : Γë╗╦ås2 = p8 Γë╗ p9 Γë╗ p10 Γë╗ p4 Γë╗ p5 Γë╗ p6 Γë╗ p7 Γë╗
+p1 Γë╗ p2 Γë╗ p3. These preferences are crafted such that a project in group B is likely to be a winner in terms of 
+the Borda count. Students S are divided into two groups S1 and S2, where |S1| =| S2| =100. For each s Γêê S1, 
+her preference is distributed around Γë╗╦ås1, and for each s ΓêêS2, her preference is distributed around Γë╗╦ås2.
+For Market II, we also divide the projects into three groups: group AΓÇ▓ ={ p1, p2, p3 p4, p5, p6}, group BΓÇ▓ =
+{p7, p8, p9, p10, p11, p12, p13, p14}, and group CΓÇ▓ ={ p15, p16, p17, p18, p19, p20}. Then Γë╗╦åsΓÇ▓
+1
+can be represented 
+as AΓÇ▓BΓÇ▓CΓÇ▓. Next we create another central preference represented as CΓÇ▓BΓÇ▓AΓÇ▓: Γë╗╦åsΓÇ▓
+2
+= p15 Γë╗ p16 Γë╗ p17 Γë╗ p18 Γë╗
+p19 Γë╗ p20 Γë╗ p7 Γë╗ p8 Γë╗ p9 Γë╗ p10 Γë╗ p11 Γë╗ p12 Γë╗ p13 Γë╗ p14 Γë╗ p1 Γë╗ p2 Γë╗ p3 Γë╗ p4 Γë╗ p5 Γë╗ p6.
+Random: We also examine the case where two central preferences are randomly chosen. For Market I, we use two 
+randomly chosen central preferences: Γë╗╦ås3 = p5 Γë╗ p4 Γë╗ p3 Γë╗ p2 Γë╗ p9 Γë╗ p8 Γë╗ p1 Γë╗ p7 Γë╗ p10 Γë╗ p6, and Γë╗╦ås4 = p8 Γë╗
+p6 Γë╗ p1 Γë╗ p2 Γë╗ p10 Γë╗ p5 Γë╗ p7 Γë╗ p3 Γë╗ p9 Γë╗ p4.
+7 Since SD, ADA, and SDA-S are computationally expensive, running experiments for larger markets is time-consuming, although SDA-V, SDA-VΓêù, and 
+ACDA can handle much larger markets.
+13
+--- PAGE 14 ---
+K . - g .L i u ,K .Y a h i r oa n dM .Y o k o o Arti∩¼ücial Intelligence 316 (2023) 103855
+Fig. 2. Trade-off between e∩¼âciency and fairness (╧å = 0.8, ╧ü = 0.1, ╬│ = 0.2, homogeneous resources, Market I). (For interpretation of the colors in the 
+∩¼ügure(s), the reader is referred to the web version of this article.)
+For Market II, we use two randomly chosen central preferences: Γë╗╦åsΓÇ▓
+3
+= p14 Γë╗ p11 Γë╗ p16 Γë╗ p7 Γë╗ p9 Γë╗ p8 Γë╗ p10 Γë╗
+p17 Γë╗ p18 Γë╗ p6 Γë╗ p1 Γë╗ p5 Γë╗ p15 Γë╗ p2 Γë╗ p3 Γë╗ p19 Γë╗ p4 Γë╗ p13 Γë╗ p20 Γë╗ p12, and Γë╗╦åsΓÇ▓
+4
+= p12 Γë╗ p16 Γë╗ p14 Γë╗ p9 Γë╗
+p10 Γë╗ p2 Γë╗ p7 Γë╗ p1 Γë╗ p17 Γë╗ p20 Γë╗ p15 Γë╗ p11 Γë╗ p8 Γë╗ p3 Γë╗ p19 Γë╗ p5 Γë╗ p18 Γë╗ p13 Γë╗ p6 Γë╗ p4.
+3-type case:
+Crafted: For Market I, we ∩¼ürst divide projects into four groups: group A ={ p1, p2}, group B ={ p3, p4, p5, p6}, group 
+C ={ p7, p8}, and group D ={ p9, p10}. Thus, Γë╗╦ås1 can be represented as ABCD . Next, we create additional two 
+central preferences Γë╗╦ås5 and Γë╗╦ås6, which can be represented as CBDA and DBAC , respectively. More precisely, 
+we choose Γë╗╦ås5 = p7 Γë╗ p8 Γë╗ p3 Γë╗ p4 Γë╗ p5 Γë╗ p6 Γë╗ p9 Γë╗ p10 Γë╗ p1 Γë╗ p2, and Γë╗╦ås6 = p9 Γë╗ p10 Γë╗ p3 Γë╗ p4 Γë╗ p5 Γë╗
+p6 Γë╗ p1 Γë╗ p2 Γë╗ p7 Γë╗ p8. These preferences are crafted such that a project in group B is likely to be a winner 
+in terms of the Borda count. The population for each central preference is 66 or 67.
+For Market II, we similarly divide projects into four groups: group AΓÇ▓ ={ p1, p2, p3, p4, p5}, group BΓÇ▓ =
+{p6, p7, p8, p9, p10}, group CΓÇ▓ ={ p11, p12,p13, p14, p15}, and group DΓÇ▓ ={ p16, p17, p18, p19, p20}. Thus, Γë╗╦åsΓÇ▓
+1
+can 
+14
+--- PAGE 15 ---
+K . - g .L i u ,K .Y a h i r oa n dM .Y o k o o Arti∩¼ücial Intelligence 316 (2023) 103855
+Fig. 3. Trade-off between e∩¼âciency and fairness (╧å =0.8, ╧ü=0.1, ╬│ =0.2, heterogeneous resources, Market I).
+be represented as AΓÇ▓BΓÇ▓CΓÇ▓DΓÇ▓. Next, we create additional two central preferences, Γë╗╦ås5ΓÇ▓ and Γë╗╦ås6ΓÇ▓, which can be 
+represented as CΓÇ▓BΓÇ▓DΓÇ▓AΓÇ▓ and DΓÇ▓BΓÇ▓AΓÇ▓CΓÇ▓, respectively. More precisely, we choose Γë╗╦åsΓÇ▓
+5
+= p11 Γë╗ p12 Γë╗ p13 Γë╗ p14 Γë╗
+p15 Γë╗ p6 Γë╗ p7 Γë╗ p8 Γë╗ p9 Γë╗ p10 Γë╗ p16 Γë╗ p17 Γë╗ p18 Γë╗ p19 Γë╗ p20 Γë╗ p1 Γë╗ p2 Γë╗ p3 Γë╗ p4 Γë╗ p5, and Γë╗╦åsΓÇ▓
+6
+= p16 Γë╗
+p17 Γë╗ p18 Γë╗ p19 Γë╗ p20 Γë╗ p6 Γë╗ p7 Γë╗ p8 Γë╗ p9 Γë╗ p10 Γë╗ p1 Γë╗ p2 Γë╗ p3 Γë╗ p4 Γë╗ p5 Γë╗ p11 Γë╗ p12 Γë╗ p13 Γë╗ p14 Γë╗ p15. 
+The population for each central preference is 133 or 134.
+Random: We also examine the case where three central preferences are randomly chosen. For Market I, we use three 
+randomly chosen central preferences: Γë╗╦ås7 = p10 Γë╗ p3 Γë╗ p2 Γë╗ p5 Γë╗ p6 Γë╗ p1 Γë╗ p4 Γë╗ p9 Γë╗ p8 Γë╗ p7, Γë╗╦ås8 = p7 Γë╗
+p5 Γë╗ p10 Γë╗ p1 Γë╗ p6 Γë╗ p2 Γë╗ p9 Γë╗ p4 Γë╗ p8 Γë╗ p3, and Γë╗╦ås9 = p1 Γë╗ p9 Γë╗ p6 Γë╗ p4 Γë╗ p8 Γë╗ p2 Γë╗ p10 Γë╗ p5 Γë╗ p7 Γë╗ p3.
+For Market II, we use three randomly chosen central preferences: Γë╗╦åsΓÇ▓
+7
+= p20 Γë╗ p17 Γë╗ p8 Γë╗ p15 Γë╗ p16 Γë╗ p19 Γë╗
+p14 Γë╗ p4 Γë╗ p11 Γë╗ p13 Γë╗ p6 Γë╗ p7 Γë╗ p10 Γë╗ p12 Γë╗ p1 Γë╗ p5 Γë╗ p18 Γë╗ p3 Γë╗ p2 Γë╗ p9, Γë╗╦åsΓÇ▓
+8
+= p1 Γë╗ p20 Γë╗ p14 Γë╗ p13 Γë╗
+p2 Γë╗ p10 Γë╗ p5 Γë╗ p12 Γë╗ p17 Γë╗ p16 Γë╗ p7 Γë╗ p3 Γë╗ p9 Γë╗ p8 Γë╗ p18 Γë╗ p15 Γë╗ p6 Γë╗ p19 Γë╗ p4 Γë╗ p11, and Γë╗╦åsΓÇ▓
+9
+= p16 Γë╗
+p19 Γë╗ p8 Γë╗ p3 Γë╗ p15 Γë╗ p14 Γë╗ p17 Γë╗ p2 Γë╗ p12 Γë╗ p13 Γë╗ p1 Γë╗ p4 Γë╗ p5 Γë╗ p7 Γë╗ p18 Γë╗ p6 Γë╗ p20 Γë╗ p10 Γë╗ p9 Γë╗ p11.
+15
+--- PAGE 16 ---
+K . - g .L i u ,K .Y a h i r oa n dM .Y o k o o Arti∩¼ücial Intelligence 316 (2023) 103855
+Fig. 4. Trade-off between e∩¼âciency and fairness by varying╬│ (╧å =0.8, ╧ü=0.1, ╬│ =0.2,0.5,0.8, homogeneous resources, Market I).
+Table 2 summarizes the three types of preferences in two markets. The preference of each project Γë╗p is drawn uniformly at 
+random. We create 100 instances for each parameter setting and compare three sample-based mechanisms (SDA-V, SDA-VΓêù, 
+SDA-S) with ACDA, SD, and ADA. ADA needs a capacity limit for each project p. As described earlier, we set this value to Γêæ
+r|TrΓêïp qr, which is the largest capacity when all of the shared resources are allocated to it. Since this capacity is large and 
+not binding in many cases, ADA resembles SD. We use a Gurobi optimizer [59]t o solve Feasibility in these mechanisms.
+5.2. Results
+To illustrate the trade-off between e∩¼âciency and fairness, we plot the results of the obtained matching in a two-
+dimensional space in Figs. 2 to 7 where the x-axis shows the average Borda scores of the students; if a student is assigned 
+to her i-th choice project, her score is |P| ΓêÆ i +1, and the y-axis shows the ratio of the student pairs without any justi∩¼üed 
+envy. Thus, the points located north-east are preferable. Each data point is an average for 100 problem instances for each 
+mechanism.
+16
+--- PAGE 17 ---
+K . - g .L i u ,K .Y a h i r oa n dM .Y o k o o Arti∩¼ücial Intelligence 316 (2023) 103855
+Fig. 5. Trade-off between e∩¼âciency and fairness by varying╧å (╧ü=0.1, ╬│ =0.2, ╧å =0.1,0.5,0.9, homogeneous resources, Market I).
+Table 2
+Summary of three types of preferences in two markets.
+Markets
+Cases
+1-Type 2-Type 3-Type
+|S|| P|| R|
+I 200 10 20
+II 400 20 40
+Γë╗╦ås1
+Γë╗╦åsΓÇ▓
+1
+Crafted Random
+Γë╗╦ås1 ,Γë╗╦ås2 Γë╗╦ås3 ,Γë╗╦ås4
+Γë╗╦åsΓÇ▓
+1
+,Γë╗╦åsΓÇ▓
+2
+Γë╗╦åsΓÇ▓
+3
+,Γë╗╦åsΓÇ▓
+4
+Crafted Random
+Γë╗╦ås1 ,Γë╗╦ås5 ,Γë╗╦ås6 Γë╗╦ås7 ,Γë╗╦ås8 ,Γë╗╦ås9
+Γë╗╦åsΓÇ▓
+1
+,Γë╗╦åsΓÇ▓
+5
+,Γë╗╦åsΓÇ▓
+6
+Γë╗╦åsΓÇ▓
+7
+,Γë╗╦åsΓÇ▓
+8
+,Γë╗╦åsΓÇ▓
+9
+17
+--- PAGE 18 ---
+K . - g .L i u ,K .Y a h i r oa n dM .Y o k o o Arti∩¼ücial Intelligence 316 (2023) 103855
+Fig. 6. Trade-off between e∩¼âciency and fairness by varying╧ü (╧å=0.8, ╬│ =0.2, ╧ü=0.2,0.5,0.8, homogeneous resources, Market I).
+Figs. 2 (a)ΓÇô(e) show the average performance for the 1-, 2-, and 3-types, where ╧å (the spread parameter in the Mallows 
+model) is 0.8, ╬│ (the probability that project p is included in Tr) is 0.2, and ╧ü (the ratio of sampled students) is 0.1. Also, 
+resources are homogeneous, i.e., the capacity of each resource is 10.
+Fig. 2 (a) shows the result for the 1-type case. The performances of the SDA mechanisms are similar and strike a better 
+balance between fairness and e∩¼âciency than the existing mechanisms. In particular, the improvement of e∩¼âciency (studentsΓÇÖ 
+welfare) is signi∩¼ücant compared to ACDA. Note that to increase the average Borda score by one point, every student must 
+be assigned to a strictly better project.
+Figs. 2 (b) and (c) show the results for the 2-type crafted case and 2-type random case, respectively, and Figs. 2 (d) 
+and (e) show the results for the 3-type crafted case and 3-type random case, respectively. For the crafted central prefer-
+ences (Figs. 2 (b) and (d)), SDA-VΓêù outperforms SDA-V, whose performance is slightly worse than ACDA. This is because 
+these central preferences are chosen such that group B projects are likely to be winners, even though they are sub-optimal 
+for all students. On the other hand, for random central preferences (Figs. 2 (c) and (e)), the performances of SDA-VΓêù and 
+18
+--- PAGE 19 ---
+K . - g .L i u ,K .Y a h i r oa n dM .Y o k o o Arti∩¼ücial Intelligence 316 (2023) 103855
+Fig. 7. Trade-off between e∩¼âciency and fairness (╧å =0.8, ╧ü=0.1, ╬│ =0.2, homogeneous resources, Market II).
+SDA-V are very close and surpass ACDA. SDA-S outperforms SDA-V and SDA-VΓêù both in the crafted/random central prefer-
+ences.
+For the 2/3-type cases, the studentsΓÇÖ preferences are more diverse. As a result, the competition among students becomes 
+less severe; both the Borda score and the ratio of pairs without envy increase compared to the 1-type case.
+Figs. 3 (a)ΓÇô(e) show the average performance in a similar setting as Fig. 2, except that the resources are heterogeneous, 
+i.e., the capacity of a resource is either 1, 5, 10, 15, or 20 (there are four resources for each capacity). The obtained results 
+are quite similar to Fig. 2. Thus, in the following experiments, we use homogeneous resources.
+Figs. 4 (a)ΓÇô(e) show the average performance by varying ╬│ as 0.2, 0.5, and 0.8; the other parameters are set as follow: 
+╧å =0.8, ╧ü=0.1, and homogeneous resources with qr =10 for all r ΓêêR. When ╬│ becomes larger, we have more freedom to 
+allocate resources. As a result, studentsΓÇÖ welfare increases as long as a mechanism can allocate resources wisely according to 
+studentsΓÇÖ demands. Fig. 4 (a) clearly shows that studentsΓÇÖ welfare improves as ╬│ increases for all mechanisms except ACDA. 
+Furthermore, the performance of SDA-V degrades in Fig. 4 for 2/3-type cases. This result indicates choosing a single winner 
+by the Borda count is inappropriate when students are divided into multiple types.
+19
+--- PAGE 20 ---
+K . - g .L i u ,K .Y a h i r oa n dM .Y o k o o Arti∩¼ücial Intelligence 316 (2023) 103855
+Figs. 5 (a)ΓÇô(e) show the average performance by varying ╧å as 0.1, 0.5, and 0.9; the other parameters are set as follow: 
+╧ü = 0.1, ╬│ = 0.2, and homogeneous resources with qr = 10 for all r Γêê R. When ╧å is large, the studentsΓÇÖ preferences are 
+almost identical. Thus, the competition among students becomes more severe and resource allocation signi∩¼ücantly affects 
+their welfare. When ╧å is small, the difference among mechanisms becomes smaller. SDA-V, SDA-VΓêù and SDA-S are quite close 
+when the studentsΓÇÖ preferences are identical, while SDA-S outperforms SDA-V in diverse cases. In particular, the performance 
+of SDA-V can be worse than ACDA.
+One might argue that SDA mechanisms work only when the sampled students resemble regular students. Although this 
+is true to some extent, our result shows that when student preferences are diverse, all the mechanisms work reasonably 
+well.
+Figs. 6 (a)ΓÇô(e) show the average performance by varying ╧ü as 0.2, 0.3, and 0.4f o r SDA mechanism; the other param-
+eters are set as follow: ╧å =0.8, ╬│ =0.2, and homogeneous resources with qr =10 for all r Γêê R. When ╧ü is small, these 
+mechanisms resemble ACDA. By increasing ╧ü, they gradually become similar to SD. Thus, by controlling parameter ╧ü, we 
+can further ∩¼üne-tune the balance. SDA-S outperforms SDA-V and SDA-VΓêù for all ╧ü.
+Figs. 7 (a)ΓÇô(e) show the results for Market II (╧å =0.8, ╧ü=0.1, ╬│ =0.2, homogeneous resources qr =10 for all r Γêê R). 
+The qualitative trends are basically very similar to Market I, while the differences in the Borda scores among mechanisms 
+become larger.
+6. Conclusion
+We introduced a student-to-project matching problem that endogenously handles the resource allocation problem that 
+de∩¼ünes the capacity of projects. We showed that it is impossible to design a mechanism that is fair, strategyproof, and 
+satis∩¼ües very mild e∩¼âciency properties. To strike a good balance between fairness and e∩¼âciency, we developed a new class 
+of strategyproof mechanisms called sampled-based Deferred Acceptance (SDA), and proved that it is weakly nonwasteful, 
+fair among some students, weakly Pareto e∩¼âcient, and weakly group strategyproof. We also developed three SDA instances 
+called SDA-V, SDA-VΓêù, and SDA-S, and proved that they are resource e∩¼âcient. We also showed that they satisfy Pareto 
+e∩¼âciency and fairness under some special cases and experimentally evaluated these mechanisms. Our experimental re-
+sults show that SDA-S outperforms the other two mechanisms in terms of e∩¼âciency (studentsΓÇÖ welfare) and fairness when 
+students are divided into different types according to their preferences.
+Our future works will theoretically identify the optimal sample size and deal with a case where various constraints are 
+imposed on the allocation of resources, e.g., where the total number of resources that can be allocated to each project is 
+bounded. We will also examine a combined model of an SPR and other generalizations of two-sided matching, such as a 
+matching with budget constraints [12,66] and a matching with multidimensional resources (a.k.a. a refugee resettlement 
+problem) [67,68].
+Declaration of competing interest
+The authors declare the following ∩¼ünancial interests/personal relationships which may be considered as potential com-
+peting interests: Kwei-guu Liu reports ∩¼ünancial support was provided by Toyota Motor Corporation.
+Data availability
+No data was used for the research described in the article.
+Acknowledgements
+This work is partially supported by the joint project with Toyota Motor Corporation, titled ΓÇ£Advanced Mathematical 
+Science for Mobility SocietyΓÇ¥, and JSPS KAKENHI Grant Numbers JP20H00609 and JP21H04979.
+References
+[1] K. Yahiro, M. Yokoo, Game theoretic analysis for two-sided matching with resource allocation, in: Proceedings of the 19th International Conference on 
+Autonomous Agents and MultiAgent Systems (AAMAS 2020), 2020, pp. 1548ΓÇô1556.
+[2] M. Goto, F. Kojima, R. Kurata, A. Tamura, M. Yokoo, Designing matching mechanisms under general distributional constraints, Am. Econ. J. Microecon. 
+9( 2 ) (2017) 226ΓÇô262.
+[3] A.E. Roth, M.A.O. Sotomayor, Two-Sided Matching: A Study in Game-Theoretic Modeling and Analysis, Econometric Society Monographs, Cambridge 
+University Press, 1990.
+[4] B. Korte, J. Vygen, Combinatorial Optimization: Theory and Algorithms, Springer, 2018.
+[5] D. Gale, L.S. Shapley, College admissions and the stability of marriage, Am. Math. Mon. 69 (1) (1962) 9ΓÇô15.
+[6] Y. Okumura, School choice with general constraints: a market design approach for the nursery school waiting list problem in Japan, Jpn. Econ. Rev. 
+(2019) 497ΓÇô516.
+[7] H. Aziz, P. Bir├│, T. Fleiner, S. Gaspers, R. de Haan, N. Mattei, B. Rastegari, Stable matching with uncertain pairwise preferences, Theor. Comput. Sci. 909 
+(2022) 1ΓÇô11.
+[8] H. Aziz, S. Gaspers, Z. Sun, T. Walsh, From matching with diversity constraints to matching with regional quotas, in: Proceedings of the 18th Interna-
+tional Conference on Autonomous Agents and MultiAgent Systems (AAMAS 2019), 2019, pp. 377ΓÇô385.
+20
+--- PAGE 21 ---
+K . - g .L i u ,K .Y a h i r oa n dM .Y o k o o Arti∩¼ücial Intelligence 316 (2023) 103855
+[9] H. Hosseini, K. Larson, R. Cohen, On manipulablity of random serial dictatorship in sequential matching with dynamic preferences, in: Proceedings of 
+the 29th AAAI Conference on Arti∩¼ücial Intelligence (AAAI 2015), 2015, pp. 4168ΓÇô4169.
+[10] Y. Kawase, A. Iwasaki, Near-feasible stable matchings with budget constraints, in: Proceedings of the 26th International Joint Conference on Arti∩¼ücial 
+Intelligence (IJCAI 2017), 2017, pp. 242ΓÇô248.
+[11] K. Yahiro, Y. Zhang, N. Barrot, M. Yokoo, Strategyproof and fair matching mechanism for ratio constraints, Auton. Agents Multi-Agent Syst. 34 (2020) 
+1ΓÇô29.
+[12] A. Ismaili, N. Hamada, Y. Zhang, T. Suzuki, M. Yokoo, Weighted matching markets with budget constraints, J. Artif. Intell. Res. 65 (2019) 393ΓÇô421.
+[13] T. Suzuki, A. Tamura, K. Yahiro, M. Yokoo, Y. Zhang, Strategyproof allocation mechanisms with endowments and M-convex distributional constraints, 
+Artif. Intell. 315 (2023) 103825.
+[14] F. Kojima, A. Tamura, M. Yokoo, Designing matching mechanisms under constraints: an approach from discrete convex analysis, J. Econ. Theory 176 
+(2018) 803ΓÇô833.
+[15] Y. Kamada, F. Kojima, Fair matching under constraints: theory and applications, Rev. Econ. Stud. (2020), in press.
+[16] Y. Kamada, F. Kojima, E∩¼âcient matching under distributional constraints: theory and applications, Am. Econ. Rev. 105 (1) (2015) 67ΓÇô99.
+[17] D. Fragiadakis, A. Iwasaki, P. Troyan, S. Ueda, M. Yokoo, Strategyproof matching with minimum quotas, ACM Trans. Econ. Comput. 4( 1 ) (2016) 6.
+[18] M. Goto, A. Iwasaki, Y. Kawasaki, R. Kurata, Y. Yasuda, M. Yokoo, Strategyproof matching with regional minimum and maximum quotas, Artif. Intell. 
+235 (2016) 40ΓÇô57.
+[19] N. Hamada, C. Hsu, R. Kurata, T. Suzuki, S. Ueda, M. Yokoo, Strategy-proof school choice mechanisms with minimum quotas and initial endowments, 
+Artif. Intell. 249 (2017) 47ΓÇô71.
+[20] T. S├╢nmez, T.B. Switzer, Matching with (branch-of-choice) contracts at the United States Military Academy, Econometrica 81 (2) (2013) 451ΓÇô488.
+[21] T. S├╢nmez, Bidding for army career specialties: improving the ROTC branching mechanism, J. Polit. Econ. 121 (1) (2013) 186ΓÇô219.
+[22] I.E. Hafalir, M.B. Yenmez, M.A. Yildirim, Effective a∩¼ârmative action in school choice, Theor. Econ. 8( 2 ) (2013) 325ΓÇô363.
+[23] L. Ehlers, I.E. Hafalir, M.B. Yenmez, M.A. Yildirim, School choice with controlled choice constraints: hard bounds versus soft bounds, J. Econ. Theory 
+153 (2014) 648ΓÇô683.
+[24] F. Kojima, School choice: impossibilities for a∩¼ârmative action, Games Econ. Behav. 75 (2) (2012) 685ΓÇô693.
+[25] R. Kurata, N. Hamada, A. Iwasaki, M. Yokoo, Controlled school choice with soft bounds and overlapping types, J. Artif. Intell. Res. 58 (2017) 153ΓÇô184.
+[26] K. Tomoeda, Finding a stable matching under type-speci∩¼üc minimum quotas, J. Econ. Theory 176 (2018) 81ΓÇô117.
+[27] P. Bir├│, T. Fleiner, R.W. Irving, D.F. Manlove, The college admissions problem with lower and common quotas, Theor. Comput. Sci. 411 (34ΓÇô36) (2010) 
+3136ΓÇô3153.
+[28] T. Fleiner, N. Kamiyama, A matroid approach to stable matchings with lower quotas, Math. Oper. Res. 41 (2) (2016) 734ΓÇô744.
+[29] K. Hamada, K. Iwama, S. Miyazaki, The hospitals/residents problem with lower quotas, Algorithmica 74 (1) (2016) 440ΓÇô465.
+[30] D. Gale, L.S. Shapley, College admissions and the stability of marriage, Am. Math. Mon. 69 (1) (1962) 9ΓÇô15.
+[31] R.W. Irving, D.F. Manlove, G. OΓÇÖMalley, Stable marriage with ties and bounded length preference lists, J. Discret. Algorithms 7( 2 ) (2009) 213ΓÇô219.
+[32] D.F. Manlove, The structure of stable marriage with indifference, Discrete Appl. Math. 122 (1ΓÇô3) (2002) 167ΓÇô181.
+[33] O. Ayg├╝n, B. Turhan, Dynamic reserves in matching markets, J. Econ. Theory 188 (2020) 105069.
+[34] H. Aziz, A. Baychkov, P. Bir├│, Cutoff stability under distributional constraints with an application to summer internship matching, Math. Program. (2022) 
+1ΓÇô23.
+[35] H. Aziz, B. Klaus, Random matching under priorities: stability and no envy concepts, Soc. Choice Welf. 53 (2) (2019) 213ΓÇô259.
+[36] P. Krishnaa, G. Limaye, M. Nasre, P. Nimbhorkar, Envy-freeness and relaxed stability: hardness and approximation algorithms, J. Comb. Optim. 45 (2023) 
+41.
+[37] K.C. ├ügoston, P. Bir├│, E. Kov├íts, Z. Jank├│, College admissions with ties and common quotas: integer programming approach, Eur. J. Oper. Res. 299 (2) 
+(2022) 722ΓÇô734.
+[38] A. Ismaili, T. Yamaguchi, M. Yokoo, Student-project-resource allocation: complexity of the symmetric case, in: Proceedings of the 21st International 
+Conference on Principles and Practice of Multi-Agent Systems (PRIMA 2018), 2018, pp. 226ΓÇô241.
+[39] A. Alkan, Nonexistence of stable threesome matchings, Math. Soc. Sci. 16 (2) (1988) 207ΓÇô209.
+[40] C.-C. Huang, TwoΓÇÖs company, threeΓÇÖs a crowd: stable family and threesome roommates problems, in: Proceedings of the 15th Annual European Sym-
+posium on Algorithms (ESA 2007), 2007, pp. 558ΓÇô569.
+[41] C. Ng, D.S. Hirschberg, Three-dimensional stable matching problems, SIAM J. Discrete Math. 4( 2 ) (1991) 245ΓÇô252.
+[42] R. Bredereck, K. Heeger, D. Knop, R. Niedermeier, Multidimensional stable roommates with master list, in: Proceedings of the 16th International 
+Conference on Web and Internet Economics (WINE 2020), Springer, 2020, pp. 59ΓÇô73.
+[43] M. McKay, D. Manlove, The three-dimensional stable roommates problem with additively separable preferences, in: Proceedings of the 14th Interna-
+tional Symposium on Algorithmic Game Theory (SAGT 2021), Springer, 2021, pp. 266ΓÇô280.
+[44] D.J. Abraham, R.W. Irving, D.F. Manlove, Two algorithms for the student-project allocation problem, J. Discret. Algorithms 5( 1 ) (2007) 73ΓÇô90.
+[45] P. Bir├│, E. McDermid, Matching with sizes (or scheduling with processing set restrictions), Discrete Appl. Math. 164 (2014) 61ΓÇô67.
+[46] C.A. Glass, H. Kellerer, Parallel machine scheduling with job assignment restrictions, Nav. Res. Logist. 54 (3) (2007) 250ΓÇô257.
+[47] J.W. Hat∩¼üeld, P.R. Milgrom, Matching with contracts, Am. Econ. Rev. 95 (4) (2005) 913ΓÇô935.
+[48] Y. Kamada, F. Kojima, Stability concepts in matching under distributional constraints, J. Econ. Theory 168 (2017) 107ΓÇô142.
+[49] S.-H. Cho, M. Koshimura, P. Mandal, K. Yahiro, M. Yokoo, Impossibility of weakly stable and strategy-proof mechanism, Econ. Lett. 217 (2022) 110675.
+[50] R.M. Karp, Reducibility among combinatorial problems, in: R.E. Miller, J.W. Thatcher, J.D. Bohlinger (Eds.), Complexity of Computer Computations, 
+Springer, 1972, pp. 85ΓÇô103.
+[51] T.H. Cormen, C.E. Leiserson, R.L. Rivest, C. Stein, Introduction to Algorithms, third edition, The MIT Press, 2009.
+[52] A.V. Goldberg, J.D. Hartline, A. Wright, Competitive auctions and digital goods, in: Proceedings of the 12th Annual Symposium on Discrete Algorithms 
+(SODA 2001), 2001, pp. 735ΓÇô744.
+[53] C. Borgs, J. Chayes, N. Immorlica, M. Mahdian, A. Saberi, Multi-unit auctions with budget-constrained bidders, in: Proceedings of the 6th ACM Confer-
+ence on Electronic Commerce (EC 2005), 2005, pp. 44ΓÇô51.
+[54] L.E. Dubins, D.A. Freedman, Machiavelli and the Gale-Shapley algorithm, Am. Math. Mon. 88 (7) (1981) 485ΓÇô494.
+[55] A.E. Roth, The economics of matching: stability and incentives, Math. Oper. Res. 7( 4 ) (1982) 617ΓÇô628.
+[56] L.-G. Svensson, Strategy-proof allocation of indivisible goods, Soc. Choice Welf. 16 (4) (1999) 557ΓÇô567.
+[57] S. P├ípai, Strategyproof assignment by hierarchical exchange, Econometrica 68 (6) (2000) 1403ΓÇô1433.
+[58] S. Barber├á, D. Berga, B. Moreno, Group strategy-proofness in private good economies, Am. Econ. Rev. 106 (4) (2016) 1073ΓÇô1099.
+[59] Gurobi, Gurobi optimization, http://www.gurobi .com/, 2022.
+[60] C.L. Mallows, Non-null ranking models. I, Biometrika 44 (1ΓÇô2) (1957) 114ΓÇô130.
+[61] J.D. Tubbs, Distance based binary matching, in: Computing Science and Statistics, Springer, 1992, pp. 548ΓÇô550.
+[62] T. Lu, C. Boutilier, Effective sampling and learning for mallows models with pairwise-preference data, J. Mach. Learn. Res. 15 (2014) 3963ΓÇô4009.
+[63] J. Drummond, C. Boutilier, Elicitation and approximately stable matching with partial preferences, in: Proceedings of the 23rd International Joint 
+Conference on Arti∩¼ücial Intelligence (IJCAI 2013), 2013, pp. 97ΓÇô105.
+21
+--- PAGE 22 ---
+K . - g .L i u ,K .Y a h i r oa n dM .Y o k o o Arti∩¼ücial Intelligence 316 (2023) 103855
+[64] W.V. Gehrlein, P.C. Fishburn, The probability of the paradox of voting: a computable solution, J. Econ. Theory 13 (1) (1976) 14ΓÇô25.
+[65] N. Mattei, T. Walsh, Pre∩¼éib: a library for preferences, in: Proceedings of the 3rd International Conference on Algorithmic Decision Theory (ADT 2013), 
+2013, pp. 259ΓÇô270, http://www.pre∩¼éib .org.
+[66] A. Abizada, Stability and incentives for college admissions with budget constraints, Theor. Econ. 11 (2) (2016) 735ΓÇô756.
+[67] H. Aziz, J. Chen, S. Gaspers, Z. Sun, Stability and Pareto optimality in refugee allocation matchings, in: Proceedings of the 17th International Conference 
+on Autonomous Agents and MultiAgent Systems (AAMAS 2018), 2018, pp. 964ΓÇô972.
+[68] D. Delacretaz, S.D. Kominers, A. Teytelboym, Matching mechanisms for refugee resettlement, working paper, 2020.
+22
