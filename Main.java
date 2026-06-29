@@ -105,11 +105,8 @@ public class Main {
         // ── Step 13: Run matching algorithm ──
         MSDAlgorithm.MatchingResult result = MSDAlgorithm.match(simData);
 
-        // ── Step 14: Print matching results ──
-        SimulationPrinter.printMatchingResults(simData, result);
-
-        // ── Step 15: Print detailed paper-style analysis ──
-        SimulationPrinter.printDetailedAnalysis(simData, result);
+        // ── Step 14: Print results ──
+        SimulationPrinter.printResults(simData, result);
 
         // ── Step 16: Print final summary ──
         SimulationPrinter.printSummary(simData);
