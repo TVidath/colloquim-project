@@ -81,6 +81,26 @@ public class WeightGenerator {
         return new WeightResult(W, P, lambdaMaxVal, ciVal, crVal, iters);
     }
 
+    /**
+     * Generates baseline AHP weights for only 2 criteria (Delay Difference and Preference Count).
+     * Since it's a 2x2 matrix, it is always perfectly consistent (CR = 0).
+     */
+    public static WeightResult generateBaselineWeights(Random rand) {
+        double v1 = 1.0 + rand.nextDouble() * 8.0;
+        double v2 = 1.0 + rand.nextDouble() * 8.0;
+        
+        double[][] P = new double[2][2];
+        P[0][0] = 1.0;
+        P[1][1] = 1.0;
+        P[0][1] = getSaatyScale(v1 / v2);
+        P[1][0] = 1.0 / P[0][1];
+        
+        double[] W = cwd(P); // returns 2 weights
+        
+        // LambdaMax for 2x2 consistent matrix is exactly 2.0
+        return new WeightResult(W, P, 2.0, 0.0, 0.0, 1);
+    }
+
     // ================================================================
     //  ALGORITHM 4: PMC — Pairwise-Comparison Matrix Computation
     // ================================================================

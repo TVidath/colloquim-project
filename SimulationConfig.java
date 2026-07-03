@@ -22,8 +22,8 @@ public class SimulationConfig {
     //  1. TASK GENERATION PARAMETERS
     // ================================================================
 
-    /** Total number of tasks to generate */
-    static final int NUM_TASKS = 250;
+    /** Total number of tasks to generate (can be modified by scenarios) */
+    public static int NUM_TASKS = 500;
 
     /** CPU demand range in million cycles */
     static final double CPU_DEMAND_MIN = 210.0;

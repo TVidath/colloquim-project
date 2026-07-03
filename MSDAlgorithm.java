@@ -50,6 +50,11 @@ public class MSDAlgorithm {
         return algo.execute();
     }
 
+    public static MatchingResult matchBaseline(SimulationData simData) {
+        MSDAlgorithm algo = new MSDAlgorithm(simData);
+        return algo.executeBaseline();
+    }
+
     private MatchingResult execute() {
         Task[] tasks = simData.getTasks();
         
@@ -79,6 +84,50 @@ public class MSDAlgorithm {
         }
         
         Map<Task, Integer> finalMatches = doTwoTypeMSDA(initialTasks, minAll, maxAll, minMajor, maxMajor);
+        
+        // Build MatchingResult
+        int[] taskAssignment = new int[tasks.length];
+        Arrays.fill(taskAssignment, -1);
+        List<List<Integer>> fogAssignments = new ArrayList<>();
+        for (int i = 0; i < numFogs; i++) fogAssignments.add(new ArrayList<>());
+        
+        int matchedCount = 0;
+        for(Map.Entry<Task, Integer> entry : finalMatches.entrySet()) {
+            int tIdx = entry.getKey().getTaskId() - 1;
+            int fIdx = entry.getValue();
+            taskAssignment[tIdx] = fIdx;
+            fogAssignments.get(fIdx).add(tIdx);
+            matchedCount++;
+        }
+        
+        int unmatchedCount = tasks.length - matchedCount;
+        return new MatchingResult(taskAssignment, fogAssignments, unmatchedCount, matchedCount);
+    }
+
+    private MatchingResult executeBaseline() {
+        Task[] tasks = simData.getTasks();
+        
+        // Build a unified Precedence List sorted by deadline 
+        Task[] unifiedPL = Arrays.copyOf(tasks, tasks.length);
+        Arrays.sort(unifiedPL, new Comparator<Task>() {
+            @Override
+            public int compare(Task a, Task b) {
+                return Double.compare(a.getDeadline(), b.getDeadline());
+            }
+        });
+        
+        List<Task> initialTasks = new ArrayList<>(Arrays.asList(unifiedPL));
+        
+        int[] minAll = new int[numFogs];
+        int[] maxAll = new int[numFogs];
+        
+        for (int c = 0; c < numFogs; c++) {
+            FogNetwork fn = simData.getFogNetworks()[c];
+            minAll[c] = fn.getMinQuotaAllTasks();
+            maxAll[c] = fn.getMaxQuotaAllTasks();
+        }
+        
+        Map<Task, Integer> finalMatches = runSingleTypeMSDABaseline(initialTasks, minAll, maxAll);
         
         // Build MatchingResult
         int[] taskAssignment = new int[tasks.length];
@@ -240,6 +289,53 @@ public class MSDAlgorithm {
         return finalMu;
     }
 
+    private Map<Task, Integer> runSingleTypeMSDABaseline(List<Task> T_PL, int[] p_init, int[] q_init) {
+        int[] curr_l = Arrays.copyOf(p_init, p_init.length);
+        int[] curr_h = Arrays.copyOf(q_init, q_init.length);
+        
+        List<Task> PL = new ArrayList<>(T_PL);
+        List<Task> R_prev = new ArrayList<>(T_PL);
+        
+        Map<Task, Integer> finalM = new HashMap<>();
+        
+        while(!PL.isEmpty()) {
+            int r_k = 0;
+            for(int c = 0; c < numFogs; c++) r_k += curr_l[c];
+            
+            List<Task> R_k = new ArrayList<>();
+            int startIndex = Math.max(0, PL.size() - r_k);
+            for(int i = startIndex; i < PL.size(); i++) {
+                R_k.add(PL.get(i));
+            }
+            
+            List<Task> diff = new ArrayList<>(R_prev);
+            diff.removeAll(R_k);
+            
+            Map<Task, Integer> Mk;
+            
+            if(!diff.isEmpty()) {
+                Mk = runStandardDABaseline(diff, curr_h, true);
+                finalM.putAll(Mk);
+                PL.removeAll(diff);
+                R_prev = R_k;
+            } else {
+                Mk = runStandardDABaseline(R_k, curr_l, false);
+                finalM.putAll(Mk);
+                PL.removeAll(R_k);
+            }
+            
+            for(int c = 0; c < numFogs; c++) {
+                int matched = 0;
+                for(Map.Entry<Task, Integer> entry : Mk.entrySet()) {
+                    if(entry.getValue() == c) matched++;
+                }
+                curr_h[c] = curr_h[c] - matched;
+                curr_l[c] = Math.max(0, curr_l[c] - matched);
+            }
+        }
+        return finalM;
+    }
+
     private Map<Task, Integer> runSingleTypeMSDA(List<Task> T, int[] p_init, int[] q_init) {
         int[] curr_p = Arrays.copyOf(p_init, p_init.length);
         int[] curr_q = Arrays.copyOf(q_init, q_init.length);
@@ -346,6 +442,59 @@ public class MSDAlgorithm {
                     }
                 }
                 else if(applicants.get(c).size() > q[c]) {
+                    List<Task> Tc = applicants.get(c);
+                    sortByUrgency(Tc, c);
+                    while(Tc.size() > q[c]) {
+                        Task rejected = Tc.remove(Tc.size() - 1);
+                        isMatched[rejected.getTaskId() - 1] = false;
+                        active = true;
+                    }
+                }
+            }
+        }
+        
+        Map<Task, Integer> mu = new HashMap<>();
+        for(int c = 0; c < numFogs; c++) {
+            for(Task t : applicants.get(c)) mu.put(t, c);
+        }
+        return mu;
+    }
+
+    private Map<Task, Integer> runStandardDABaseline(List<Task> candidateTasks, int[] q, boolean status) {
+        int totalTasks = simData.getTasks().length;
+        int[] nextFog = new int[totalTasks];
+        boolean[] isMatched = new boolean[totalTasks];
+        
+        List<List<Task>> applicants = new ArrayList<>();
+        for(int c = 0; c < numFogs; c++) applicants.add(new ArrayList<>());
+        
+        boolean active = true;
+        while(active) {
+            active = false;
+            for(Task t : candidateTasks) {
+                int tIdx = t.getTaskId() - 1;
+                if(isMatched[tIdx]) continue;
+                
+                int[] prefs = t.getPreferredFogIndices();
+                while(nextFog[tIdx] < prefs.length) {
+                    int fIdx = prefs[nextFog[tIdx]];
+                    nextFog[tIdx]++;
+                    
+                    if (status) {
+                        if (t.getOffloadingDelay(fIdx) > t.getDeadline()) {
+                            continue;
+                        }
+                    }
+                    
+                    applicants.get(fIdx).add(t);
+                    isMatched[tIdx] = true;
+                    active = true;
+                    break;
+                }
+            }
+            
+            for(int c = 0; c < numFogs; c++) {
+                if(applicants.get(c).size() > q[c]) {
                     List<Task> Tc = applicants.get(c);
                     sortByUrgency(Tc, c);
                     while(Tc.size() > q[c]) {

@@ -1,3 +1,5 @@
+import java.io.ByteArrayOutputStream;
+import java.io.PrintStream;
 import java.util.Random;
 
 /**
@@ -24,60 +26,131 @@ import java.util.Random;
  *
  *  Compile : javac *.java
  *  Run     : java Main
+ *             :  java Main > output.txt
  * ============================================================================
  */
 public class Main {
 
     public static void main(String[] args) {
-
         Random rand = new Random();
+        int[] scenarios = {250, 500, 1000, 2000};
+        int iterations = 10;
+        
+        ByteArrayOutputStream detailedOutput = new ByteArrayOutputStream();
+        PrintStream originalOut = System.out;
+        PrintStream captureOut = new PrintStream(detailedOutput);
 
-        // ── Step 1: Generate Fog Networks ──
-        FogNetwork[] fogNetworks = FogNetworkGenerator.generate(rand);
+        for (int scenarioTasks : scenarios) {
+            SimulationConfig.NUM_TASKS = scenarioTasks;
+            
+            SimulationMetrics baselineAccumulator = new SimulationMetrics();
+            SimulationMetrics proposedAccumulator = new SimulationMetrics();
 
-        // ── Step 2: Generate AHP Urgency Weights ──
-        WeightGenerator.WeightResult weightResult = WeightGenerator.generateWeights(rand);
-        double[] weights = weightResult.weights;
-        double w1 = weights[0], w2 = weights[1], w3 = weights[2], w4 = weights[3];
+            for (int iter = 0; iter < iterations; iter++) {
+                boolean printDetails = (iter == 0);
 
-        // ── Step 3: Print Configuration & Diagnostics ──
-        SimulationPrinter.printHeader(SimulationConfig.NUM_TASKS,
-                                      SimulationConfig.NUM_FOG_NODES, weights);
-        SimulationPrinter.printAHPDiagnostics(weightResult);
-        SimulationPrinter.printFogNodes(fogNetworks);
+                // ── Step 1: Generate Core Data ──
+                FogNetwork[] fogNetworks = FogNetworkGenerator.generate(rand);
+                Task[] baseTasks = TaskGenerator.generate(rand);
 
-        // ── Step 4: Generate Tasks ──
-        Task[] tasks = TaskGenerator.generate(rand);
+                // ── Step 2: Compute Absolute Delay & Energy (Common) ──
+                for (Task task : baseTasks) {
+                    OffloadingCalculator.computeAndStore(task, fogNetworks);
+                }
 
-        // ── Step 5: Compute Delay & Energy for all tasks × all fog nodes ──
-        for (Task task : tasks) {
-            OffloadingCalculator.computeAndStore(task, fogNetworks);
-        }
+                // ── Step 3: Deep Copy Tasks for Independent Pipelines ──
+                Task[] baselineTasks = new Task[baseTasks.length];
+                Task[] proposedTasks = new Task[baseTasks.length];
+                for (int i = 0; i < baseTasks.length; i++) {
+                    baselineTasks[i] = baseTasks[i].deepCopy();
+                    proposedTasks[i] = baseTasks[i].deepCopy();
+                }
 
-        // ── Step 6: Normalize Metrics Globally ──
-        Normalizer.normalize(tasks, fogNetworks.length);
+                // ================================================================
+                //  BASELINE PIPELINE (M-DAFTO)
+                // ================================================================
+                WeightGenerator.WeightResult baselineWeights = WeightGenerator.generateBaselineWeights(rand);
+                Normalizer.normalizeBaseline(baselineTasks, fogNetworks.length);
+                UrgencyCalculator.computeBaselineUrgencies(baselineTasks, baselineWeights.weights[0], baselineWeights.weights[1]);
+                
+                int[][] prefBase = PreferenceRanker.rankAllTasksPerFog(baselineTasks, fogNetworks.length);
+                Task[] precBaseMaj = PreferenceRanker.buildMajorPrecedenceList(baselineTasks);
+                Task[] precBaseMin = PreferenceRanker.buildMinorPrecedenceList(baselineTasks);
+                
+                SimulationData baselineSimData = buildSimData(
+                    baselineTasks, fogNetworks, baselineWeights.weights, 
+                    prefBase, prefBase, prefBase, precBaseMaj, precBaseMin
+                );
 
-        // ── Step 7: Compute Urgencies ──
-        UrgencyCalculator.computeAllUrgencies(tasks, w1, w2, w3, w4);
+                // ================================================================
+                //  PROPOSED PIPELINE (2-Type MSDA)
+                // ================================================================
+                WeightGenerator.WeightResult proposedWeights = WeightGenerator.generateWeights(rand);
+                Normalizer.normalize(proposedTasks, fogNetworks.length);
+                UrgencyCalculator.computeAllUrgencies(
+                    proposedTasks, proposedWeights.weights[0], proposedWeights.weights[1], 
+                    proposedWeights.weights[2], proposedWeights.weights[3]
+                );
+                
+                int[][] prefProp    = PreferenceRanker.rankAllTasksPerFog(proposedTasks, fogNetworks.length);
+                int[][] prefPropMaj = PreferenceRanker.rankMajorTasksPerFog(proposedTasks, fogNetworks.length);
+                int[][] prefPropMin = PreferenceRanker.rankMinorTasksPerFog(proposedTasks, fogNetworks.length);
+                Task[] precPropMaj  = PreferenceRanker.buildMajorPrecedenceList(proposedTasks);
+                Task[] precPropMin  = PreferenceRanker.buildMinorPrecedenceList(proposedTasks);
+                
+                SimulationData proposedSimData = buildSimData(
+                    proposedTasks, fogNetworks, proposedWeights.weights, 
+                    prefProp, prefPropMaj, prefPropMin, precPropMaj, precPropMin
+                );
 
-        // ── Step 8: Rank Task Preferences per Fog Node ──
-        int[][] preferredTasksPerFog      = PreferenceRanker.rankAllTasksPerFog(tasks, fogNetworks.length);
-        int[][] preferredMajorTasksPerFog = PreferenceRanker.rankMajorTasksPerFog(tasks, fogNetworks.length);
-        int[][] preferredMinorTasksPerFog = PreferenceRanker.rankMinorTasksPerFog(tasks, fogNetworks.length);
+                // ── Step 4: Compute Quotas (Based on proposed/common task counts) ──
+                int majorCount = PreferenceRanker.countMajorTasks(proposedTasks);
+                QuotaDeterminator.computeMinimumQuotas(fogNetworks, SimulationConfig.NUM_TASKS, true);
+                QuotaDeterminator.computeMinimumQuotas(fogNetworks, majorCount, false);
 
-        // ── Step 9: Build Precedence Lists ──
-        Task[] precedenceListMajor = PreferenceRanker.buildMajorPrecedenceList(tasks);
-        Task[] precedenceListMinor = PreferenceRanker.buildMinorPrecedenceList(tasks);
+                // ── Step 7: Run Algorithms & Capture Results ──
+                if (printDetails) {
+                    System.setOut(captureOut);
+                    System.out.println("\n==========================================================================");
+                    System.out.println(" DETAILED RESULTS FOR 1 ITERATION (SCENARIO: " + scenarioTasks + " TASKS)");
+                    System.out.println("==========================================================================");
+                    System.out.println("\n=================================================");
+                    System.out.println(" RUNNING BASELINE M-DAFTO ALGORITHM");
+                    System.out.println("=================================================");
+                }
+                MSDAlgorithm.MatchingResult baselineResult = MSDAlgorithm.matchBaseline(baselineSimData);
+                SimulationMetrics baseMetrics = SimulationPrinter.printResults(baselineSimData, baselineResult, true, printDetails);
+                baselineAccumulator.add(baseMetrics);
 
-        // ── Step 10: Compute Quotas ──
-        int majorCount = PreferenceRanker.countMajorTasks(tasks);
-        QuotaDeterminator.computeMinimumQuotas(fogNetworks, SimulationConfig.NUM_TASKS, true);
-        QuotaDeterminator.computeMinimumQuotas(fogNetworks, majorCount, false);
+                if (printDetails) {
+                    System.out.println("\n=================================================");
+                    System.out.println(" RUNNING PROPOSED 2-TYPE MSDA ALGORITHM");
+                    System.out.println("=================================================");
+                }
+                MSDAlgorithm.MatchingResult result = MSDAlgorithm.match(proposedSimData);
+                SimulationMetrics propMetrics = SimulationPrinter.printResults(proposedSimData, result, false, printDetails);
+                proposedAccumulator.add(propMetrics);
+                
+                if (printDetails) {
+                    System.setOut(originalOut);
+                }
 
-        SimulationPrinter.printQuotas(fogNetworks);
+            } // End of Iterations
 
-        // ── Step 11: Extract Normalized Arrays & Assemble SimulationData ──
-        int numTasks = SimulationConfig.NUM_TASKS;
+            baselineAccumulator.divideBy(iterations);
+            proposedAccumulator.divideBy(iterations);
+            
+            SimulationPrinter.printScenarioAverages(scenarioTasks, baselineAccumulator, proposedAccumulator);
+        } // End of Scenarios
+        
+        // Print the detailed output at the very end
+        System.out.println(detailedOutput.toString());
+    }
+
+    private static SimulationData buildSimData(Task[] tasks, FogNetwork[] fogNetworks, double[] weights, 
+                                               int[][] pAll, int[][] pMaj, int[][] pMin, 
+                                               Task[] precMaj, Task[] precMin) {
+        int numTasks = tasks.length;
         double[][] normDelayArray  = new double[numTasks][fogNetworks.length];
         double[][] normEnergyArray = new double[numTasks][fogNetworks.length];
         double[][] normSumArray    = new double[numTasks][fogNetworks.length];
@@ -90,25 +163,9 @@ public class Main {
             preferredFogIndices[i] = tasks[i].getPreferredFogIndices();
         }
 
-        SimulationData simData = new SimulationData(
-            tasks, fogNetworks,
-            normDelayArray, normEnergyArray, normSumArray, preferredFogIndices,
-            preferredTasksPerFog, preferredMajorTasksPerFog, preferredMinorTasksPerFog,
-            weights, precedenceListMajor, precedenceListMinor
+        return new SimulationData(
+            tasks, fogNetworks, normDelayArray, normEnergyArray, normSumArray, 
+            preferredFogIndices, pAll, pMaj, pMin, weights, precMaj, precMin
         );
-
-        // ── Step 12: Print Input Configurations & Lists ──
-        SimulationPrinter.printSampleTasks(tasks, fogNetworks, SimulationConfig.SAMPLE_TASK_COUNT);
-        SimulationPrinter.printPreferredTaskPrioritization(simData, tasks, fogNetworks);
-        SimulationPrinter.printPrecedenceLists(precedenceListMajor, precedenceListMinor);
-
-        // ── Step 13: Run matching algorithm ──
-        MSDAlgorithm.MatchingResult result = MSDAlgorithm.match(simData);
-
-        // ── Step 14: Print results ──
-        SimulationPrinter.printResults(simData, result);
-
-        // ── Step 16: Print final summary ──
-        SimulationPrinter.printSummary(simData);
     }
 }

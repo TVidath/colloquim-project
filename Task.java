@@ -195,4 +195,34 @@ public class Task {
             (severity == null ? "-" : severity)
         );
     }
+
+    // ================================================================
+    //  DEEP COPY
+    // ================================================================
+
+    public Task deepCopy() {
+        Task t = new Task(this.taskId, this.cpuDemanded, this.inputSize, this.outputSize, this.deadline);
+        t.initFogMetrics(this.transmissionTimes.length);
+        t.phase = this.phase;
+        t.severity = this.severity;
+        
+        System.arraycopy(this.transmissionTimes, 0, t.transmissionTimes, 0, this.transmissionTimes.length);
+        System.arraycopy(this.executionTimes, 0, t.executionTimes, 0, this.executionTimes.length);
+        System.arraycopy(this.receivingTimes, 0, t.receivingTimes, 0, this.receivingTimes.length);
+        System.arraycopy(this.offloadingDelays, 0, t.offloadingDelays, 0, this.offloadingDelays.length);
+        System.arraycopy(this.energies, 0, t.energies, 0, this.energies.length);
+        
+        System.arraycopy(this.normalizedDelays, 0, t.normalizedDelays, 0, this.normalizedDelays.length);
+        System.arraycopy(this.normalizedEnergies, 0, t.normalizedEnergies, 0, this.normalizedEnergies.length);
+        System.arraycopy(this.normSums, 0, t.normSums, 0, this.normSums.length);
+        System.arraycopy(this.urgencies, 0, t.urgencies, 0, this.urgencies.length);
+        
+        if (this.preferredFogIndices != null) {
+            t.preferredFogIndices = new int[this.preferredFogIndices.length];
+            System.arraycopy(this.preferredFogIndices, 0, t.preferredFogIndices, 0, this.preferredFogIndices.length);
+        }
+        
+        t.prefCount = this.prefCount;
+        return t;
+    }
 }

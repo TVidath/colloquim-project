@@ -78,4 +78,45 @@ public class Normalizer {
             PreferenceRanker.computePreferredFogOrder(t, numFogNodes);
         }
     }
+
+    /**
+     * Normalizes delay values globally across all tasks and fog nodes for the BASELINE method.
+     * Energy is explicitly ignored as per the original M-DAFTO formulation.
+     */
+    public static void normalizeBaseline(Task[] tasks, int numFogNodes) {
+
+        // ── Step 1: Find global min/max for delay only ──
+        double minDelay  = Double.MAX_VALUE, maxDelay  = -Double.MAX_VALUE;
+
+        for (Task t : tasks) {
+            for (int f = 0; f < numFogNodes; f++) {
+                double delay  = t.getOffloadingDelay(f);
+
+                if (delay  < minDelay)  minDelay  = delay;
+                if (delay  > maxDelay)  maxDelay  = delay;
+            }
+        }
+
+        double delayRange  = (maxDelay  - minDelay)  == 0 ? 1 : (maxDelay  - minDelay);
+
+        // ── Step 2: Normalize each value and compute sums (delay only) ──
+        for (Task t : tasks) {
+            // Original M-DAFTO does NOT use a severity weight reduction factor on normalization
+            // so we use a strict weight of 1.0 for all tasks.
+            for (int f = 0; f < numFogNodes; f++) {
+                double nd = (t.getOffloadingDelay(f) - minDelay)  / delayRange;
+
+                t.setNormalizedDelay(f, nd);
+                
+                // Set normalized energy to 0 just to be safe
+                t.setNormalizedEnergy(f, 0.0);
+
+                // Sum of normalized delay ONLY (Energy is ignored)
+                t.setNormSum(f, nd);
+            }
+
+            // ── Step 3: Compute preferred fog order for this task ──
+            PreferenceRanker.computePreferredFogOrder(t, numFogNodes);
+        }
+    }
 }

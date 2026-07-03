@@ -43,6 +43,28 @@ public class UrgencyCalculator {
         }
     }
 
+    /**
+     * Computes baseline urgencies for ALL tasks across all fog nodes.
+     * This strictly uses only 2 criteria: Delay Difference and Preference Count,
+     * ignoring Energy and Severity as per the original M-DAFTO paper.
+     */
+    public static void computeBaselineUrgencies(Task[] tasks, double w1, double w2) {
+        for (Task task : tasks) {
+            calculatePrefCount(task);
+            double invPref = (task.getPrefCount() == 0) ? 1.0 : (1.0 / task.getPrefCount());
+            double[] delays   = task.getOffloadingDelays();
+            double   deadline = task.getDeadline();
+
+            for (int f = 0; f < delays.length; f++) {
+                double delayDiff    = deadline - delays[f];
+                double invDelayDiff = 1.0 / Math.max(delayDiff, 0.5);
+
+                double urgency = w1 * invDelayDiff + w2 * invPref;
+                task.setUrgency(f, urgency);
+            }
+        }
+    }
+
     // ================================================================
     //  SINGLE TASK COMPUTATION
     // ================================================================

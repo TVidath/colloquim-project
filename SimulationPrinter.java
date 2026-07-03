@@ -39,8 +39,13 @@ public class SimulationPrinter {
         System.out.println("  Tasks          : " + numTasks);
         System.out.println("  Fog Nodes      : " + numFogNodes);
         System.out.println("  Bandwidth      : 20 MHz (2500 KB/s)");
-        System.out.printf("  Weights        : w1=%.4f  w2=%.4f  w3=%.4f  w4=%.4f%n",
-            weights[0], weights[1], weights[2], weights[3]);
+        if (weights.length == 4) {
+            System.out.printf("  Weights        : w1=%.4f  w2=%.4f  w3=%.4f  w4=%.4f%n",
+                weights[0], weights[1], weights[2], weights[3]);
+        } else if (weights.length == 2) {
+            System.out.printf("  Weights        : w1=%.4f  w2=%.4f%n",
+                weights[0], weights[1]);
+        }
         System.out.println(LINE + "\n");
     }
 
@@ -60,15 +65,18 @@ public class SimulationPrinter {
             result.consistencyRatio <= 0.1 ? "PASSED" : "FAILED");
         System.out.println();
 
-        String[] labels = {"DelayDiff", "PrefCount", "Energy", "Severity"};
+        double[][] pm = result.pairwiseMatrix;
+        int n = pm.length;
+        String[] labels = (n == 4) ? new String[]{"DelayDiff", "PrefCount", "Energy", "Severity"}
+                                   : new String[]{"DelayDiff", "PrefCount"};
+        
         System.out.printf("  %-12s", "");
         for (String lbl : labels) System.out.printf("%12s", lbl);
         System.out.println();
 
-        double[][] pm = result.pairwiseMatrix;
-        for (int x = 0; x < 4; x++) {
+        for (int x = 0; x < n; x++) {
             System.out.printf("  %-12s", labels[x]);
-            for (int y = 0; y < 4; y++) {
+            for (int y = 0; y < n; y++) {
                 System.out.printf("%12.4f", pm[x][y]);
             }
             System.out.println();
@@ -214,11 +222,11 @@ public class SimulationPrinter {
     // ================================================================
 
     /**
-     * Prints all results in a single section: matching summary, performance,
+     * Computes metrics and optionally prints all results in a single section: matching summary, performance,
      * deadline compliance, major/minor breakdown, per-FN stats, utilization,
      * traffic load, satisfaction, and fairness.
      */
-    public static void printResults(SimulationData simData, MSDAlgorithm.MatchingResult result) {
+    public static SimulationMetrics printResults(SimulationData simData, MSDAlgorithm.MatchingResult result, boolean isBaseline, boolean printDetails) {
         Task[] tasks = simData.getTasks();
         FogNetwork[] fogNetworks = simData.getFogNetworks();
         int[] assignments = result.getTaskAssignment();
@@ -339,10 +347,16 @@ public class SimulationPrinter {
         double gini = computeGiniIndex(matchesPerFog);
         double jain = computeJainIndex(matchesPerFog);
 
+        SimulationMetrics metrics = new SimulationMetrics(avgDelay, totalDelay, totalEnergy, (outages * 100.0 / numTasks), avgTaskSat, avgFnSat);
+
+        if (!printDetails) {
+            return metrics;
+        }
+
         // === PRINT EVERYTHING ===
 
         System.out.println("\n" + LINE);
-        System.out.println("  RESULTS (M-DAFTO Section VI)");
+        System.out.println("  RESULTS");
         System.out.println(LINE);
 
         // Matching overview
@@ -353,8 +367,10 @@ public class SimulationPrinter {
         // Performance
         System.out.printf("%n  Total Offloading Delay : %.4f s%n", totalDelay);
         System.out.printf("  Avg Delay per Task     : %.4f s%n", avgDelay);
-        System.out.printf("  Total Energy Consumed  : %.4f J%n", totalEnergy);
-        System.out.printf("  Avg Energy per Task    : %.4f J%n", avgEnergy);
+        if (!isBaseline) {
+            System.out.printf("  Total Energy Consumed  : %.4f J%n", totalEnergy);
+            System.out.printf("  Avg Energy per Task    : %.4f J%n", avgEnergy);
+        }
 
         // Deadline compliance
         System.out.printf("%n  Deadline Compliance    : (out of %d total tasks)%n", numTasks);
@@ -371,28 +387,36 @@ public class SimulationPrinter {
         System.out.printf("  Jain Fairness Index    : %.4f%n", jain);
 
         // Major vs Minor
-        System.out.printf("%n  Major vs Minor Breakdown:%n");
-        System.out.printf("  %-8s %14s %10s %12s %12s%n",
-            "Type", "Matched", "Outages", "Avg Delay", "Avg Energy");
-        System.out.println("  " + "-".repeat(60));
-        System.out.printf("  %-8s %4d/%-4d(%4.1f%%) %10d %10.4f s %10.4f J%n",
-            "Major", majMatched, majTotal,
-            majTotal > 0 ? (majMatched * 100.0 / majTotal) : 0,
-            majTotal - majMatched,
-            majMatched > 0 ? majDelay / majMatched : 0,
-            majMatched > 0 ? majEnergy / majMatched : 0);
-        System.out.printf("  %-8s %4d/%-4d(%4.1f%%) %10d %10.4f s %10.4f J%n",
-            "Minor", minMatched, minTotal,
-            minTotal > 0 ? (minMatched * 100.0 / minTotal) : 0,
-            minTotal - minMatched,
-            minMatched > 0 ? minDelay / minMatched : 0,
-            minMatched > 0 ? minEnergy / minMatched : 0);
+        if (!isBaseline) {
+            System.out.printf("%n  Major vs Minor Breakdown:%n");
+            System.out.printf("  %-8s %14s %10s %12s %12s%n",
+                "Type", "Matched", "Outages", "Avg Delay", "Avg Energy");
+            System.out.println("  " + "-".repeat(60));
+            System.out.printf("  %-8s %4d/%-4d(%4.1f%%) %10d %10.4f s %10.4f J%n",
+                "Major", majMatched, majTotal,
+                majTotal > 0 ? (majMatched * 100.0 / majTotal) : 0,
+                majTotal - majMatched,
+                majMatched > 0 ? majDelay / majMatched : 0,
+                majMatched > 0 ? majEnergy / majMatched : 0);
+            System.out.printf("  %-8s %4d/%-4d(%4.1f%%) %10d %10.4f s %10.4f J%n",
+                "Minor", minMatched, minTotal,
+                minTotal > 0 ? (minMatched * 100.0 / minTotal) : 0,
+                minTotal - minMatched,
+                minMatched > 0 ? minDelay / minMatched : 0,
+                minMatched > 0 ? minEnergy / minMatched : 0);
+        }
 
         // FN Assignment Table
         System.out.printf("%n  FN Assignment Table:%n");
-        System.out.printf("  %-12s %8s %8s %8s %8s %8s %10s%n",
-            "Fog Node", "MinQ", "MaxQ", "Major", "Minor", "Total", "Util(%)");
-        System.out.println("  " + "-".repeat(68));
+        if (!isBaseline) {
+            System.out.printf("  %-12s %8s %8s %8s %8s %8s %10s%n",
+                "Fog Node", "MinQ", "MaxQ", "Major", "Minor", "Total", "Util(%)");
+            System.out.println("  " + "-".repeat(68));
+        } else {
+            System.out.printf("  %-12s %8s %8s %8s %10s%n",
+                "Fog Node", "MinQ", "MaxQ", "Total", "Util(%)");
+            System.out.println("  " + "-".repeat(50));
+        }
         for (int j = 0; j < numFogs; j++) {
             FogNetwork fn = fogNetworks[j];
             List<Integer> mTasks = result.getFogAssignments().get(j);
@@ -404,23 +428,46 @@ public class SimulationPrinter {
             int total = mTasks.size();
             double util = fn.getMaxQuotaAllTasks() > 0
                 ? (total * 100.0 / fn.getMaxQuotaAllTasks()) : 0.0;
-            System.out.printf("  %-12s %8d %8d %8d %8d %8d %9.2f%%%n",
-                fn.getName(), fn.getMinQuotaAllTasks(), fn.getMaxQuotaAllTasks(),
-                majCnt, minCnt, total, util);
+            if (!isBaseline) {
+                System.out.printf("  %-12s %8d %8d %8d %8d %8d %9.2f%%%n",
+                    fn.getName(), fn.getMinQuotaAllTasks(), fn.getMaxQuotaAllTasks(),
+                    majCnt, minCnt, total, util);
+            } else {
+                System.out.printf("  %-12s %8d %8d %8d %9.2f%%%n",
+                    fn.getName(), fn.getMinQuotaAllTasks(), fn.getMaxQuotaAllTasks(),
+                    total, util);
+            }
         }
 
         // Per-FN Delay & Energy
-        System.out.printf("%n  Per-FN Delay & Energy:%n");
-        System.out.printf("  %-12s %6s %12s %14s%n", "Fog Node", "Tasks", "Avg Delay(s)", "Total Energy(J)");
-        System.out.println("  " + "-".repeat(50));
+        if (!isBaseline) {
+            System.out.printf("%n  Per-FN Delay & Energy:%n");
+            System.out.printf("  %-12s %6s %12s %14s%n", "Fog Node", "Tasks", "Avg Delay(s)", "Total Energy(J)");
+            System.out.println("  " + "-".repeat(50));
+        } else {
+            System.out.printf("%n  Per-FN Delay:%n");
+            System.out.printf("  %-12s %6s %12s%n", "Fog Node", "Tasks", "Avg Delay(s)");
+            System.out.println("  " + "-".repeat(34));
+        }
         for (int j = 0; j < numFogs; j++) {
             if (fnCount[j] > 0) {
-                System.out.printf("  %-12s %6d %12.4f %14.4f%n",
-                    fogNetworks[j].getName(), fnCount[j],
-                    fnDelay[j] / fnCount[j], fnEnergy[j]);
+                if (!isBaseline) {
+                    System.out.printf("  %-12s %6d %12.4f %14.4f%n",
+                        fogNetworks[j].getName(), fnCount[j],
+                        fnDelay[j] / fnCount[j], fnEnergy[j]);
+                } else {
+                    System.out.printf("  %-12s %6d %12.4f%n",
+                        fogNetworks[j].getName(), fnCount[j],
+                        fnDelay[j] / fnCount[j]);
+                }
             } else {
-                System.out.printf("  %-12s %6d %12s %14s%n",
-                    fogNetworks[j].getName(), 0, "--", "--");
+                if (!isBaseline) {
+                    System.out.printf("  %-12s %6d %12s %14s%n",
+                        fogNetworks[j].getName(), 0, "--", "--");
+                } else {
+                    System.out.printf("  %-12s %6d %12s%n",
+                        fogNetworks[j].getName(), 0, "--");
+                }
             }
         }
 
@@ -448,6 +495,23 @@ public class SimulationPrinter {
         }
 
         System.out.println("\n" + LINE + "\n");
+        
+        return metrics;
+    }
+
+    public static void printScenarioAverages(int numTasks, SimulationMetrics baselineAvg, SimulationMetrics proposedAvg) {
+        System.out.println("\n==========================================================================");
+        System.out.printf("  SCENARIO SUMMARY (Tasks: %d, Average of 10 runs)%n", numTasks);
+        System.out.println("==========================================================================");
+        System.out.printf("  %-28s %20s %22s%n", "Metric", "Baseline (M-DAFTO)", "Proposed (2-Type MSDA)");
+        System.out.println("  --------------------------------------------------------------------------");
+        System.out.printf("  %-28s %20.4f %22.4f%n", "Total Offloading Delay (s)", baselineAvg.totalDelay, proposedAvg.totalDelay);
+        System.out.printf("  %-28s %20.4f %22.4f%n", "Avg Offloading Delay (s)", baselineAvg.avgDelay, proposedAvg.avgDelay);
+        System.out.printf("  %-28s %20.4f %22.4f%n", "Total Energy (J)", baselineAvg.totalEnergy, proposedAvg.totalEnergy);
+        System.out.printf("  %-28s %19.2f%% %21.2f%%%n", "Outage Probability", baselineAvg.outageRate, proposedAvg.outageRate);
+        System.out.printf("  %-28s %19.2f%% %21.2f%%%n", "Task Satisfaction", baselineAvg.avgTaskSat, proposedAvg.avgTaskSat);
+        System.out.printf("  %-28s %19.2f%% %21.2f%%%n", "FN Satisfaction", baselineAvg.avgFnSat, proposedAvg.avgFnSat);
+        System.out.println("==========================================================================\n");
     }
 
     // ================================================================
