@@ -328,6 +328,24 @@ STEP 12e: ASSEMBLE PROPOSED SimulationData
 
 
 ================================================================================
+  PHASE 2C: GPM PIPELINE
+================================================================================
+  Uses: gpmTasks[]
+
+STEP 12f: GPM DATA PREPARATION
+  File: Main.java, Normalizer.java, UrgencyCalculator.java
+
+  Reuses Proposed normalization and AHP weights on gpmTasks to generate
+  identical task/FN preference lists for fair evaluation:
+    - Normalizer.normalize(gpmTasks, 5)
+    - UrgencyCalculator.computeAllUrgencies(gpmTasks, w1, w2, w3, w4)
+    - PreferenceRanker preference rankings and precedence lists are compiled.
+  
+  Assembles into: gpmSimData = new SimulationData(...)
+
+
+
+================================================================================
   PHASE 3: QUOTA DETERMINATION (Common — computed once on fogNetworks)
 ================================================================================
 
@@ -480,6 +498,18 @@ STEP 16B: RUN PROPOSED 2-TYPE MSDA ALGORITHM
     Multi-stage loop similar to baseline, using runStandardDA internally.
 
 
+................................................................................
+
+STEP 16C: RUN GPM ALGORITHM
+  File: MSDAlgorithm.java — matchGPM() → executeGPM()
+
+  16C.1: Copy tasks and sort them by ascending deadline (matching baseline PL order).
+  16C.2: Retrieve all Fog Networks and sort their indices by `numberOfVRUs` descending (with stable node ID sorting).
+  16C.3: Loop through sorted tasks and assign each to the current fog node if its assigned count is less than the node's `numberOfVRUs` limit.
+  16C.4: If the current fog node is full, move to the next fog node in the sorted list.
+  16C.5: If all fog nodes are fully utilized, leave the remaining tasks unassigned.
+
+
 ================================================================================
   PHASE 6: EVALUATION METRICS & RESULTS PRINTING
 ================================================================================
@@ -487,8 +517,10 @@ STEP 16B: RUN PROPOSED 2-TYPE MSDA ALGORITHM
 STEP 17: COMPUTE & PRINT RESULTS
   File: SimulationPrinter.java — printResults()
 
-  Called TWICE: once for baselineResult, once for proposedResult.
-  For each result set, computes and prints:
+  Called THREE TIMES: for baselineResult, proposedResult, and gpmResult.
+  For gpmResult, printDetails is false to suppress console print logs.
+  For each result set, computes (and optionally prints) metrics:
+
 
   17a. MATCHING OVERVIEW:
        matched = result.matchedCount
@@ -575,27 +607,29 @@ STEP 18: SCENARIO LOOPING & OUTPUT CAPTURE
     1. For iteration 0 of each scenario, full detailed metrics are captured 
        using a ByteArrayOutputStream.
     2. After 10 iterations, the accumulators are averaged and SimulationPrinter.printScenarioAverages() 
-       prints a comparative summary table for the scenario.
+       prints a comparative summary table (with GPM, Baseline, and Proposed) for the scenario.
     3. The 4 scenario tables print sequentially at the top of the output file.
     4. Finally, the captured detailed 1st-iteration logs are appended at the bottom.
 
 
 ================================================================================
-  KEY DIFFERENCES: BASELINE vs PROPOSED
+  KEY DIFFERENCES: GPM vs BASELINE vs PROPOSED
 ================================================================================
 
-  FEATURE                  BASELINE (M-DAFTO)         PROPOSED (2-Type MSDA)
-  ─────────────────────────────────────────────────────────────────────────────
-  Initial Data             IDENTICAL raw delays/energy from Steps 1-3
-  AHP Criteria             2 (DelayDiff, PrefCount)   4 (+Energy, +Severity)
-  AHP Matrix               2×2 (always CR=0)          4×4 (loop until CR≤0.1)
-  Normalization normSum    normDelay only              normDelay + normEnergy
-  Severity Weight on Norm  None (all tasks = 1.0)     Minor=0.5, Major=1.0
-  Urgency Formula          w1/slack + w2/pref          + w3/energy + w4*gamma
-  Critical Score (gamma)   Not used                   Major=1.5, Minor=1.0
-  Fog Preference Ranking   By delay only              By delay+energy
-  Task Ranking per Fog     Single pool (all tasks)    Separate Major/Minor pools
-  Matching Algorithm       Single-Type MSDA (Alg 9)   2-Type MSDA (Alg 10)
-  Deadline Handling         status flag (true/false)   No deadline filtering in DA
-  Quota Enforcement         Min-quota with relaxation  Split min-quota R/S types
-  ─────────────────────────────────────────────────────────────────────────────
+  FEATURE                  GPM                        BASELINE (M-DAFTO)         PROPOSED (2-Type MSDA)
+  ─────────────────────────────────────────────────────────────────────────────────────────────────────────────
+  Initial Data             IDENTICAL raw delays/energy IDENTICAL raw delays/energy IDENTICAL raw delays/energy
+                           from Steps 1-3             from Steps 1-3             from Steps 1-3
+  AHP Criteria             None                       2 (DelayDiff, PrefCount)   4 (+Energy, +Severity)
+  AHP Matrix               None                       2×2 (always CR=0)          4×4 (loop until CR≤0.1)
+  Normalization normSum    Proposed norm (for stats)  normDelay only             normDelay + normEnergy
+  Severity Weight on Norm  None                       None                       Minor=0.5, Major=1.0
+  Urgency Formula          None                       w1/slack + w2/pref         + w3/energy + w4*gamma
+  Critical Score (gamma)   Not used                   Not used                   Major=1.5, Minor=1.0
+  Fog Preference Ranking   Proposed rankings          By delay only              By delay+energy
+  Task Ranking per Fog     Proposed rankings          Single pool (all tasks)    Separate Major/Minor pools
+  Matching Algorithm       Greedy VRU assignment      Single-Type MSDA (Alg 9)   2-Type MSDA (Alg 10)
+  Deadline Handling        Ignored during match       status flag (true/false)   No deadline filtering in DA
+  Quota Enforcement        Max capacity = VRUs only   Min-quota with relaxation  Split min-quota R/S types
+  ─────────────────────────────────────────────────────────────────────────────────────────────────────────────
+
