@@ -43,29 +43,32 @@ public class Main {
         for (int scenarioTasks : scenarios) {
             SimulationConfig.NUM_TASKS = scenarioTasks;
             
+            SimulationMetrics gpmAccumulator = new SimulationMetrics();
             SimulationMetrics baselineAccumulator = new SimulationMetrics();
             SimulationMetrics proposedAccumulator = new SimulationMetrics();
-
+ 
             for (int iter = 0; iter < iterations; iter++) {
                 boolean printDetails = (iter == 0);
-
+ 
                 // ── Step 1: Generate Core Data ──
                 FogNetwork[] fogNetworks = FogNetworkGenerator.generate(rand);
                 Task[] baseTasks = TaskGenerator.generate(rand);
-
+ 
                 // ── Step 2: Compute Absolute Delay & Energy (Common) ──
                 for (Task task : baseTasks) {
                     OffloadingCalculator.computeAndStore(task, fogNetworks);
                 }
-
+ 
                 // ── Step 3: Deep Copy Tasks for Independent Pipelines ──
                 Task[] baselineTasks = new Task[baseTasks.length];
                 Task[] proposedTasks = new Task[baseTasks.length];
+                Task[] gpmTasks = new Task[baseTasks.length];
                 for (int i = 0; i < baseTasks.length; i++) {
                     baselineTasks[i] = baseTasks[i].deepCopy();
                     proposedTasks[i] = baseTasks[i].deepCopy();
+                    gpmTasks[i] = baseTasks[i].deepCopy();
                 }
-
+ 
                 // ================================================================
                 //  BASELINE PIPELINE (M-DAFTO)
                 // ================================================================
@@ -81,7 +84,7 @@ public class Main {
                     baselineTasks, fogNetworks, baselineWeights.weights, 
                     prefBase, prefBase, prefBase, precBaseMaj, precBaseMin
                 );
-
+ 
                 // ================================================================
                 //  PROPOSED PIPELINE (2-Type MSDA)
                 // ================================================================
@@ -102,12 +105,32 @@ public class Main {
                     proposedTasks, fogNetworks, proposedWeights.weights, 
                     prefProp, prefPropMaj, prefPropMin, precPropMaj, precPropMin
                 );
+ 
+                // ================================================================
+                //  GPM PIPELINE (Greedy Placement Method)
+                // ================================================================
+                // Reuse the Proposed normalization and AHP weights to yield task/FN preferences for fair metric evaluation
+                Normalizer.normalize(gpmTasks, fogNetworks.length);
+                UrgencyCalculator.computeAllUrgencies(
+                    gpmTasks, proposedWeights.weights[0], proposedWeights.weights[1], 
+                    proposedWeights.weights[2], proposedWeights.weights[3]
+                );
+                int[][] prefGpm    = PreferenceRanker.rankAllTasksPerFog(gpmTasks, fogNetworks.length);
+                int[][] prefGpmMaj = PreferenceRanker.rankMajorTasksPerFog(gpmTasks, fogNetworks.length);
+                int[][] prefGpmMin = PreferenceRanker.rankMinorTasksPerFog(gpmTasks, fogNetworks.length);
+                Task[] precGpmMaj  = PreferenceRanker.buildMajorPrecedenceList(gpmTasks);
+                Task[] precGpmMin  = PreferenceRanker.buildMinorPrecedenceList(gpmTasks);
+                
+                SimulationData gpmSimData = buildSimData(
+                    gpmTasks, fogNetworks, proposedWeights.weights, 
+                    prefGpm, prefGpmMaj, prefGpmMin, precGpmMaj, precGpmMin
+                );
 
                 // ── Step 4: Compute Quotas (Based on proposed/common task counts) ──
                 int majorCount = PreferenceRanker.countMajorTasks(proposedTasks);
                 QuotaDeterminator.computeMinimumQuotas(fogNetworks, SimulationConfig.NUM_TASKS, true);
                 QuotaDeterminator.computeMinimumQuotas(fogNetworks, majorCount, false);
-
+ 
                 // ── Step 7: Run Algorithms & Capture Results ──
                 if (printDetails) {
                     System.setOut(captureOut);
@@ -121,7 +144,7 @@ public class Main {
                 MSDAlgorithm.MatchingResult baselineResult = MSDAlgorithm.matchBaseline(baselineSimData);
                 SimulationMetrics baseMetrics = SimulationPrinter.printResults(baselineSimData, baselineResult, true, printDetails);
                 baselineAccumulator.add(baseMetrics);
-
+ 
                 if (printDetails) {
                     System.out.println("\n=================================================");
                     System.out.println(" RUNNING PROPOSED 2-TYPE MSDA ALGORITHM");
@@ -130,17 +153,23 @@ public class Main {
                 MSDAlgorithm.MatchingResult result = MSDAlgorithm.match(proposedSimData);
                 SimulationMetrics propMetrics = SimulationPrinter.printResults(proposedSimData, result, false, printDetails);
                 proposedAccumulator.add(propMetrics);
+
+                // Run GPM matching algorithm (GPM detail printing is suppressed as requested)
+                MSDAlgorithm.MatchingResult gpmResult = MSDAlgorithm.matchGPM(gpmSimData);
+                SimulationMetrics gpmMetrics = SimulationPrinter.printResults(gpmSimData, gpmResult, false, false);
+                gpmAccumulator.add(gpmMetrics);
                 
                 if (printDetails) {
                     System.setOut(originalOut);
                 }
-
+ 
             } // End of Iterations
-
+ 
+            gpmAccumulator.divideBy(iterations);
             baselineAccumulator.divideBy(iterations);
             proposedAccumulator.divideBy(iterations);
             
-            SimulationPrinter.printScenarioAverages(scenarioTasks, baselineAccumulator, proposedAccumulator);
+            SimulationPrinter.printScenarioAverages(scenarioTasks, gpmAccumulator, baselineAccumulator, proposedAccumulator);
         } // End of Scenarios
         
         // Print the detailed output at the very end

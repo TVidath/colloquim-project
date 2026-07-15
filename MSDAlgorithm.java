@@ -148,6 +148,71 @@ public class MSDAlgorithm {
         return new MatchingResult(taskAssignment, fogAssignments, unmatchedCount, matchedCount);
     }
 
+    public static MatchingResult matchGPM(SimulationData simData) {
+        MSDAlgorithm algo = new MSDAlgorithm(simData);
+        return algo.executeGPM();
+    }
+
+    private MatchingResult executeGPM() {
+        Task[] tasks = simData.getTasks();
+        FogNetwork[] fogs = simData.getFogNetworks();
+        int numFogs = fogs.length;
+
+        // Sort tasks by ascending deadline (matching baseline PL sorting)
+        Task[] sortedTasks = Arrays.copyOf(tasks, tasks.length);
+        Arrays.sort(sortedTasks, new Comparator<Task>() {
+            @Override
+            public int compare(Task a, Task b) {
+                return Double.compare(a.getDeadline(), b.getDeadline());
+            }
+        });
+
+        // Sort fog node indices by numberOfVRUs descending
+        Integer[] sortedFogIndices = new Integer[numFogs];
+        for (int i = 0; i < numFogs; i++) {
+            sortedFogIndices[i] = i;
+        }
+        Arrays.sort(sortedFogIndices, new Comparator<Integer>() {
+            @Override
+            public int compare(Integer a, Integer b) {
+                int cmp = Integer.compare(fogs[b].getNumberOfVRUs(), fogs[a].getNumberOfVRUs());
+                if (cmp != 0) return cmp;
+                return Integer.compare(a, b);
+            }
+        });
+
+        int[] taskAssignment = new int[tasks.length];
+        Arrays.fill(taskAssignment, -1);
+        
+        List<List<Integer>> fogAssignments = new ArrayList<>();
+        for (int i = 0; i < numFogs; i++) {
+            fogAssignments.add(new ArrayList<>());
+        }
+
+        int currentFogIdxInSorted = 0;
+        int matchedCount = 0;
+
+        for (Task t : sortedTasks) {
+            int tIdx = t.getTaskId() - 1;
+            while (currentFogIdxInSorted < numFogs) {
+                int fIdx = sortedFogIndices[currentFogIdxInSorted];
+                int limit = fogs[fIdx].getNumberOfVRUs();
+                if (fogAssignments.get(fIdx).size() < limit) {
+                    taskAssignment[tIdx] = fIdx;
+                    fogAssignments.get(fIdx).add(tIdx);
+                    matchedCount++;
+                    break;
+                } else {
+                    currentFogIdxInSorted++;
+                }
+            }
+        }
+
+        int unmatchedCount = tasks.length - matchedCount;
+        return new MatchingResult(taskAssignment, fogAssignments, unmatchedCount, matchedCount);
+    }
+
+
     private Map<Task, Integer> doTwoTypeMSDA(List<Task> T, int[] p_init, int[] q_init, int[] pr_init, int[] qr_init) {
         int[] p = Arrays.copyOf(p_init, p_init.length);
         int[] q = Arrays.copyOf(q_init, q_init.length);

@@ -260,7 +260,7 @@ public class SimulationPrinter {
 
         // Major vs Minor
         int majTotal = 0, majMatched = 0, minTotal = 0, minMatched = 0;
-        double majDelay = 0, minDelay = 0, majEnergy = 0, minEnergy = 0;
+        double majDelay = 0, minDelay = 0;
         for (int i = 0; i < numTasks; i++) {
             boolean isMaj = "Major".equalsIgnoreCase(tasks[i].getSeverity());
             if (isMaj) {
@@ -268,14 +268,12 @@ public class SimulationPrinter {
                 if (assignments[i] != -1) {
                     majMatched++;
                     majDelay  += tasks[i].getOffloadingDelay(assignments[i]);
-                    majEnergy += tasks[i].getEnergy(assignments[i]);
                 }
             } else {
                 minTotal++;
                 if (assignments[i] != -1) {
                     minMatched++;
                     minDelay  += tasks[i].getOffloadingDelay(assignments[i]);
-                    minEnergy += tasks[i].getEnergy(assignments[i]);
                 }
             }
         }
@@ -347,7 +345,13 @@ public class SimulationPrinter {
         double gini = computeGiniIndex(matchesPerFog);
         double jain = computeJainIndex(matchesPerFog);
 
-        SimulationMetrics metrics = new SimulationMetrics(avgDelay, totalDelay, totalEnergy, (outages * 100.0 / numTasks), avgTaskSat, avgFnSat);
+        double majOutageRate = majTotal > 0 ? ((majTotal - majMatched) * 100.0 / majTotal) : 0.0;
+        double minOutageRate = minTotal > 0 ? ((minTotal - minMatched) * 100.0 / minTotal) : 0.0;
+        double majorAvgDelay = majMatched > 0 ? (majDelay / majMatched) : 0.0;
+        double minorAvgDelay = minMatched > 0 ? (minDelay / minMatched) : 0.0;
+
+        SimulationMetrics metrics = new SimulationMetrics(avgDelay, totalDelay, totalEnergy, (outages * 100.0 / numTasks), avgTaskSat, avgFnSat,
+                                                          majOutageRate, minOutageRate, majorAvgDelay, minorAvgDelay);
 
         if (!printDetails) {
             return metrics;
@@ -386,25 +390,7 @@ public class SimulationPrinter {
         System.out.printf("  Gini Index             : %.4f%n", gini);
         System.out.printf("  Jain Fairness Index    : %.4f%n", jain);
 
-        // Major vs Minor
-        if (!isBaseline) {
-            System.out.printf("%n  Major vs Minor Breakdown:%n");
-            System.out.printf("  %-8s %14s %10s %12s %12s%n",
-                "Type", "Matched", "Outages", "Avg Delay", "Avg Energy");
-            System.out.println("  " + "-".repeat(60));
-            System.out.printf("  %-8s %4d/%-4d(%4.1f%%) %10d %10.4f s %10.4f J%n",
-                "Major", majMatched, majTotal,
-                majTotal > 0 ? (majMatched * 100.0 / majTotal) : 0,
-                majTotal - majMatched,
-                majMatched > 0 ? majDelay / majMatched : 0,
-                majMatched > 0 ? majEnergy / majMatched : 0);
-            System.out.printf("  %-8s %4d/%-4d(%4.1f%%) %10d %10.4f s %10.4f J%n",
-                "Minor", minMatched, minTotal,
-                minTotal > 0 ? (minMatched * 100.0 / minTotal) : 0,
-                minTotal - minMatched,
-                minMatched > 0 ? minDelay / minMatched : 0,
-                minMatched > 0 ? minEnergy / minMatched : 0);
-        }
+
 
         // FN Assignment Table
         System.out.printf("%n  FN Assignment Table:%n");
@@ -499,19 +485,23 @@ public class SimulationPrinter {
         return metrics;
     }
 
-    public static void printScenarioAverages(int numTasks, SimulationMetrics baselineAvg, SimulationMetrics proposedAvg) {
-        System.out.println("\n==========================================================================");
+    public static void printScenarioAverages(int numTasks, SimulationMetrics gpmAvg, SimulationMetrics baselineAvg, SimulationMetrics proposedAvg) {
+        System.out.println("\n========================================================================================");
         System.out.printf("  SCENARIO SUMMARY (Tasks: %d, Average of 10 runs)%n", numTasks);
-        System.out.println("==========================================================================");
-        System.out.printf("  %-28s %20s %22s%n", "Metric", "Baseline (M-DAFTO)", "Proposed (2-Type MSDA)");
-        System.out.println("  --------------------------------------------------------------------------");
-        System.out.printf("  %-28s %20.4f %22.4f%n", "Total Offloading Delay (s)", baselineAvg.totalDelay, proposedAvg.totalDelay);
-        System.out.printf("  %-28s %20.4f %22.4f%n", "Avg Offloading Delay (s)", baselineAvg.avgDelay, proposedAvg.avgDelay);
-        System.out.printf("  %-28s %20.4f %22.4f%n", "Total Energy (J)", baselineAvg.totalEnergy, proposedAvg.totalEnergy);
-        System.out.printf("  %-28s %19.2f%% %21.2f%%%n", "Outage Probability", baselineAvg.outageRate, proposedAvg.outageRate);
-        System.out.printf("  %-28s %19.2f%% %21.2f%%%n", "Task Satisfaction", baselineAvg.avgTaskSat, proposedAvg.avgTaskSat);
-        System.out.printf("  %-28s %19.2f%% %21.2f%%%n", "FN Satisfaction", baselineAvg.avgFnSat, proposedAvg.avgFnSat);
-        System.out.println("==========================================================================\n");
+        System.out.println("========================================================================================");
+        System.out.printf("  %-28s %15s %20s %22s%n", "Metric", "GPM [14]", "Baseline (M-DAFTO)", "Proposed (2-Type MSDA)");
+        System.out.println("  ----------------------------------------------------------------------------------------");
+        System.out.printf("  %-28s %15.4f %20.4f %22.4f%n", "Total Offloading Delay (s)", gpmAvg.totalDelay, baselineAvg.totalDelay, proposedAvg.totalDelay);
+        System.out.printf("  %-28s %15.4f %20.4f %22.4f%n", "Avg Offloading Delay (s)", gpmAvg.avgDelay, baselineAvg.avgDelay, proposedAvg.avgDelay);
+        System.out.printf("  %-28s %15.4f %20.4f %22.4f%n", "Major Avg Delay (s)", gpmAvg.majorAvgDelay, baselineAvg.majorAvgDelay, proposedAvg.majorAvgDelay);
+        System.out.printf("  %-28s %15.4f %20.4f %22.4f%n", "Minor Avg Delay (s)", gpmAvg.minorAvgDelay, baselineAvg.minorAvgDelay, proposedAvg.minorAvgDelay);
+        System.out.printf("  %-28s %15.4f %20.4f %22.4f%n", "Total Energy (J)", gpmAvg.totalEnergy, baselineAvg.totalEnergy, proposedAvg.totalEnergy);
+        System.out.printf("  %-28s %14.2f%% %19.2f%% %21.2f%%%n", "Overall Outage Prob.", gpmAvg.outageRate, baselineAvg.outageRate, proposedAvg.outageRate);
+        System.out.printf("  %-28s %14.2f%% %19.2f%% %21.2f%%%n", "Major Outage Prob.", gpmAvg.majorOutageRate, baselineAvg.majorOutageRate, proposedAvg.majorOutageRate);
+        System.out.printf("  %-28s %14.2f%% %19.2f%% %21.2f%%%n", "Minor Outage Prob.", gpmAvg.minorOutageRate, baselineAvg.minorOutageRate, proposedAvg.minorOutageRate);
+        System.out.printf("  %-28s %14.2f%% %19.2f%% %21.2f%%%n", "Task Satisfaction", gpmAvg.avgTaskSat, baselineAvg.avgTaskSat, proposedAvg.avgTaskSat);
+        System.out.printf("  %-28s %14.2f%% %19.2f%% %21.2f%%%n", "FN Satisfaction", gpmAvg.avgFnSat, baselineAvg.avgFnSat, proposedAvg.avgFnSat);
+        System.out.println("========================================================================================\n");
     }
 
     // ================================================================

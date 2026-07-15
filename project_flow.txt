@@ -538,19 +538,16 @@ STEP 17: COMPUTE & PRINT RESULTS
          sumSq = sum(matchesPerFog[j]^2)
          jain  = sum^2 / (numFogs * sumSq)
 
-  17g. MAJOR vs MINOR BREAKDOWN:
-       Counts, match rates, avg delay, avg energy for each severity type.
-
-  17h. FN ASSIGNMENT TABLE:
+  17g. FN ASSIGNMENT TABLE:
        Per fog: MinQ, MaxQ, Major assigned, Minor assigned, Total, Utilization%.
 
-  17i. PER-FN DELAY & ENERGY:
+  17h. PER-FN DELAY & ENERGY:
        Per fog: task count, average delay, total energy.
 
-  17j. RESOURCE UTILIZATION BAR:
+  17i. RESOURCE UTILIZATION BAR:
        Per fog: assigned/maxQuota with visual bar.
 
-  17k. TRAFFIC LOAD DISTRIBUTION:
+  17j. TRAFFIC LOAD DISTRIBUTION:
        Per fog: task count with proportional bar.
 
 
@@ -567,8 +564,9 @@ STEP 18: SCENARIO LOOPING & OUTPUT CAPTURE
   
   For each iteration, SimulationMetrics accumulates:
     - Total Offloading Delay, Avg Offloading Delay
+    - Major/Minor Avg Offloading Delay
     - Total Energy
-    - Outage Probability
+    - Overall/Major/Minor Outage Probability
     - Task Satisfaction, FN Satisfaction
 
   Output Strategy:
