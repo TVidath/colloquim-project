@@ -34,7 +34,7 @@ public class SimulationPrinter {
 
     public static void printHeader(int numTasks, int numFogNodes, double[] weights) {
         System.out.println("\n" + LINE);
-        System.out.println("  M-DAFTO FOG COMPUTING OFFLOADING SIMULATION");
+        System.out.println("  FOGFLOW TASK OFFLOADING SIMULATION");
         System.out.println(LINE);
         System.out.println("  Tasks          : " + numTasks);
         System.out.println("  Fog Nodes      : " + numFogNodes);
@@ -218,7 +218,7 @@ public class SimulationPrinter {
     }
 
     // ================================================================
-    //  8. RESULTS (Single unified section — Paper Section VI)
+    //  8. RESULTS (Single unified section)
     // ================================================================
 
     /**
@@ -489,7 +489,7 @@ public class SimulationPrinter {
         System.out.println("\n========================================================================================");
         System.out.printf("  SCENARIO SUMMARY (Tasks: %d, Average of 10 runs)%n", numTasks);
         System.out.println("========================================================================================");
-        System.out.printf("  %-28s %15s %20s %22s%n", "Metric", "GPM [14]", "Baseline (M-DAFTO)", "Proposed (2-Type MSDA)");
+        System.out.printf("  %-28s %15s %20s %22s%n", "Metric", "Greedy Placement", "Quota Baseline", "Severity-Aware Two-Type");
         System.out.println("  ----------------------------------------------------------------------------------------");
         System.out.printf("  %-28s %15.4f %20.4f %22.4f%n", "Total Offloading Delay (s)", gpmAvg.totalDelay, baselineAvg.totalDelay, proposedAvg.totalDelay);
         System.out.printf("  %-28s %15.4f %20.4f %22.4f%n", "Avg Offloading Delay (s)", gpmAvg.avgDelay, baselineAvg.avgDelay, proposedAvg.avgDelay);

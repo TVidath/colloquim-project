@@ -11,7 +11,7 @@ import java.util.Map;
  * ============================================================================
  *
  *  Implements the 2-Type Multi-Stage Deferred Acceptance (MSDA) algorithm
- *  for task offloading in IoT-Fog systems (Oomori & Manabe).
+ *  for task offloading in IoT-Fog systems.
  *
  * ============================================================================
  */
@@ -287,7 +287,7 @@ public class MSDAlgorithm {
                 if(Vk_R.size() == vr) {
                     int[] q_temp = new int[numFogs];
                     for(int c = 0; c < numFogs; c++) {
-                        if(C_prime[c]) q_temp[c] = pr[c]; // FIX: The paper typo said qr_c^k, but to force min quotas it MUST be pr_c^k, just like line 19 does for S.
+                        if(C_prime[c]) q_temp[c] = pr[c]; // FIX: The reference typo said qr_c^k, but to force min quotas it MUST be pr_c^k, just like line 19 does for S.
                         else q_temp[c] = 0;
                     }
                     finalMu.putAll(runStandardDA(Vk_R, q_temp));

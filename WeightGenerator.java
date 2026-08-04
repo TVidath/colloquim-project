@@ -6,7 +6,7 @@ import java.util.Random;
  * ============================================================================
  *
  *  Generates urgency weights w1, w2, w3, w4 using the Analytic Hierarchy
- *  Process (AHP) from the M-DAFTO paper.
+ *  Process (AHP).
  *
  *  Implements four algorithms:
  *    - Algorithm 3 (ACW) : AHP-Based Criteria Weight — main loop

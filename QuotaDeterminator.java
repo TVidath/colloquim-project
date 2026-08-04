@@ -3,7 +3,7 @@
  *  QuotaDeterminator
  * ============================================================================
  *
- *  Implements Algorithm 1: Minimum Quota Determination (MQD) from M-DAFTO.
+ *  Implements minimum quota determination for fog nodes.
  *
  *  Computes minimum quotas for each Fog Network proportionately based on
  *  their VRU capacity relative to the most computationally efficient node.

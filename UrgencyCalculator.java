@@ -45,8 +45,8 @@ public class UrgencyCalculator {
 
     /**
      * Computes baseline urgencies for ALL tasks across all fog nodes.
-     * This strictly uses only 2 criteria: Delay Difference and Preference Count,
-     * ignoring Energy and Severity as per the original M-DAFTO paper.
+    * This strictly uses only 2 criteria: Delay Difference and Preference Count,
+    * ignoring Energy and Severity.
      */
     public static void computeBaselineUrgencies(Task[] tasks, double w1, double w2) {
         for (Task task : tasks) {

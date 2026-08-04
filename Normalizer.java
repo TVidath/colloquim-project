@@ -23,8 +23,8 @@
 public class Normalizer {
 
     /**
-     * Normalizes delay and energy values globally across all tasks and fog nodes.
-     * Stores normalized values, sums, and fog preference order back into each Task.
+    * Normalizes delay and energy values globally across all tasks and fog nodes.
+    * Stores normalized values, sums, and fog preference order back into each Task.
      *
      * @param tasks        Array of tasks with computed delay and energy
      * @param numFogNodes  Number of fog nodes in the simulation
@@ -80,8 +80,8 @@ public class Normalizer {
     }
 
     /**
-     * Normalizes delay values globally across all tasks and fog nodes for the BASELINE method.
-     * Energy is explicitly ignored as per the original M-DAFTO formulation.
+    * Normalizes delay values globally across all tasks and fog nodes for the baseline method.
+    * Energy is explicitly ignored.
      */
     public static void normalizeBaseline(Task[] tasks, int numFogNodes) {
 
@@ -101,7 +101,7 @@ public class Normalizer {
 
         // ── Step 2: Normalize each value and compute sums (delay only) ──
         for (Task t : tasks) {
-            // Original M-DAFTO does NOT use a severity weight reduction factor on normalization
+            // The baseline path does not apply a severity weight reduction factor on normalization,
             // so we use a strict weight of 1.0 for all tasks.
             for (int f = 0; f < numFogNodes; f++) {
                 double nd = (t.getOffloadingDelay(f) - minDelay)  / delayRange;

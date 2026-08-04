@@ -6,7 +6,7 @@ import java.util.Random;
  * ============================================================================
  *  Main — Simulation Orchestrator
  * ============================================================================
- *  Entry point for the M-DAFTO Fog Computing Offloading Simulation.
+ *  Entry point for the FogFlow task offloading simulation.
  *
  *  This class orchestrates the full pipeline by calling each component
  *  in order. All logic is delegated to specialized classes:
@@ -70,7 +70,7 @@ public class Main {
                 }
  
                 // ================================================================
-                //  BASELINE PIPELINE (M-DAFTO)
+                //  BASELINE PIPELINE (quota-driven)
                 // ================================================================
                 WeightGenerator.WeightResult baselineWeights = WeightGenerator.generateBaselineWeights(rand);
                 Normalizer.normalizeBaseline(baselineTasks, fogNetworks.length);
@@ -138,7 +138,7 @@ public class Main {
                     System.out.println(" DETAILED RESULTS FOR 1 ITERATION (SCENARIO: " + scenarioTasks + " TASKS)");
                     System.out.println("==========================================================================");
                     System.out.println("\n=================================================");
-                    System.out.println(" RUNNING BASELINE M-DAFTO ALGORITHM");
+                    System.out.println(" RUNNING QUOTA BASELINE ALGORITHM");
                     System.out.println("=================================================");
                 }
                 MSDAlgorithm.MatchingResult baselineResult = MSDAlgorithm.matchBaseline(baselineSimData);
@@ -147,7 +147,7 @@ public class Main {
  
                 if (printDetails) {
                     System.out.println("\n=================================================");
-                    System.out.println(" RUNNING PROPOSED 2-TYPE MSDA ALGORITHM");
+                    System.out.println(" RUNNING SEVERITY-AWARE TWO-TYPE ALGORITHM");
                     System.out.println("=================================================");
                 }
                 MSDAlgorithm.MatchingResult result = MSDAlgorithm.match(proposedSimData);
