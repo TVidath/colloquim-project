@@ -170,7 +170,7 @@ java Main | Out-File -Encoding utf8 output.txt
 
 ## References
 
-- **Base Paper:** M-DAFTO — [Multi-Stage Deferred Acceptance Based Fair Task Offloading in IoT-Fog Systems](https://doi.org/10.1109/JIOT.2022.3183979) (IEEE JIOT 2022)
+- **Base Paper:** M-DAFTO — [Multi-Stage Deferred Acceptance Based Fair Task Offloading in IoT-Fog Systems](https://ieeexplore.ieee.org/document/10620404) (IEEE JIOT 2022)
 - **Matching Theory:** Gale-Shapley Deferred Acceptance Algorithm
 - **AHP:** Saaty's Analytic Hierarchy Process
 
