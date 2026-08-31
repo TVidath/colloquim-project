@@ -18,7 +18,7 @@ Your project does the EXACT same thing — but with a BETTER algorithm.
 Here is the correct way to frame it:
 
   >> "An extended and improved task offloading algorithm for IoT-Fog healthcare
-      systems, built on top of the M-DAFTO framework. I designed a 2-Type
+      systems, built on top of the M-DAFTO framework. I adapted a 2-Type
       Multi-Stage Deferred Acceptance (MSDA) algorithm that introduces task
       severity classification (Major/Minor), energy-aware urgency scoring,
       and type-separated matching to significantly reduce outage probability
@@ -27,7 +27,7 @@ Here is the correct way to frame it:
 
 Key distinction:
   - The Java code is the IMPLEMENTATION and EVALUATION of the algorithm.
-  - The algorithm itself (2-Type MSDA) is your core contribution.
+  - Adapting the algorithm itself (2-Type MSDA) is your core contribution.
   - The "simulation" is just the experimental setup to test performance —
     exactly how every research paper evaluates their algorithms.
   - The M-DAFTO paper also does the same — they implement in Java and
@@ -53,7 +53,7 @@ You made the following changes/extensions to the base M-DAFTO paper:
      ─────────────────────────────────────────────────────────────
      - M-DAFTO uses a Single-Type MSDA (Algorithm 2 in their paper) which treats
        all tasks in one undifferentiated pool.
-     - You designed a 2-Type MSDA that maintains separate quota tracking for
+     - You adapted a 2-Type MSDA that maintains separate quota tracking for
        Major (R-type) and Minor (S-type) tasks WITHIN the same multi-stage
        deferred acceptance framework.
      - Your algorithm runs a "Modified DA" (runModifiedDA) which simultaneously
@@ -232,7 +232,7 @@ WHAT DID YOU DO? (60 seconds):
   "I built on top of a published algorithm called M-DAFTO, which uses a
    Multi-Stage Deferred Acceptance approach — similar to the stable matching
    problem, like the one used in hospital-resident matching. The original
-   algorithm treats all tasks in a single pool. I redesigned it as a 2-Type
+   algorithm treats all tasks in a single pool. I adapted a 2-Type
    system where Major tasks (critical surgeries) and Minor tasks (routine
    checkups) have separate quota constraints and preference rankings.
 
@@ -385,7 +385,7 @@ OPTION 1 — Best All-Rounder (Recommended for most placements)
 ────────────────────────────────────────────────────────────────────────────────
 
   Severity-Aware Task Offloading for IoT-Fog Healthcare Systems     [Java, DSA]
-  • Designed a 2-Type MSDA algorithm that classifies healthcare tasks by
+  • Adapted a 2-Type MSDA algorithm that classifies healthcare tasks by
     severity (Major/Minor) and matches them to fog nodes with type-specific
     quota constraints, reducing critical-task outage by ~90% on average
   • Extended the urgency model with energy consumption and severity scoring
@@ -398,7 +398,7 @@ OPTION 2 — Short & Punchy (2 bullet points — saves space)
 ────────────────────────────────────────────────────────────────────────────────
 
   Severity-Aware Task Offloading in IoT-Fog Systems                 [Java, DSA]
-  • Designed a 2-Type matching algorithm for healthcare fog computing that
+  • Adapted a 2-Type matching algorithm for healthcare fog computing that
     reduced critical-task outage by ~90% and overall outage by ~80% on
     average compared to the baseline M-DAFTO method
   • Implemented AHP-based 4-criteria urgency scoring, severity-weighted
@@ -431,7 +431,7 @@ OPTION 4 — Domain + Impact (good for product / healthcare tech roles)
 OPTION 5 — Single Line (for very tight space)
 ────────────────────────────────────────────────────────────────────────────────
 
-  • Designed a severity-aware matching algorithm for IoT-Fog healthcare
+  • Developed a severity-aware matching system for IoT-Fog healthcare
     systems — reduced outage by ~80% on average across test scales  [Java, DSA]
 
 
@@ -451,7 +451,7 @@ project. Here's what you actually used and can defend in an interview:
   │                                Comparator-based sorting, deep copy,    │
   │                                preference lists, precedence lists      │
   │                                                                        │
-  │  Algorithm Design             Designed a novel 2-Type MSDA algorithm   │
+  │  Algorithm Design             Adapted a 2-Type MSDA algorithm        │
   │                                extending Deferred Acceptance matching   │
   │                                                                        │
   │  OOP / Object-Oriented        14 modular classes with clear SRP,       │
@@ -492,6 +492,80 @@ project. Here's what you actually used and can defend in an interview:
   ─────────────────────────────────────────────────────
   If you know Python, SQL, Web Dev, etc. from OTHER projects or coursework,
   absolutely list them. Just don't tie them to THIS project specifically.
+
+
+
+================================================================================
+  SECTION 12:  FINAL CLEANED RESUME OPTIONS (Medium Length, Accurate)
+================================================================================
+
+Project Name Options (pick one):
+  1. Healthcare IoT Task Offloading
+  2. IoT-Fog Task Offloading System
+  3. Smart Healthcare Task Scheduler
+  4. Fog Computing Task Offloading
+
+────────────────────────────────────────────────────────────────────────────────
+FOR SDE / SOFTWARE ENGINEERING ROLES
+────────────────────────────────────────────────────────────────────────────────
+
+  [Project Name]                                                      [Java]
+  • Improved M-DAFTO algorithm by adding Major/Minor task classification
+    with separate quota constraints and a 2-Type Deferred Acceptance
+    matching with three-constraint rejection (Major limit, Minor limit,
+    total capacity)
+  • Extended urgency scoring from 2 to 4 criteria (delay, energy,
+    preference, severity) using a 4×4 AHP matrix with consistency check,
+    and applied severity-weighted normalization with separate preference
+    lists per task type
+  • Compared 3 algorithms across 4 scales (250–2000 tasks), 10 runs each
+    — reduced critical-task outage by ~90% and overall outage by ~80% on
+    average compared to the baseline
+
+────────────────────────────────────────────────────────────────────────────────
+FOR DATA / ML / AI ROLES
+────────────────────────────────────────────────────────────────────────────────
+
+  [Project Name]                                                      [Java]
+  • Improved M-DAFTO algorithm by classifying tasks as Major/Minor with
+    separate quotas and type-separated Deferred Acceptance matching,
+    ensuring critical healthcare tasks are prioritized during fog node
+    assignment
+  • Designed a 4-criteria urgency model (delay, energy, preference,
+    severity) with AHP-generated weights, severity-weighted normalization,
+    and separate Major/Minor preference rankings per fog node
+  • Evaluated over 40 runs (4 scales × 10 iterations) against 2 baselines
+    — reduced critical-task outage by ~90% and overall outage by ~80% on
+    average; measured satisfaction, delay, and Gini/Jain fairness
+
+────────────────────────────────────────────────────────────────────────────────
+FOR PRODUCT / HEALTHCARE TECH ROLES
+────────────────────────────────────────────────────────────────────────────────
+
+  [Project Name]                                                      [Java]
+  • Improved M-DAFTO algorithm by separating critical surgeries from
+    routine tasks with independent quotas and priority-aware matching,
+    preventing resource starvation for high-priority operations
+  • Added energy consumption and severity scoring to the urgency model
+    (2 → 4 criteria) with AHP weight generation, giving critical tasks a
+    natural priority boost in fog node preference rankings
+  • Tested across 250–2000 tasks against 2 baselines, 10 runs each —
+    reduced critical-task outage by ~90% and overall outage by ~80% on
+    average compared to baseline
+
+────────────────────────────────────────────────────────────────────────────────
+PROJECT DESCRIPTION (300 chars — for GitHub / portfolio)
+────────────────────────────────────────────────────────────────────────────────
+
+  Improved a published matching algorithm (M-DAFTO) by introducing
+  Major/Minor task classification with separate quota constraints and
+  type-separated Deferred Acceptance matching for healthcare IoT-Fog
+  systems. Expanded the urgency model from 2 to 4 criteria (delay,
+  energy, preference, severity) using AHP-based weight generation with
+  consistency validation. Implemented severity-weighted normalization
+  and separate preference lists per task type across fog nodes. Evaluated
+  in Java across 250–2000 task scales against 2 baselines, achieving 0%
+  critical-task outage under normal load.
 
 
 ================================================================================

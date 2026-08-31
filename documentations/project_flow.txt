@@ -72,9 +72,10 @@ STEP 3: COMPUTE ABSOLUTE DELAY & ENERGY (for every task × every fog node)
 STEP 4: DEEP COPY (PIPELINE SPLIT)
   File: Main.java, Task.java (deepCopy method)
 
-  Creates two independent copies of the baseTasks array:
+  Creates three independent copies of the baseTasks array:
     - baselineTasks[i] = baseTasks[i].deepCopy()   (for Baseline M-DAFTO)
-    - proposedTasks[i] = baseTasks[i].deepCopy()   (for Proposed 2-Type MSDA)
+    - proposedTasks[i] = baseTasks[i].deepCopy()   (for Adapted 2-Type MSDA)
+    - gpmTasks[i]      = baseTasks[i].deepCopy()   (for Greedy Placement Method)
 
   deepCopy() creates a new Task with identical:
     taskId, cpuDemanded, inputSize, outputSize, deadline, phase, severity,
@@ -82,7 +83,7 @@ STEP 4: DEEP COPY (PIPELINE SPLIT)
     receivingTimes, offloadingDelays, energies, normalizedDelays,
     normalizedEnergies, normSums, urgencies, preferredFogIndices, prefCount).
 
-  PURPOSE: From this point, the two pipelines modify their own copies
+  PURPOSE: From this point, the three pipelines modify their own copies
   independently. The raw delays and energies are identical, but
   normalization, urgency, and rankings will diverge.
 
@@ -201,7 +202,7 @@ STEP 8c: ASSEMBLE BASELINE SimulationData
 
 
 ================================================================================
-  PHASE 2B: PROPOSED 2-TYPE MSDA PIPELINE
+  PHASE 2B: ADAPTED 2-TYPE MSDA PIPELINE
 ================================================================================
   Uses: proposedTasks[]
 
@@ -333,15 +334,30 @@ STEP 12e: ASSEMBLE PROPOSED SimulationData
   Uses: gpmTasks[]
 
 STEP 12f: GPM DATA PREPARATION
-  File: Main.java, Normalizer.java, UrgencyCalculator.java
+  File: Main.java, Normalizer.java, UrgencyCalculator.java, PreferenceRanker.java
 
-  Reuses Proposed normalization and AHP weights on gpmTasks to generate
-  identical task/FN preference lists for fair evaluation:
-    - Normalizer.normalize(gpmTasks, 5)
-    - UrgencyCalculator.computeAllUrgencies(gpmTasks, w1, w2, w3, w4)
-    - PreferenceRanker preference rankings and precedence lists are compiled.
-  
-  Assembles into: gpmSimData = new SimulationData(...)
+  Reuses the PROPOSED AHP weights (proposedWeights) on gpmTasks so that
+  metrics like task/FN satisfaction can be computed on a level playing field.
+  The GPM algorithm itself (Step 16C) ignores urgency and preferences — it is
+  purely greedy — but the preference arrays are still needed for the metric
+  evaluation in printResults().
+
+  Process:
+    1. Normalizer.normalize(gpmTasks, numFogs)  — severity-weighted delay+energy
+    2. UrgencyCalculator.computeAllUrgencies(gpmTasks, w1, w2, w3, w4)
+    3. PreferenceRanker.rankAllTasksPerFog(gpmTasks, numFogs)    → prefGpm
+    4. PreferenceRanker.rankMajorTasksPerFog(gpmTasks, numFogs)  → prefGpmMaj
+    5. PreferenceRanker.rankMinorTasksPerFog(gpmTasks, numFogs)  → prefGpmMin
+    6. PreferenceRanker.buildMajorPrecedenceList(gpmTasks)       → precGpmMaj
+    7. PreferenceRanker.buildMinorPrecedenceList(gpmTasks)       → precGpmMin
+
+  Assembles into: gpmSimData = new SimulationData(
+    gpmTasks, fogNetworks,
+    normDelayArray, normEnergyArray, normSumArray, preferredFogIndices,
+    prefGpm, prefGpmMaj, prefGpmMin,
+    proposedWeights.weights,
+    precGpmMaj, precGpmMin
+  )
 
 
 
@@ -379,28 +395,25 @@ STEP 13: MINIMUM QUOTA DETERMINATION (Algorithm 1: MQD)
 
 
 ================================================================================
-  PHASE 4: OUTPUT — PRINT CONFIGURATION & DIAGNOSTICS
+  PHASE 4: (RESERVED — DIAGNOSTIC METHODS AVAILABLE BUT NOT ACTIVE)
 ================================================================================
 
-STEP 14: PRINT HEADER & AHP DIAGNOSTICS
-  File: SimulationPrinter.java
+  NOTE: SimulationPrinter.java contains several diagnostic methods that are
+  NOT called from the current Main.java pipeline. They exist for manual
+  debugging and are documented here for reference:
 
-  14a. printHeader() — Shows task count, fog count, bandwidth, proposed weights
-  14b. Print "[BASELINE M-DAFTO AHP DIAGNOSTICS]"
-       printAHPDiagnostics(baselineWeights) — Shows 2×2 matrix
-  14c. Print "[PROPOSED 2-TYPE MSDA AHP DIAGNOSTICS]"
-       printAHPDiagnostics(proposedWeights) — Shows 4×4 matrix
-  14d. printFogNodes() — CPU, VRUs, VRU Capacity for each fog
-  14e. printQuotas() — Min(All), Max(All), Min(Major), Max(Major) per fog
+    - printHeader(numTasks, numFogs, weights)  — Simulation config summary
+    - printAHPDiagnostics(weightResult)        — AHP matrix, CI, CR, weights
+    - printFogNodes(fogNetworks)               — CPU, VRUs, VRU capacity table
+    - printQuotas(fogNetworks)                 — Min/Max quota table
+    - printSampleTasks(tasks, fogs, count)     — Detailed first N tasks
+    - printPreferredTaskPrioritization(...)     — Top-N urgent tasks per fog
+    - printPrecedenceLists(major, minor)        — Deadline-sorted precedence
+    - printSummary(simData)                    — Array dimension summary
 
-STEP 15: PRINT INPUT DATA (using Proposed pipeline data)
-  15a. printSampleTasks(proposedTasks, fogNetworks, 3)
-       Shows first 3 tasks: attributes, delay/energy/normSum/urgency per fog,
-       and preferred fog order.
-  15b. printPreferredTaskPrioritization(proposedSimData, proposedTasks, fogNetworks)
-       Shows top 15 most-urgent tasks per fog node.
-  15c. printPrecedenceLists(precPropMaj, precPropMin)
-       Shows top 15 tasks from Major and Minor precedence lists (by deadline).
+  These can be re-enabled by adding the corresponding calls in Main.java
+  within the printDetails block. The current pipeline skips directly from
+  quota determination (Phase 3) to algorithm execution (Phase 5).
 
 
 ================================================================================
@@ -444,7 +457,7 @@ STEP 16A: RUN BASELINE M-DAFTO ALGORITHM
 
 ................................................................................
 
-STEP 16B: RUN PROPOSED 2-TYPE MSDA ALGORITHM
+STEP 16B: RUN PROPOSED 2-TYPE MSDA ALGORITHM (Adapted from Oomori & Manabe Algorithm 10)
   File: MSDAlgorithm.java — match() → execute()
 
   16B.1: Build unified Precedence List (ALL proposedTasks sorted by ascending deadline)
@@ -479,7 +492,7 @@ STEP 16B: RUN PROPOSED 2-TYPE MSDA ALGORITHM
          c. Otherwise:
             - Recurse: doTwoTypeMSDA(V_new, adjusted quotas)
 
-  runModifiedDA(candidates, p, q, pr, qr) — 2-Type Deferred Acceptance:
+  runModifiedDA(candidates, p, q, pr, qr) — 2-Type Deferred Acceptance (from Oomori & Manabe):
     1. Each unmatched task proposes to its next preferred fog node
        (NO deadline filtering — quotas must be satisfied)
     2. Each fog node c evaluates applicants in two pools:
@@ -503,11 +516,23 @@ STEP 16B: RUN PROPOSED 2-TYPE MSDA ALGORITHM
 STEP 16C: RUN GPM ALGORITHM
   File: MSDAlgorithm.java — matchGPM() → executeGPM()
 
-  16C.1: Copy tasks and sort them by ascending deadline (matching baseline PL order).
-  16C.2: Retrieve all Fog Networks and sort their indices by `numberOfVRUs` descending (with stable node ID sorting).
-  16C.3: Loop through sorted tasks and assign each to the current fog node if its assigned count is less than the node's `numberOfVRUs` limit.
-  16C.4: If the current fog node is full, move to the next fog node in the sorted list.
-  16C.5: If all fog nodes are fully utilized, leave the remaining tasks unassigned.
+  A capacity-based greedy algorithm that ignores urgency, preferences, and
+  quotas entirely. Serves as a lower-bound comparison point.
+
+  16C.1: Copy tasks and sort them by ascending deadline (same order as PL).
+  16C.2: Sort fog node indices by descending numberOfVRUs.
+         Ties are broken by ascending fog node index (stable ordering).
+  16C.3: Maintain a pointer (currentFogIdxInSorted) starting at 0.
+  16C.4: For each task in sorted order:
+         - Attempt to assign to the current fog node.
+         - If that fog's assigned count < numberOfVRUs → assign and move on.
+         - If that fog is full → advance the pointer to the next fog.
+         - If all fogs are exhausted → task remains unassigned (outage).
+  16C.5: No deadline filtering is performed during assignment.
+
+  NOTE: GPM detail printing is SUPPRESSED (printDetails=false) for all
+  iterations. GPM metrics are computed and included in the scenario
+  summary table but its per-iteration breakdown is never printed.
 
 
 ================================================================================
@@ -520,7 +545,6 @@ STEP 17: COMPUTE & PRINT RESULTS
   Called THREE TIMES: for baselineResult, proposedResult, and gpmResult.
   For gpmResult, printDetails is false to suppress console print logs.
   For each result set, computes (and optionally prints) metrics:
-
 
   17a. MATCHING OVERVIEW:
        matched = result.matchedCount
@@ -570,19 +594,16 @@ STEP 17: COMPUTE & PRINT RESULTS
          sumSq = sum(matchesPerFog[j]^2)
          jain  = sum^2 / (numFogs * sumSq)
 
-  17g. MAJOR vs MINOR BREAKDOWN:
-       Counts, match rates, avg delay, avg energy for each severity type.
-
-  17h. FN ASSIGNMENT TABLE:
+  17g. FN ASSIGNMENT TABLE:
        Per fog: MinQ, MaxQ, Major assigned, Minor assigned, Total, Utilization%.
 
-  17i. PER-FN DELAY & ENERGY:
+  17h. PER-FN DELAY & ENERGY:
        Per fog: task count, average delay, total energy.
 
-  17j. RESOURCE UTILIZATION BAR:
+  17i. RESOURCE UTILIZATION BAR:
        Per fog: assigned/maxQuota with visual bar.
 
-  17k. TRAFFIC LOAD DISTRIBUTION:
+  17j. TRAFFIC LOAD DISTRIBUTION:
        Per fog: task count with proportional bar.
 
 
@@ -591,7 +612,7 @@ STEP 17: COMPUTE & PRINT RESULTS
 ================================================================================
 
 STEP 18: SCENARIO LOOPING & OUTPUT CAPTURE
-  File: Main.java, SimulationMetrics.java
+  File: Main.java, SimulationMetrics.java, SimulationPrinter.java
 
   The entire pipeline (Steps 1 to 17) is wrapped in two loops:
     - Outer Loop: Iterates through load scenarios (250, 500, 1000, 2000 tasks).
@@ -599,24 +620,69 @@ STEP 18: SCENARIO LOOPING & OUTPUT CAPTURE
   
   For each iteration, SimulationMetrics accumulates:
     - Total Offloading Delay, Avg Offloading Delay
+    - Major/Minor Avg Offloading Delay
     - Total Energy
-    - Outage Probability
+    - Overall/Major/Minor Outage Probability
     - Task Satisfaction, FN Satisfaction
 
-  Output Strategy:
-    1. For iteration 0 of each scenario, full detailed metrics are captured 
-       using a ByteArrayOutputStream.
-    2. After 10 iterations, the accumulators are averaged and SimulationPrinter.printScenarioAverages() 
-       prints a comparative summary table (with GPM, Baseline, and Proposed) for the scenario.
-    3. The 4 scenario tables print sequentially at the top of the output file.
-    4. Finally, the captured detailed 1st-iteration logs are appended at the bottom.
+  Output Capture Strategy:
+    A ByteArrayOutputStream (detailedOutput) is allocated once before all loops.
+    PrintStream captureOut wraps it; originalOut holds System.out.
+
+    For EACH scenario's iteration 0 (printDetails=true):
+      1. System.out is redirected → captureOut
+      2. "DETAILED RESULTS FOR 1 ITERATION (SCENARIO: X TASKS)" header is printed
+      3. Baseline algorithm is run, printResults(isBaseline=true, printDetails=true)
+         prints full results to captureOut
+      4. Proposed algorithm is run, printResults(isBaseline=false, printDetails=true)
+         prints full results (with energy + Major/Minor columns) to captureOut
+      5. GPM algorithm is run, printResults(isBaseline=false, printDetails=false)
+         → printDetails=false means NO output is printed for GPM, only metrics
+         are returned for accumulation
+      6. System.out is restored → originalOut
+
+    For iterations 1–9 (printDetails=false):
+      All three algorithms run silently; only metrics are accumulated.
+
+    After all 10 iterations of a scenario:
+      - Accumulators are divided by 10
+      - SimulationPrinter.printScenarioAverages() prints a 3-column comparison
+        table (GPM vs Baseline vs Proposed) to originalOut immediately
+
+    After ALL scenarios complete:
+      - System.out.println(detailedOutput.toString()) appends all captured
+        first-iteration logs at the bottom of the output
+
+  Final Output File Structure:
+    ┌──────────────────────────────────────────────┐
+    │  SCENARIO SUMMARY (250 tasks, avg of 10)     │  ← printed live
+    │  SCENARIO SUMMARY (500 tasks, avg of 10)     │
+    │  SCENARIO SUMMARY (1000 tasks, avg of 10)    │
+    │  SCENARIO SUMMARY (2000 tasks, avg of 10)    │
+    ├──────────────────────────────────────────────┤
+    │  DETAILED RESULTS (250 tasks, iteration 0)   │  ← from captureOut
+    │    └─ Baseline results                       │
+    │    └─ Proposed results                       │
+    │  DETAILED RESULTS (500 tasks, iteration 0)   │
+    │    └─ Baseline results                       │
+    │    └─ Proposed results                       │
+    │  DETAILED RESULTS (1000 tasks, iteration 0)  │
+    │    └─ Baseline results                       │
+    │    └─ Proposed results                       │
+    │  DETAILED RESULTS (2000 tasks, iteration 0)  │
+    │    └─ Baseline results                       │
+    │    └─ Proposed results                       │
+    └──────────────────────────────────────────────┘
+
+  NOTE: GPM detailed results are NEVER printed (printDetails is always
+  false for GPM). GPM metrics appear only in the scenario summary tables.
 
 
 ================================================================================
   KEY DIFFERENCES: GPM vs BASELINE vs PROPOSED
 ================================================================================
 
-  FEATURE                  GPM                        BASELINE (M-DAFTO)         PROPOSED (2-Type MSDA)
+  FEATURE                  GPM                        BASELINE (M-DAFTO)         PROPOSED SYSTEM (Adapted 2-Type MSDA)
   ─────────────────────────────────────────────────────────────────────────────────────────────────────────────
   Initial Data             IDENTICAL raw delays/energy IDENTICAL raw delays/energy IDENTICAL raw delays/energy
                            from Steps 1-3             from Steps 1-3             from Steps 1-3

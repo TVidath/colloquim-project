@@ -1,0 +1,61 @@
+% --- CONCLUSION ---
+
+\section{Summary of Contributions}
+
+This project addressed the limitations of the M-DAFTO algorithm for healthcare IoT-fog task offloading by adapting the 2-Type Multi-Stage Deferred Acceptance (MSDA) algorithm from Oomori and Manabe \cite{oomori2026strategyproof} and combining it with several original extensions.
+
+\subsection*{Adaptations of Prior Work}
+
+\begin{enumerate}
+\item \textbf{2-Type MSDA matching}: Adapted the 2-Type MSDA algorithm from \cite{oomori2026strategyproof} for IoT-fog task offloading, including the Modified DA with three simultaneous constraints and the final-stage three-case logic.
+
+\item \textbf{Two-type task classification}: Applied the R-type/S-type framework from \cite{oomori2026strategyproof} by mapping Major/Minor healthcare task severity onto it, with separate quota constraints ($pr_c$, $qr_c$) per fog node ensuring critical tasks are never starved of resources.
+
+\item \textbf{Separate preference lists}: Implemented separate fog-side rankings for all tasks, Major tasks only, and Minor tasks only, as structurally required by the 2-Type MSDA architecture \cite{oomori2026strategyproof}.
+\end{enumerate}
+
+\subsection*{Original Technical Additions}
+
+\begin{enumerate}
+\item \textbf{Energy as a metric}: Extended the urgency function to include energy consumption, computed from transmission, execution, and receiving power.
+
+\item \textbf{Severity score}: Introduced a severity multiplier $\gamma$ (1.5 for Major, 1.0 for Minor) to the urgency formula, naturally prioritising critical tasks.
+
+\item \textbf{Severity-weighted normalisation}: Designed a Min-Max normalisation applied to both delay and energy with severity-based weighting (0.5 for Minor, 1.0 for Major).
+
+\item \textbf{4$\times$4 AHP}: Extended the AHP matrix from 2$\times$2 to 4$\times$4 with genuine consistency validation (CR $\leq$ 0.1).
+
+\item \textbf{GPM baseline}: Implemented a Greedy Placement Method as an additional comparison point.
+\end{enumerate}
+
+On average across all tested scales, the adapted and extended method reduced overall outage by approximately 79\% and critical-task outage by approximately 89\% compared to the baseline. Under normal load (250--1000 tasks), the proposed algorithm achieves 0\% Major outage. These improvements come with acceptable trade-offs in delay and task satisfaction.
+
+\section{Limitations}
+
+Several limitations should be noted:
+\begin{itemize}
+\item \textbf{Batch processing}: The current system processes all tasks simultaneously in a batch. Real hospitals have continuous task arrivals that would require online/streaming processing.
+\item \textbf{Synthetic data}: The evaluation uses randomly generated data rather than real healthcare workload traces. Testing with actual hospital data would validate practical viability.
+\item \textbf{Narrow deadline range}: The deadline range of 15--22 seconds may not capture the full spectrum of healthcare urgency. Tasks requiring sub-second processing were not tested.
+\item \textbf{Device-to-fog only}: The model supports only device-to-fog offloading. Fog-to-fog horizontal and fog-to-cloud vertical offloading are not considered.
+\end{itemize}
+
+\section{Future Work}
+
+Several directions warrant future investigation:
+
+\begin{itemize}
+\item \textbf{Dynamic task arrival}: Extending the system to handle continuous, online task arrivals rather than batch processing, making it more realistic for hospital environments.
+
+\item \textbf{Task migration}: Allowing tasks to be migrated between fog nodes when loads change dynamically, potentially improving performance under fluctuating conditions.
+
+\item \textbf{Real-world workload traces}: Testing with actual healthcare workload traces from hospitals to validate the algorithm's practical viability.
+
+\item \textbf{Heterogeneous deadlines}: Expanding the deadline range to include truly time-critical tasks (sub-second) and longer-horizon tasks, stressing the algorithm further.
+
+\item \textbf{Fog-to-fog and fog-to-cloud offloading}: Adding horizontal (fog-to-fog) and vertical (fog-to-cloud) offloading to handle overflow scenarios more gracefully.
+
+\item \textbf{Multi-tier severity}: Extending from 2 severity levels to 3 or more (e.g., Critical/Major/Minor/Routine) for finer-grained control.
+
+\item \textbf{Machine learning weight generation}: Replacing the random AHP weight generation with learned weights from historical data, potentially improving performance.
+\end{itemize}

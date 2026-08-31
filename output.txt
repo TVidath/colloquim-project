@@ -4,16 +4,16 @@
 ========================================================================================
   Metric                       Greedy Placement       Quota Baseline Severity-Aware Two-Type
   ----------------------------------------------------------------------------------------
-  Total Offloading Delay (s)         5165.9807            3125.8831              3212.9885
-  Avg Offloading Delay (s)             20.6639              12.6473                12.8714
-  Major Avg Delay (s)                  20.5912              12.5775                12.7403
-  Minor Avg Delay (s)                  20.7411              12.7165                13.0086
-  Total Energy (J)                   5142.8052            3102.9243              3189.8512
-  Overall Outage Prob.                   0.00%                0.92%                  0.16%
-  Major Outage Prob.                     0.00%                1.06%                  0.00%
-  Minor Outage Prob.                     0.00%                0.78%                  0.32%
-  Task Satisfaction                      9.04%               71.14%                 69.96%
-  FN Satisfaction                       10.04%               10.54%                 10.34%
+  Total Offloading Delay (s)         4787.2192            3172.6851              3340.7307
+  Avg Offloading Delay (s)             19.1489              13.1235                13.3877
+  Major Avg Delay (s)                  19.1782              13.2413                13.4434
+  Minor Avg Delay (s)                  19.1309              13.0180                13.3415
+  Total Energy (J)                   4763.9623            3150.0815              3317.5080
+  Overall Outage Prob.                   0.00%                2.76%                  0.16%
+  Major Outage Prob.                     0.00%                2.55%                  0.00%
+  Minor Outage Prob.                     0.00%                2.97%                  0.30%
+  Task Satisfaction                     17.40%               67.03%                 66.23%
+  FN Satisfaction                       10.04%               10.33%                 10.46%
 ========================================================================================
 
 
@@ -22,16 +22,34 @@
 ========================================================================================
   Metric                       Greedy Placement       Quota Baseline Severity-Aware Two-Type
   ----------------------------------------------------------------------------------------
-  Total Offloading Delay (s)        10215.4295            6232.8120              6412.9587
-  Avg Offloading Delay (s)             20.4309              12.6692                12.8281
-  Major Avg Delay (s)                  20.4345              12.5893                12.6800
-  Minor Avg Delay (s)                  20.4273              12.7577                12.9878
-  Total Energy (J)                  10168.9263            6186.9221              6366.4667
-  Overall Outage Prob.                   0.00%                1.34%                  0.02%
-  Major Outage Prob.                     0.00%                1.32%                  0.00%
-  Minor Outage Prob.                     0.00%                1.36%                  0.04%
-  Task Satisfaction                     14.09%               68.26%                 67.46%
-  FN Satisfaction                       12.05%               19.50%                 18.85%
+  Total Offloading Delay (s)        10172.5271            6002.3311              6102.9651
+  Avg Offloading Delay (s)             20.3451              12.0759                12.2256
+  Major Avg Delay (s)                  20.3835              12.0224                12.0632
+  Minor Avg Delay (s)                  20.3052              12.1302                12.3958
+  Total Energy (J)                  10126.2453            5956.3010              6056.7608
+  Overall Outage Prob.                   0.00%                0.54%                  0.16%
+  Major Outage Prob.                     0.00%                0.62%                  0.00%
+  Minor Outage Prob.                     0.00%                0.47%                  0.32%
+  Task Satisfaction                     14.97%               71.05%                 70.52%
+  FN Satisfaction                       11.82%               19.80%                 19.01%
+========================================================================================
+
+
+========================================================================================
+  SCENARIO SUMMARY (Tasks: 750, Average of 10 runs)
+========================================================================================
+  Metric                       Greedy Placement       Quota Baseline Severity-Aware Two-Type
+  ----------------------------------------------------------------------------------------
+  Total Offloading Delay (s)        14153.2631            9618.6619             10124.3708
+  Avg Offloading Delay (s)             18.8710              13.2168                13.5068
+  Major Avg Delay (s)                  18.8496              13.1544                13.2106
+  Minor Avg Delay (s)                  18.8943              13.2878                13.8107
+  Total Energy (J)                  14083.6188            9550.9276             10054.7729
+  Overall Outage Prob.                   0.00%                2.69%                  0.07%
+  Major Outage Prob.                     0.00%                2.37%                  0.00%
+  Minor Outage Prob.                     0.00%                3.02%                  0.13%
+  Task Satisfaction                     18.66%               64.09%                 63.45%
+  FN Satisfaction                       17.46%               27.98%                 27.34%
 ========================================================================================
 
 
@@ -40,34 +58,16 @@
 ========================================================================================
   Metric                       Greedy Placement       Quota Baseline Severity-Aware Two-Type
   ----------------------------------------------------------------------------------------
-  Total Offloading Delay (s)        18070.0228           12829.1524             13697.8270
-  Avg Offloading Delay (s)             18.0700              13.3627                13.7003
-  Major Avg Delay (s)                  18.0700              13.3906                13.4518
-  Minor Avg Delay (s)                  18.0724              13.3350                13.9478
-  Total Energy (J)                  17976.6879           12739.1442             13604.5102
-  Overall Outage Prob.                   0.00%                3.65%                  0.02%
-  Major Outage Prob.                     0.00%                3.72%                  0.00%
-  Minor Outage Prob.                     0.00%                3.58%                  0.04%
-  Task Satisfaction                     21.72%               60.62%                 59.31%
-  FN Satisfaction                       25.00%               34.57%                 35.25%
-========================================================================================
-
-
-========================================================================================
-  SCENARIO SUMMARY (Tasks: 2000, Average of 10 runs)
-========================================================================================
-  Metric                       Greedy Placement       Quota Baseline Severity-Aware Two-Type
-  ----------------------------------------------------------------------------------------
-  Total Offloading Delay (s)        28194.5169           23114.9549             28271.7374
-  Avg Offloading Delay (s)             16.1677              14.5321                16.2171
-  Major Avg Delay (s)                  16.1864              14.5174                15.2326
-  Minor Avg Delay (s)                  16.1490              14.5461                17.2873
-  Total Energy (J)                  28033.1794           22967.3054             28110.3600
-  Overall Outage Prob.                  13.15%               20.46%                 13.15%
-  Major Outage Prob.                    13.02%               20.46%                  9.36%
-  Minor Outage Prob.                    13.28%               20.48%                 16.95%
-  Task Satisfaction                     33.77%               40.27%                 32.83%
-  FN Satisfaction                       50.43%               50.22%                 59.08%
+  Total Offloading Delay (s)        17275.4483           12995.1612             13709.4743
+  Avg Offloading Delay (s)             17.2754              13.4295                13.7095
+  Major Avg Delay (s)                  17.2925              13.4835                13.5000
+  Minor Avg Delay (s)                  17.2593              13.3779                13.9213
+  Total Energy (J)                  17182.5673           12905.1528             13616.5933
+  Overall Outage Prob.                   0.00%                3.06%                  0.00%
+  Major Outage Prob.                     0.00%                2.90%                  0.00%
+  Minor Outage Prob.                     0.00%                3.21%                  0.00%
+  Task Satisfaction                     25.61%               59.93%                 58.60%
+  FN Satisfaction                       24.71%               34.45%                 34.89%
 ========================================================================================
 
 
@@ -86,51 +86,51 @@
   Matched / Total        : 250 / 250
   Outage Rate            : 0.00%  (0 tasks)
 
-  Total Offloading Delay : 3285.0182 s
-  Avg Delay per Task     : 13.1401 s
+  Total Offloading Delay : 2796.7880 s
+  Avg Delay per Task     : 11.1872 s
 
   Deadline Compliance    : (out of 250 total tasks)
-    Assigned & Met DL    : 250
-    Assigned & Missed DL : 0
+    Assigned & Met DL    : 249
+    Assigned & Missed DL : 1
     Unassigned (outages) : 0
-    Success Rate         : 100.0% of assigned tasks met their deadline
+    Success Rate         : 99.6% of assigned tasks met their deadline
 
-  Task Satisfaction      : 70.51%  (Eq. 20)
-  FN Satisfaction        : 10.18%  (Eq. 21-22)
-  Gini Index             : 0.2704
-  Jain Fairness Index    : 0.7518
+  Task Satisfaction      : 78.45%  (Eq. 20)
+  FN Satisfaction        : 12.20%  (Eq. 21-22)
+  Gini Index             : 0.4096
+  Jain Fairness Index    : 0.5047
 
   FN Assignment Table:
   Fog Node         MinQ     MaxQ    Total    Util(%)
   --------------------------------------------------
-  FogNode_1          24      437       24      5.49%
-  FogNode_2          42      269       42     15.61%
-  FogNode_3          50      279      106     37.99%
-  FogNode_4          37      412       37      8.98%
-  FogNode_5          41      279       41     14.70%
+  FogNode_1          24      306       24      7.84%
+  FogNode_2          26      276       26      9.42%
+  FogNode_3          23      435       23      5.29%
+  FogNode_4          28      393       28      7.12%
+  FogNode_5          50      201      149     74.13%
 
   Per-FN Delay:
   Fog Node      Tasks Avg Delay(s)
   ----------------------------------
-  FogNode_1        24      15.8791
-  FogNode_2        42      16.3658
-  FogNode_3       106      11.4344
-  FogNode_4        37      11.9593
-  FogNode_5        41      13.7076
+  FogNode_1        24      15.3070
+  FogNode_2        26      16.7549
+  FogNode_3        23      12.3294
+  FogNode_4        28      18.2342
+  FogNode_5       149       8.0514
 
   Resource Utilization:
-  FogNode_1    [#........................]   24/437  (  5.5%)
-  FogNode_2    [####.....................]   42/269  ( 15.6%)
-  FogNode_3    [#########................]  106/279  ( 38.0%)
-  FogNode_4    [##.......................]   37/412  (  9.0%)
-  FogNode_5    [####.....................]   41/279  ( 14.7%)
+  FogNode_1    [##.......................]   24/306  (  7.8%)
+  FogNode_2    [##.......................]   26/276  (  9.4%)
+  FogNode_3    [#........................]   23/435  (  5.3%)
+  FogNode_4    [##.......................]   28/393  (  7.1%)
+  FogNode_5    [###################......]  149/201  ( 74.1%)
 
   Traffic Load Distribution:
-  FogNode_1    [######...................]   24 tasks (  9.6%)
-  FogNode_2    [##########...............]   42 tasks ( 16.8%)
-  FogNode_3    [#########################]  106 tasks ( 42.4%)
-  FogNode_4    [#########................]   37 tasks ( 14.8%)
-  FogNode_5    [##########...............]   41 tasks ( 16.4%)
+  FogNode_1    [####.....................]   24 tasks (  9.6%)
+  FogNode_2    [####.....................]   26 tasks ( 10.4%)
+  FogNode_3    [####.....................]   23 tasks (  9.2%)
+  FogNode_4    [#####....................]   28 tasks ( 11.2%)
+  FogNode_5    [#########################]  149 tasks ( 59.6%)
 
 ================================================================================
 
@@ -146,53 +146,53 @@
   Matched / Total        : 250 / 250
   Outage Rate            : 0.00%  (0 tasks)
 
-  Total Offloading Delay : 3304.9596 s
-  Avg Delay per Task     : 13.2198 s
-  Total Energy Consumed  : 3282.1135 J
-  Avg Energy per Task    : 13.1285 J
+  Total Offloading Delay : 2824.9617 s
+  Avg Delay per Task     : 11.2998 s
+  Total Energy Consumed  : 2801.7437 J
+  Avg Energy per Task    : 11.2070 J
 
   Deadline Compliance    : (out of 250 total tasks)
-    Assigned & Met DL    : 250
-    Assigned & Missed DL : 0
+    Assigned & Met DL    : 240
+    Assigned & Missed DL : 10
     Unassigned (outages) : 0
-    Success Rate         : 100.0% of assigned tasks met their deadline
+    Success Rate         : 96.0% of assigned tasks met their deadline
 
-  Task Satisfaction      : 69.67%  (Eq. 20)
-  FN Satisfaction        : 9.87%  (Eq. 21-22)
-  Gini Index             : 0.2704
-  Jain Fairness Index    : 0.7518
+  Task Satisfaction      : 77.62%  (Eq. 20)
+  FN Satisfaction        : 11.31%  (Eq. 21-22)
+  Gini Index             : 0.4096
+  Jain Fairness Index    : 0.5047
 
   FN Assignment Table:
   Fog Node         MinQ     MaxQ    Major    Minor    Total    Util(%)
   --------------------------------------------------------------------
-  FogNode_1          24      437       12       12       24      5.49%
-  FogNode_2          42      269       24       18       42     15.61%
-  FogNode_3          50      279       58       48      106     37.99%
-  FogNode_4          37      412       19       18       37      8.98%
-  FogNode_5          41      279       21       20       41     14.70%
+  FogNode_1          24      306       15        9       24      7.84%
+  FogNode_2          26      276       17        9       26      9.42%
+  FogNode_3          23      435       12       11       23      5.29%
+  FogNode_4          28      393       13       15       28      7.12%
+  FogNode_5          50      201       65       84      149     74.13%
 
   Per-FN Delay & Energy:
   Fog Node      Tasks Avg Delay(s) Total Energy(J)
   --------------------------------------------------
-  FogNode_1        24      17.1250       408.8317
-  FogNode_2        42      12.3109       513.3382
-  FogNode_3       106      11.4344      1202.2267
-  FogNode_4        37      13.6295       500.8320
-  FogNode_5        41      16.1112       656.8849
+  FogNode_1        24      16.7111       398.8921
+  FogNode_2        26      14.7960       382.4735
+  FogNode_3        23      18.5339       424.1849
+  FogNode_4        28      14.7593       410.6208
+  FogNode_5       149       8.0514      1185.5723
 
   Resource Utilization:
-  FogNode_1    [#........................]   24/437  (  5.5%)
-  FogNode_2    [####.....................]   42/269  ( 15.6%)
-  FogNode_3    [#########................]  106/279  ( 38.0%)
-  FogNode_4    [##.......................]   37/412  (  9.0%)
-  FogNode_5    [####.....................]   41/279  ( 14.7%)
+  FogNode_1    [##.......................]   24/306  (  7.8%)
+  FogNode_2    [##.......................]   26/276  (  9.4%)
+  FogNode_3    [#........................]   23/435  (  5.3%)
+  FogNode_4    [##.......................]   28/393  (  7.1%)
+  FogNode_5    [###################......]  149/201  ( 74.1%)
 
   Traffic Load Distribution:
-  FogNode_1    [######...................]   24 tasks (  9.6%)
-  FogNode_2    [##########...............]   42 tasks ( 16.8%)
-  FogNode_3    [#########################]  106 tasks ( 42.4%)
-  FogNode_4    [#########................]   37 tasks ( 14.8%)
-  FogNode_5    [##########...............]   41 tasks ( 16.4%)
+  FogNode_1    [####.....................]   24 tasks (  9.6%)
+  FogNode_2    [####.....................]   26 tasks ( 10.4%)
+  FogNode_3    [####.....................]   23 tasks (  9.2%)
+  FogNode_4    [#####....................]   28 tasks ( 11.2%)
+  FogNode_5    [#########################]  149 tasks ( 59.6%)
 
 ================================================================================
 
@@ -212,51 +212,51 @@
   Matched / Total        : 500 / 500
   Outage Rate            : 0.00%  (0 tasks)
 
-  Total Offloading Delay : 5991.8765 s
-  Avg Delay per Task     : 11.9838 s
+  Total Offloading Delay : 6508.3843 s
+  Avg Delay per Task     : 13.0168 s
 
   Deadline Compliance    : (out of 500 total tasks)
-    Assigned & Met DL    : 471
-    Assigned & Missed DL : 29
+    Assigned & Met DL    : 492
+    Assigned & Missed DL : 8
     Unassigned (outages) : 0
-    Success Rate         : 94.2% of assigned tasks met their deadline
+    Success Rate         : 98.4% of assigned tasks met their deadline
 
-  Task Satisfaction      : 70.72%  (Eq. 20)
-  FN Satisfaction        : 21.84%  (Eq. 21-22)
-  Gini Index             : 0.4008
-  Jain Fairness Index    : 0.6257
+  Task Satisfaction      : 69.39%  (Eq. 20)
+  FN Satisfaction        : 21.05%  (Eq. 21-22)
+  Gini Index             : 0.3440
+  Jain Fairness Index    : 0.7062
 
   FN Assignment Table:
   Fog Node         MinQ     MaxQ    Total    Util(%)
   --------------------------------------------------
-  FogNode_1          64      311      183     58.84%
-  FogNode_2          49      297       49     16.50%
-  FogNode_3          34      400       34      8.50%
-  FogNode_4         100      205      205    100.00%
-  FogNode_5          29      480       29      6.04%
+  FogNode_1         100      213      213    100.00%
+  FogNode_2          37      480       37      7.71%
+  FogNode_3          72      297       72     24.24%
+  FogNode_4          93      304      128     42.11%
+  FogNode_5          50      470       50     10.64%
 
   Per-FN Delay:
   Fog Node      Tasks Avg Delay(s)
   ----------------------------------
-  FogNode_1       183      11.4619
-  FogNode_2        49      19.7537
-  FogNode_3        34      22.2748
-  FogNode_4       205       7.8859
-  FogNode_5        29      19.0500
+  FogNode_1       213      10.8365
+  FogNode_2        37      19.4395
+  FogNode_3        72      17.1550
+  FogNode_4       128      10.3310
+  FogNode_5        50      18.4682
 
   Resource Utilization:
-  FogNode_1    [###############..........]  183/311  ( 58.8%)
-  FogNode_2    [####.....................]   49/297  ( 16.5%)
-  FogNode_3    [##.......................]   34/400  (  8.5%)
-  FogNode_4    [#########################]  205/205  (100.0%)
-  FogNode_5    [##.......................]   29/480  (  6.0%)
+  FogNode_1    [#########################]  213/213  (100.0%)
+  FogNode_2    [##.......................]   37/480  (  7.7%)
+  FogNode_3    [######...................]   72/297  ( 24.2%)
+  FogNode_4    [###########..............]  128/304  ( 42.1%)
+  FogNode_5    [###......................]   50/470  ( 10.6%)
 
   Traffic Load Distribution:
-  FogNode_1    [######################...]  183 tasks ( 36.6%)
-  FogNode_2    [######...................]   49 tasks (  9.8%)
-  FogNode_3    [####.....................]   34 tasks (  6.8%)
-  FogNode_4    [#########################]  205 tasks ( 41.0%)
-  FogNode_5    [####.....................]   29 tasks (  5.8%)
+  FogNode_1    [#########################]  213 tasks ( 42.6%)
+  FogNode_2    [####.....................]   37 tasks (  7.4%)
+  FogNode_3    [########.................]   72 tasks ( 14.4%)
+  FogNode_4    [###############..........]  128 tasks ( 25.6%)
+  FogNode_5    [######...................]   50 tasks ( 10.0%)
 
 ================================================================================
 
@@ -272,53 +272,179 @@
   Matched / Total        : 500 / 500
   Outage Rate            : 0.00%  (0 tasks)
 
-  Total Offloading Delay : 6091.8104 s
-  Avg Delay per Task     : 12.1836 s
-  Total Energy Consumed  : 6045.5094 J
-  Avg Energy per Task    : 12.0910 J
+  Total Offloading Delay : 6514.1218 s
+  Avg Delay per Task     : 13.0282 s
+  Total Energy Consumed  : 6468.0005 J
+  Avg Energy per Task    : 12.9360 J
 
   Deadline Compliance    : (out of 500 total tasks)
-    Assigned & Met DL    : 453
-    Assigned & Missed DL : 47
+    Assigned & Met DL    : 491
+    Assigned & Missed DL : 9
     Unassigned (outages) : 0
-    Success Rate         : 90.6% of assigned tasks met their deadline
+    Success Rate         : 98.2% of assigned tasks met their deadline
 
-  Task Satisfaction      : 70.90%  (Eq. 20)
-  FN Satisfaction        : 20.52%  (Eq. 21-22)
-  Gini Index             : 0.4008
-  Jain Fairness Index    : 0.6257
+  Task Satisfaction      : 69.09%  (Eq. 20)
+  FN Satisfaction        : 19.45%  (Eq. 21-22)
+  Gini Index             : 0.3440
+  Jain Fairness Index    : 0.7062
 
   FN Assignment Table:
   Fog Node         MinQ     MaxQ    Major    Minor    Total    Util(%)
   --------------------------------------------------------------------
-  FogNode_1          64      311       92       91      183     58.84%
-  FogNode_2          49      297       26       23       49     16.50%
-  FogNode_3          34      400       19       15       34      8.50%
-  FogNode_4         100      205      113       92      205    100.00%
-  FogNode_5          29      480       15       14       29      6.04%
+  FogNode_1         100      213      118       95      213    100.00%
+  FogNode_2          37      480       17       20       37      7.71%
+  FogNode_3          72      297       34       38       72     24.24%
+  FogNode_4          93      304       48       80      128     42.11%
+  FogNode_5          50      470       24       26       50     10.64%
 
   Per-FN Delay & Energy:
   Fog Node      Tasks Avg Delay(s) Total Energy(J)
   --------------------------------------------------
-  FogNode_1       183      11.4713      2082.3193
-  FogNode_2        49      16.6077       809.3202
-  FogNode_3        34      23.0974       782.1036
-  FogNode_4       205       7.8809      1596.5133
-  FogNode_5        29      26.8233       775.2530
+  FogNode_1       213      10.5579      2229.0984
+  FogNode_2        37      19.5410       719.6680
+  FogNode_3        72      17.1393      1227.1337
+  FogNode_4       128      10.8278      1374.3983
+  FogNode_5        50      18.4460       917.7022
 
   Resource Utilization:
-  FogNode_1    [###############..........]  183/311  ( 58.8%)
-  FogNode_2    [####.....................]   49/297  ( 16.5%)
-  FogNode_3    [##.......................]   34/400  (  8.5%)
-  FogNode_4    [#########################]  205/205  (100.0%)
-  FogNode_5    [##.......................]   29/480  (  6.0%)
+  FogNode_1    [#########################]  213/213  (100.0%)
+  FogNode_2    [##.......................]   37/480  (  7.7%)
+  FogNode_3    [######...................]   72/297  ( 24.2%)
+  FogNode_4    [###########..............]  128/304  ( 42.1%)
+  FogNode_5    [###......................]   50/470  ( 10.6%)
 
   Traffic Load Distribution:
-  FogNode_1    [######################...]  183 tasks ( 36.6%)
-  FogNode_2    [######...................]   49 tasks (  9.8%)
-  FogNode_3    [####.....................]   34 tasks (  6.8%)
-  FogNode_4    [#########################]  205 tasks ( 41.0%)
-  FogNode_5    [####.....................]   29 tasks (  5.8%)
+  FogNode_1    [#########################]  213 tasks ( 42.6%)
+  FogNode_2    [####.....................]   37 tasks (  7.4%)
+  FogNode_3    [########.................]   72 tasks ( 14.4%)
+  FogNode_4    [###############..........]  128 tasks ( 25.6%)
+  FogNode_5    [######...................]   50 tasks ( 10.0%)
+
+================================================================================
+
+
+==========================================================================
+ DETAILED RESULTS FOR 1 ITERATION (SCENARIO: 750 TASKS)
+==========================================================================
+
+=================================================
+ RUNNING QUOTA BASELINE ALGORITHM
+=================================================
+
+================================================================================
+  RESULTS
+================================================================================
+
+  Matched / Total        : 750 / 750
+  Outage Rate            : 0.00%  (0 tasks)
+
+  Total Offloading Delay : 8586.4154 s
+  Avg Delay per Task     : 11.4486 s
+
+  Deadline Compliance    : (out of 750 total tasks)
+    Assigned & Met DL    : 750
+    Assigned & Missed DL : 0
+    Unassigned (outages) : 0
+    Success Rate         : 100.0% of assigned tasks met their deadline
+
+  Task Satisfaction      : 70.30%  (Eq. 20)
+  FN Satisfaction        : 32.69%  (Eq. 21-22)
+  Gini Index             : 0.2309
+  Jain Fairness Index    : 0.8423
+
+  FN Assignment Table:
+  Fog Node         MinQ     MaxQ    Total    Util(%)
+  --------------------------------------------------
+  FogNode_1          82      417       82     19.66%
+  FogNode_2          86      351       86     24.50%
+  FogNode_3         150      225      225    100.00%
+  FogNode_4          96      232      128     55.17%
+  FogNode_5         116      229      229    100.00%
+
+  Per-FN Delay:
+  Fog Node      Tasks Avg Delay(s)
+  ----------------------------------
+  FogNode_1        82      12.1890
+  FogNode_2        86      17.5170
+  FogNode_3       225       8.5925
+  FogNode_4       128      12.0735
+  FogNode_5       229      11.3613
+
+  Resource Utilization:
+  FogNode_1    [#####....................]   82/417  ( 19.7%)
+  FogNode_2    [######...................]   86/351  ( 24.5%)
+  FogNode_3    [#########################]  225/225  (100.0%)
+  FogNode_4    [##############...........]  128/232  ( 55.2%)
+  FogNode_5    [#########################]  229/229  (100.0%)
+
+  Traffic Load Distribution:
+  FogNode_1    [#########................]   82 tasks ( 10.9%)
+  FogNode_2    [#########................]   86 tasks ( 11.5%)
+  FogNode_3    [#########################]  225 tasks ( 30.0%)
+  FogNode_4    [##############...........]  128 tasks ( 17.1%)
+  FogNode_5    [#########################]  229 tasks ( 30.5%)
+
+================================================================================
+
+
+=================================================
+ RUNNING SEVERITY-AWARE TWO-TYPE ALGORITHM
+=================================================
+
+================================================================================
+  RESULTS
+================================================================================
+
+  Matched / Total        : 745 / 750
+  Outage Rate            : 0.67%  (5 tasks)
+
+  Total Offloading Delay : 8558.6345 s
+  Avg Delay per Task     : 11.4881 s
+  Total Energy Consumed  : 8489.4712 J
+  Avg Energy per Task    : 11.3953 J
+
+  Deadline Compliance    : (out of 750 total tasks)
+    Assigned & Met DL    : 745
+    Assigned & Missed DL : 0
+    Unassigned (outages) : 5
+    Success Rate         : 100.0% of assigned tasks met their deadline
+
+  Task Satisfaction      : 69.95%  (Eq. 20)
+  FN Satisfaction        : 31.25%  (Eq. 21-22)
+  Gini Index             : 0.2357
+  Jain Fairness Index    : 0.8363
+
+  FN Assignment Table:
+  Fog Node         MinQ     MaxQ    Major    Minor    Total    Util(%)
+  --------------------------------------------------------------------
+  FogNode_1          82      417       40       42       82     19.66%
+  FogNode_2          86      351       42       39       81     23.08%
+  FogNode_3         150      225      121      104      225    100.00%
+  FogNode_4          96      232       52       76      128     55.17%
+  FogNode_5         116      229      113      116      229    100.00%
+
+  Per-FN Delay & Energy:
+  Fog Node      Tasks Avg Delay(s) Total Energy(J)
+  --------------------------------------------------
+  FogNode_1        82      15.2782      1245.1193
+  FogNode_2        81      14.9439      1202.9252
+  FogNode_3       225       8.5244      1896.8515
+  FogNode_4       128      12.5604      1595.9062
+  FogNode_5       229      11.2212      2548.6690
+
+  Resource Utilization:
+  FogNode_1    [#####....................]   82/417  ( 19.7%)
+  FogNode_2    [######...................]   81/351  ( 23.1%)
+  FogNode_3    [#########################]  225/225  (100.0%)
+  FogNode_4    [##############...........]  128/232  ( 55.2%)
+  FogNode_5    [#########################]  229/229  (100.0%)
+
+  Traffic Load Distribution:
+  FogNode_1    [#########................]   82 tasks ( 11.0%)
+  FogNode_2    [#########................]   81 tasks ( 10.9%)
+  FogNode_3    [#########################]  225 tasks ( 30.2%)
+  FogNode_4    [##############...........]  128 tasks ( 17.2%)
+  FogNode_5    [#########################]  229 tasks ( 30.7%)
 
 ================================================================================
 
@@ -335,54 +461,54 @@
   RESULTS
 ================================================================================
 
-  Matched / Total        : 963 / 1000
-  Outage Rate            : 3.70%  (37 tasks)
+  Matched / Total        : 982 / 1000
+  Outage Rate            : 1.80%  (18 tasks)
 
-  Total Offloading Delay : 12618.1878 s
-  Avg Delay per Task     : 13.1030 s
+  Total Offloading Delay : 12915.6082 s
+  Avg Delay per Task     : 13.1524 s
 
   Deadline Compliance    : (out of 1000 total tasks)
-    Assigned & Met DL    : 929
-    Assigned & Missed DL : 34
-    Unassigned (outages) : 37
-    Success Rate         : 96.5% of assigned tasks met their deadline
+    Assigned & Met DL    : 972
+    Assigned & Missed DL : 10
+    Unassigned (outages) : 18
+    Success Rate         : 99.0% of assigned tasks met their deadline
 
-  Task Satisfaction      : 63.63%  (Eq. 20)
-  FN Satisfaction        : 34.95%  (Eq. 21-22)
-  Gini Index             : 0.2795
-  Jain Fairness Index    : 0.7964
+  Task Satisfaction      : 63.14%  (Eq. 20)
+  FN Satisfaction        : 34.79%  (Eq. 21-22)
+  Gini Index             : 0.1312
+  Jain Fairness Index    : 0.9439
 
   FN Assignment Table:
   Fog Node         MinQ     MaxQ    Total    Util(%)
   --------------------------------------------------
-  FogNode_1          82      498       82     16.47%
-  FogNode_2          87      385       87     22.60%
-  FogNode_3         102      331      331    100.00%
-  FogNode_4         200      201      201    100.00%
-  FogNode_5         101      342      262     76.61%
+  FogNode_1         154      369      154     41.73%
+  FogNode_2         194      242      242    100.00%
+  FogNode_3         170      347      173     49.86%
+  FogNode_4         148      385      148     38.44%
+  FogNode_5         200      265      265    100.00%
 
   Per-FN Delay:
   Fog Node      Tasks Avg Delay(s)
   ----------------------------------
-  FogNode_1        82      15.2059
-  FogNode_2        87      20.8503
-  FogNode_3       331      13.2931
-  FogNode_4       201       8.9631
-  FogNode_5       262      12.8080
+  FogNode_1       154      17.8619
+  FogNode_2       242      11.7407
+  FogNode_3       173      13.1985
+  FogNode_4       148      12.7774
+  FogNode_5       265      11.8839
 
   Resource Utilization:
-  FogNode_1    [####.....................]   82/498  ( 16.5%)
-  FogNode_2    [######...................]   87/385  ( 22.6%)
-  FogNode_3    [#########################]  331/331  (100.0%)
-  FogNode_4    [#########################]  201/201  (100.0%)
-  FogNode_5    [###################......]  262/342  ( 76.6%)
+  FogNode_1    [##########...............]  154/369  ( 41.7%)
+  FogNode_2    [#########################]  242/242  (100.0%)
+  FogNode_3    [############.............]  173/347  ( 49.9%)
+  FogNode_4    [##########...............]  148/385  ( 38.4%)
+  FogNode_5    [#########################]  265/265  (100.0%)
 
   Traffic Load Distribution:
-  FogNode_1    [######...................]   82 tasks (  8.5%)
-  FogNode_2    [#######..................]   87 tasks (  9.0%)
-  FogNode_3    [#########################]  331 tasks ( 34.4%)
-  FogNode_4    [###############..........]  201 tasks ( 20.9%)
-  FogNode_5    [####################.....]  262 tasks ( 27.2%)
+  FogNode_1    [###############..........]  154 tasks ( 15.7%)
+  FogNode_2    [#######################..]  242 tasks ( 24.6%)
+  FogNode_3    [################.........]  173 tasks ( 17.6%)
+  FogNode_4    [##############...........]  148 tasks ( 15.1%)
+  FogNode_5    [#########################]  265 tasks ( 27.0%)
 
 ================================================================================
 
@@ -398,179 +524,53 @@
   Matched / Total        : 1000 / 1000
   Outage Rate            : 0.00%  (0 tasks)
 
-  Total Offloading Delay : 13404.0879 s
-  Avg Delay per Task     : 13.4041 s
-  Total Energy Consumed  : 13311.2209 J
-  Avg Energy per Task    : 13.3112 J
+  Total Offloading Delay : 13250.3936 s
+  Avg Delay per Task     : 13.2504 s
+  Total Energy Consumed  : 13157.2742 J
+  Avg Energy per Task    : 13.1573 J
 
   Deadline Compliance    : (out of 1000 total tasks)
-    Assigned & Met DL    : 917
-    Assigned & Missed DL : 83
+    Assigned & Met DL    : 968
+    Assigned & Missed DL : 32
     Unassigned (outages) : 0
-    Success Rate         : 91.7% of assigned tasks met their deadline
+    Success Rate         : 96.8% of assigned tasks met their deadline
 
-  Task Satisfaction      : 62.65%  (Eq. 20)
-  FN Satisfaction        : 36.37%  (Eq. 21-22)
-  Gini Index             : 0.2840
-  Jain Fairness Index    : 0.7885
-
-  FN Assignment Table:
-  Fog Node         MinQ     MaxQ    Major    Minor    Total    Util(%)
-  --------------------------------------------------------------------
-  FogNode_1          82      498       42       40       82     16.47%
-  FogNode_2          87      385       48       39       87     22.60%
-  FogNode_3         102      331      134      197      331    100.00%
-  FogNode_4         200      201      131       70      201    100.00%
-  FogNode_5         101      342      133      166      299     87.43%
-
-  Per-FN Delay & Energy:
-  Fog Node      Tasks Avg Delay(s) Total Energy(J)
-  --------------------------------------------------
-  FogNode_1        82      19.2817      1573.6896
-  FogNode_2        87      17.2278      1490.8037
-  FogNode_3       331      13.9628      4590.9510
-  FogNode_4       201       8.7758      1745.3535
-  FogNode_5       299      13.1724      3910.4230
-
-  Resource Utilization:
-  FogNode_1    [####.....................]   82/498  ( 16.5%)
-  FogNode_2    [######...................]   87/385  ( 22.6%)
-  FogNode_3    [#########################]  331/331  (100.0%)
-  FogNode_4    [#########################]  201/201  (100.0%)
-  FogNode_5    [######################...]  299/342  ( 87.4%)
-
-  Traffic Load Distribution:
-  FogNode_1    [######...................]   82 tasks (  8.2%)
-  FogNode_2    [#######..................]   87 tasks (  8.7%)
-  FogNode_3    [#########################]  331 tasks ( 33.1%)
-  FogNode_4    [###############..........]  201 tasks ( 20.1%)
-  FogNode_5    [#######################..]  299 tasks ( 29.9%)
-
-================================================================================
-
-
-==========================================================================
- DETAILED RESULTS FOR 1 ITERATION (SCENARIO: 2000 TASKS)
-==========================================================================
-
-=================================================
- RUNNING QUOTA BASELINE ALGORITHM
-=================================================
-
-================================================================================
-  RESULTS
-================================================================================
-
-  Matched / Total        : 1659 / 2000
-  Outage Rate            : 17.05%  (341 tasks)
-
-  Total Offloading Delay : 24692.7237 s
-  Avg Delay per Task     : 14.8841 s
-
-  Deadline Compliance    : (out of 2000 total tasks)
-    Assigned & Met DL    : 1659
-    Assigned & Missed DL : 0
-    Unassigned (outages) : 341
-    Success Rate         : 100.0% of assigned tasks met their deadline
-
-  Task Satisfaction      : 36.58%  (Eq. 20)
-  FN Satisfaction        : 58.37%  (Eq. 21-22)
-  Gini Index             : 0.1671
-  Jain Fairness Index    : 0.9128
-
-  FN Assignment Table:
-  Fog Node         MinQ     MaxQ    Total    Util(%)
-  --------------------------------------------------
-  FogNode_1         171      260      260    100.00%
-  FogNode_2         148      275      275    100.00%
-  FogNode_3         119      427      427    100.00%
-  FogNode_4         217      217      217    100.00%
-  FogNode_5         115      480      480    100.00%
-
-  Per-FN Delay:
-  Fog Node      Tasks Avg Delay(s)
-  ----------------------------------
-  FogNode_1       260      15.0112
-  FogNode_2       275      15.0156
-  FogNode_3       427      14.4989
-  FogNode_4       217      12.9227
-  FogNode_5       480      15.9693
-
-  Resource Utilization:
-  FogNode_1    [#########################]  260/260  (100.0%)
-  FogNode_2    [#########################]  275/275  (100.0%)
-  FogNode_3    [#########################]  427/427  (100.0%)
-  FogNode_4    [#########################]  217/217  (100.0%)
-  FogNode_5    [#########################]  480/480  (100.0%)
-
-  Traffic Load Distribution:
-  FogNode_1    [##############...........]  260 tasks ( 15.7%)
-  FogNode_2    [##############...........]  275 tasks ( 16.6%)
-  FogNode_3    [######################...]  427 tasks ( 25.7%)
-  FogNode_4    [###########..............]  217 tasks ( 13.1%)
-  FogNode_5    [#########################]  480 tasks ( 28.9%)
-
-================================================================================
-
-
-=================================================
- RUNNING SEVERITY-AWARE TWO-TYPE ALGORITHM
-=================================================
-
-================================================================================
-  RESULTS
-================================================================================
-
-  Matched / Total        : 1659 / 2000
-  Outage Rate            : 17.05%  (341 tasks)
-
-  Total Offloading Delay : 26510.2996 s
-  Avg Delay per Task     : 15.9797 s
-  Total Energy Consumed  : 26355.1959 J
-  Avg Energy per Task    : 15.8862 J
-
-  Deadline Compliance    : (out of 2000 total tasks)
-    Assigned & Met DL    : 1249
-    Assigned & Missed DL : 410
-    Unassigned (outages) : 341
-    Success Rate         : 75.3% of assigned tasks met their deadline
-
-  Task Satisfaction      : 31.68%  (Eq. 20)
-  FN Satisfaction        : 61.24%  (Eq. 21-22)
-  Gini Index             : 0.1671
-  Jain Fairness Index    : 0.9128
+  Task Satisfaction      : 61.94%  (Eq. 20)
+  FN Satisfaction        : 34.83%  (Eq. 21-22)
+  Gini Index             : 0.1288
+  Jain Fairness Index    : 0.9484
 
   FN Assignment Table:
   Fog Node         MinQ     MaxQ    Major    Minor    Total    Util(%)
   --------------------------------------------------------------------
-  FogNode_1         171      260      158      102      260    100.00%
-  FogNode_2         148      275      136      139      275    100.00%
-  FogNode_3         119      427      109      318      427    100.00%
-  FogNode_4         217      217      200       17      217    100.00%
-  FogNode_5         115      480      282      198      480    100.00%
+  FogNode_1         154      369       74       80      154     41.73%
+  FogNode_2         194      242      128      114      242    100.00%
+  FogNode_3         170      347       82      109      191     55.04%
+  FogNode_4         148      385       73       75      148     38.44%
+  FogNode_5         200      265      128      137      265    100.00%
 
   Per-FN Delay & Energy:
   Fog Node      Tasks Avg Delay(s) Total Energy(J)
   --------------------------------------------------
-  FogNode_1       260      13.5778      3505.7248
-  FogNode_2       275      14.3732      3926.8952
-  FogNode_3       427      17.0304      7231.9108
-  FogNode_4       217      11.6267      2502.7404
-  FogNode_5       480      19.2344      9187.9249
+  FogNode_1       154      15.3705      2352.5914
+  FogNode_2       242      12.1435      2916.2527
+  FogNode_3       191      13.1410      2491.7999
+  FogNode_4       148      15.4484      2272.4200
+  FogNode_5       265      11.8805      3124.2101
 
   Resource Utilization:
-  FogNode_1    [#########################]  260/260  (100.0%)
-  FogNode_2    [#########################]  275/275  (100.0%)
-  FogNode_3    [#########################]  427/427  (100.0%)
-  FogNode_4    [#########################]  217/217  (100.0%)
-  FogNode_5    [#########################]  480/480  (100.0%)
+  FogNode_1    [##########...............]  154/369  ( 41.7%)
+  FogNode_2    [#########################]  242/242  (100.0%)
+  FogNode_3    [##############...........]  191/347  ( 55.0%)
+  FogNode_4    [##########...............]  148/385  ( 38.4%)
+  FogNode_5    [#########################]  265/265  (100.0%)
 
   Traffic Load Distribution:
-  FogNode_1    [##############...........]  260 tasks ( 15.7%)
-  FogNode_2    [##############...........]  275 tasks ( 16.6%)
-  FogNode_3    [######################...]  427 tasks ( 25.7%)
-  FogNode_4    [###########..............]  217 tasks ( 13.1%)
-  FogNode_5    [#########################]  480 tasks ( 28.9%)
+  FogNode_1    [###############..........]  154 tasks ( 15.4%)
+  FogNode_2    [#######################..]  242 tasks ( 24.2%)
+  FogNode_3    [##################.......]  191 tasks ( 19.1%)
+  FogNode_4    [##############...........]  148 tasks ( 14.8%)
+  FogNode_5    [#########################]  265 tasks ( 26.5%)
 
 ================================================================================
 

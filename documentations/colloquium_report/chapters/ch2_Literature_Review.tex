@@ -1,0 +1,35 @@
+% --- LITERATURE REVIEW ---
+\noindent This chapter surveys the foundational theory and prior work relevant to this project, and identifies the gaps that motivate the proposed approach.
+
+\section{Matching Theory Foundations}
+
+The Deferred Acceptance (DA) algorithm, introduced by Gale and Shapley \cite{gale1962college}, solves the stable matching problem for two-sided markets. In DA, one side (proposers) makes offers to the other side (receivers). Each receiver tentatively accepts the best proposals up to its capacity and rejects the rest. Rejected proposers then propose to their next choice. This process repeats until no more proposals can be made. DA guarantees a stable matching --- no unmatched pair would both prefer each other over their current assignment.
+
+Roth and Sotomayor \cite{roth1990twosided} provide the foundational theoretical treatment of two-sided matching, establishing key properties such as strategy-proofness for the proposing side and the lattice structure of stable matchings. Their work forms the basis for applying matching theory to resource allocation problems beyond the original marriage and college admissions settings.
+
+Standard DA does not enforce minimum quotas --- some receivers may remain empty while others are overloaded. Kamada and Kojima \cite{kamada2015efficient} studied efficient matching under distributional constraints, showing that minimum-quota requirements can be incorporated while preserving desirable matching properties. Fragiadakis et al. \cite{fragiadakis2016strategyproof} formalised the Multi-Stage Deferred Acceptance (MSDA) algorithm with minimum quotas. MSDA runs DA in multiple stages: in early stages, tasks with the latest deadlines are removed from the pool and DA runs with maximum quotas; in the final stage, minimum quotas force remaining tasks onto receivers even if constraints are relaxed. This ensures every receiver gets at least its minimum quota.
+
+The extension of MSDA to handle two types of agents with separate quota constraints was proposed by Oomori and Manabe \cite{oomori2026strategyproof}. Their 2-Type MSDA maintains four quota values per receiver: minimum and maximum quotas for all agents, and separate minimum and maximum quotas for one designated type (R-type). This theoretical framework is the basis for the matching algorithm adapted in this project.
+
+\section{Task Offloading in IoT-Fog Systems}
+
+Chiti et al. \cite{chiti2018matching} proposed a Matching-Based Task Offloading (MBTO) framework for IoT-fog systems, demonstrating that matching theory provides a principled approach to the task offloading problem. Their work showed that matching-based offloading outperforms greedy and random assignment strategies in terms of delay and resource utilisation.
+
+Swain et al. \cite{swain2021leto} proposed LETO, a load-balanced task offloading strategy for IoT-fog systems that focused on distributing tasks fairly across fog nodes. LETO served as a direct predecessor to the M-DAFTO algorithm.
+
+The M-DAFTO algorithm \cite{swain2024mdafto} extended the MSDA framework specifically for IoT-fog task offloading. M-DAFTO introduced a 2-criteria urgency function (based on delay difference and preference count), AHP-based weight generation, and multi-stage quota enforcement. M-DAFTO demonstrated improved fairness over prior approaches through its minimum-quota mechanism, which ensures that no fog node is left idle while others are overloaded.
+
+\section{Gaps Identified}
+
+Despite M-DAFTO's contributions, the following key gaps exist that limit its applicability to healthcare IoT:
+
+\begin{enumerate}
+\item \textbf{No task differentiation}: M-DAFTO treats all tasks in a single pool. In healthcare, a critical surgery and a routine checkup should not compete equally for resources.
+\item \textbf{Limited urgency criteria}: Using only delay difference and preference count ignores energy consumption, which is important for battery-powered IoT devices.
+\item \textbf{No severity awareness}: Without a severity concept, the algorithm cannot guarantee that critical tasks are assigned even under high load.
+\item \textbf{Trivial AHP consistency}: The 2$\times$2 AHP matrix always has CR = 0, so no actual consistency validation occurs.
+\item \textbf{Incomplete normalisation}: Only delay is normalised; energy values are neither scaled nor incorporated into the preference ordering.
+\item \textbf{Single preference ranking}: Each fog node maintains only one preference list over all tasks, preventing type-specific prioritisation.
+\end{enumerate}
+
+These gaps motivate the adaptation of the 2-Type MSDA algorithm from \cite{oomori2026strategyproof}, combined with the proposed extensions: expanded urgency criteria, genuine AHP consistency checking, severity-weighted normalisation, and the mapping of Major/Minor healthcare task severity onto the R-type/S-type framework.

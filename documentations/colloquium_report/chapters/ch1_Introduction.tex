@@ -1,0 +1,35 @@
+This chapter provides the context for this project and outlines the objectives to be achieved.
+
+\section{Context}
+
+The rapid growth of the Internet of Things (IoT) in healthcare has led to a proliferation of connected medical devices in smart hospital environments --- patient monitors, surgical equipment, diagnostic imaging systems, and environmental sensors \cite{swain2024mdafto}. These devices generate computational tasks that must be processed in real time. For instance, a surgery monitoring system cannot tolerate the 100+ millisecond latency of a distant cloud data centre; it requires single-digit millisecond response times.
+
+Fog computing addresses this need by placing small edge servers --- called Fog Nodes (FNs) --- close to the data source, typically within the same building or campus \cite{chiti2018matching}. Compared to cloud computing, fog offers lower latency, reduced bandwidth consumption, higher reliability against internet outages, and stronger data privacy since sensitive patient information stays within the hospital network.
+
+The core challenge addressed in this work is \textit{task offloading}: deciding which FN should process which task. Each IoT task has a strict deadline, each FN has limited capacity measured in Virtual Resource Units (VRUs), and network bandwidth is shared. Critically, not all tasks are equally important --- a major surgery matters far more than a routine checkup. If a task cannot be assigned to any FN, it results in an \textit{outage}. In healthcare, outages for critical operations are unacceptable.
+
+This problem is fundamentally a multi-criteria matching problem: tasks have preferences over FNs (based on delay and energy), FNs have preferences over tasks (based on urgency), and both sides have constraints (deadlines, quotas). Standard load balancing optimises for a single metric and is insufficient. The Deferred Acceptance (DA) algorithm from matching theory \cite{gale1962college} provides a principled framework, and Multi-Stage Deferred Acceptance (MSDA) extends it with minimum-quota enforcement for fairness \cite{fragiadakis2016strategyproof}.
+
+\section{Objectives}
+
+The primary base paper, M-DAFTO \cite{swain2024mdafto}, proposes a Single-Type MSDA algorithm for IoT-fog task offloading. While effective, six key limitations can be identified:
+
+\begin{itemize}
+\item \textbf{Single-pool matching}: All tasks compete in one undifferentiated pool. A routine checkup competes for the same FN slots as a critical surgery, and under high load, critical tasks can be starved of resources.
+\item \textbf{2-criteria urgency}: The urgency function uses only delay difference and preference count. Energy consumption --- a key concern in battery-powered IoT devices --- is completely ignored.
+\item \textbf{No severity awareness}: There is no concept of task severity (Major vs Minor). The algorithm cannot prioritise critical healthcare operations over routine ones.
+\item \textbf{Trivially consistent 2$\times$2 AHP}: With only 2 criteria, the Analytic Hierarchy Process (AHP) matrix is 2$\times$2 and always passes the consistency check (CR = 0 by definition).
+\item \textbf{Delay-only normalisation}: Only delay is normalised via Min-Max scaling. Energy is neither normalised nor combined into the preference ordering.
+\item \textbf{Single preference list per FN}: Each FN has one preference ranking over all tasks. There are no separate rankings for different task types.
+\end{itemize}
+
+The main objective is to adapt and implement a severity-aware 2-Type MSDA algorithm from \cite{oomori2026strategyproof} that overcomes all six limitations, while maintaining the theoretical guarantees of the original MSDA framework. Specifically, the project aims to:
+
+\begin{enumerate}
+\item Apply Major/Minor task classification with separate quota constraints based on the 2-Type framework of \cite{oomori2026strategyproof}.
+\item Extend the urgency function from 2 to 4 criteria (adding energy and severity).
+\item Implement a 4$\times$4 AHP matrix with genuine consistency validation.
+\item Apply severity-weighted normalisation to both delay and energy.
+\item Generate separate fog-side preference lists for Major and Minor tasks, as required by the 2-Type MSDA architecture \cite{oomori2026strategyproof}.
+\item Evaluate the proposed method against two baselines across multiple load scales.
+\end{enumerate}

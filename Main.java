@@ -86,7 +86,7 @@ public class Main {
                 );
  
                 // ================================================================
-                //  PROPOSED PIPELINE (2-Type MSDA)
+                //  PROPOSED PIPELINE (Adapted 2-Type MSDA)
                 // ================================================================
                 WeightGenerator.WeightResult proposedWeights = WeightGenerator.generateWeights(rand);
                 Normalizer.normalize(proposedTasks, fogNetworks.length);

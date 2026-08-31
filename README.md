@@ -1,6 +1,6 @@
 # Optimized Task Offloading for Healthcare IoT-Fog Systems
 
-Improved a published matching algorithm (M-DAFTO) by introducing Major/Minor task classification with separate quota constraints and type-separated Deferred Acceptance matching for healthcare IoT-Fog systems. Expanded the urgency model from 2 to 4 criteria (delay, energy, preference, severity) using AHP-based weight generation with consistency validation. Implemented severity-weighted normalization and separate preference lists per task type across fog nodes. Evaluated in Java across 250–2000 task scales against 2 baselines, achieving 0% critical-task outage under normal load.
+Improved a published matching algorithm (M-DAFTO) by adapting the 2-Type Multi-Stage Deferred Acceptance framework from Oomori and Manabe for healthcare IoT-Fog task offloading with Major/Minor task classification. Extended the urgency model from 2 to 4 criteria (delay, energy, preference, severity) using AHP-based weight generation with consistency validation. Introduced severity-weighted normalization and separate preference lists per task type across fog nodes. Implemented and evaluated in Java across 250–2000 task scales against 2 baselines, achieving 0% critical-task outage under normal load.
 
 ---
 
@@ -19,7 +19,7 @@ The existing **M-DAFTO** algorithm treats all tasks equally in a single pool, so
 
 ## What This Project Does
 
-Redesigns the matching algorithm as a **2-Type Multi-Stage Deferred Acceptance (MSDA)** system that separates critical and routine tasks.
+Adapts the matching algorithm into a **2-Type Multi-Stage Deferred Acceptance (MSDA)** system (based on Oomori and Manabe) that separates critical and routine tasks, combined with original extensions to the urgency model, normalisation, and AHP.
 
 | What Changed | Baseline (M-DAFTO) | This Project (2-Type MSDA) |
 |:---|:---|:---|
@@ -77,9 +77,9 @@ Phase 6 → Compute metrics (outage, delay, energy, satisfaction, fairness)
 Phase 7 → Loop across 4 scales × 10 iterations, average results
 ```
 
-### Core Algorithm: 2-Type MSDA
+### Core Algorithm: 2-Type MSDA (adapted from Oomori and Manabe)
 
-The matching runs in multiple stages:
+The matching runs in multiple stages as defined in the 2-Type MSDA framework:
 
 1. **Compute target counts** — how many Major (R-type) and Minor (S-type) slots are needed
 2. **Extract bottom-of-list tasks** — tasks with latest deadlines are deferred to later stages
@@ -170,7 +170,8 @@ java Main | Out-File -Encoding utf8 output.txt
 
 ## References
 
-- **Base Paper:** M-DAFTO — [Multi-Stage Deferred Acceptance Based Fair Task Offloading in IoT-Fog Systems](https://doi.org/10.1109/JIOT.2022.3183979) (IEEE JIOT 2022)
+- **Base Paper 1:** M-DAFTO — [Multi-Stage Deferred Acceptance Based Fair Task Offloading in IoT-Fog Systems](https://doi.org/10.1109/JIOT.2022.3183979) (IEEE JIOT 2022)
+- **Base Paper 2:** Oomori and Manabe — Strategyproof Matching with Maximum and Minimum Quotas for Two Types of Members
 - **Matching Theory:** Gale-Shapley Deferred Acceptance Algorithm
 - **AHP:** Saaty's Analytic Hierarchy Process
 
